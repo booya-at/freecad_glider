@@ -48,10 +48,7 @@ class OGGlider(OGBaseObject):
         obj.addProperty("App::PropertyPythonObject",
                         "glider_2d", "object",
                         "parametric glider", 2)
-        with open(
-                str(App.ConfigGet("UserAppData")) +
-                "Mod/glider_gui/glider2d.json", 'r'
-                ) as importfile:
+        with open(os.path.dirname(__file__) + "/../glider2d.json", "r") as importfile:
             obj.glider_2d = load(importfile)["data"]
         obj.glider_instance = obj.glider_2d.get_glider_3d()
         obj.Proxy = self

@@ -1,9 +1,13 @@
-import FreeCADGui as Gui
-import FreeCAD
+try:
+    import FreeCADGui as Gui
+    import FreeCAD
+except ImportError:
+    print("module not loaded with freecad")
 
 from tools import *
 
-Gui.addIconPath(FreeCAD.ConfigGet("UserAppData") + "/Mod/glider_gui/icons")
+
+Gui.addIconPath(Dir + "/icons")
 
 Gui.addCommand('CreateGlider', CreateGlider())
 Gui.addCommand('Shape_Tool', Shape_Tool())
