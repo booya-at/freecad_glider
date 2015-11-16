@@ -1,5 +1,5 @@
 from freecad_dist import fc_install         # custom freecad install
-from distutils.core import setup
+from setuptools import setup
 
 import freecad_glider
 
