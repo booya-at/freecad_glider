@@ -4,7 +4,7 @@ from setuptools import setup
 import freecad_glider
 
 setup(cmdclass={'install': fc_install},
-      install_requires=[OpenGlider],     
+      install_requires=["OpenGlider"],     
       name='freecad_glider',
       version=freecad_glider.__version__,
       description='gui for openglider in freecad',

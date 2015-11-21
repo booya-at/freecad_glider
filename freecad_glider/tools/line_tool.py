@@ -459,6 +459,7 @@ class line_tool(base_tool):
         self.remove_all_callbacks()
         self.obj.glider_2d = self.glider_2d
         super(line_tool, self).accept()
+        self.obj.ViewObject.Proxy.updateData()
         
     def reject(self):
         self.shape.unregister()

@@ -161,8 +161,7 @@ class OGGliderVP(OGBaseVP):
         self.updateData(vp, prop)
 
     def getIcon(self):
-        return str(App.getHomePath() +
-                   "Mod/glider_gui/icons/glider_import.svg")
+        return "new_glider.svg"
 
     def __getstate__(self):
         return None
