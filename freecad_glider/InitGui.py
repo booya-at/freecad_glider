@@ -1,11 +1,13 @@
+import os
 try:
     import FreeCADGui as Gui
     import FreeCAD
 except ImportError:
     print("module not loaded with freecad")
 
-from tools import *
-
+from freecad_glider.tools import *
+import freecad_glider
+Dir = os.path.dirname(freecad_glider.__file__)
 
 Gui.addIconPath(Dir + "/icons")
 
