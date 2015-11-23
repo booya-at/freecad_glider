@@ -5,30 +5,10 @@ try:
 except ImportError:
     print("module not loaded with freecad")
 
-from freecad_glider.tools import *
 import freecad_glider
 Dir = os.path.dirname(freecad_glider.__file__)
 
 Gui.addIconPath(Dir + "/icons")
-
-Gui.addCommand('CreateGlider', CreateGlider())
-Gui.addCommand('Shape_Tool', Shape_Tool())
-Gui.addCommand('Airfoil_Tool', Airfoil_Tool())
-Gui.addCommand('Arc_Tool', Arc_Tool())
-Gui.addCommand("Aoa_Tool", Aoa_Tool())
-Gui.addCommand("Ballooning_Tool", Ballooning_Tool())
-Gui.addCommand("Line_Tool", Line_Tool())
-Gui.addCommand("Gl2d_Import", Gl2d_Import())
-Gui.addCommand("Gl2d_Export", Gl2d_Export())
-Gui.addCommand("AirfoilMergeTool", AirfoilMergeTool())
-Gui.addCommand("BallooningMergeTool", BallooningMergeTool())
-
-
-Gui.addCommand("Pattern_Tool", Pattern_Tool())
-Gui.addCommand("Panel_Tool", Panel_Tool())
-Gui.addCommand("Polars_Tool", Polars_Tool())
-
-Gui.addCommand("Reload", Reload())
 
 
 class gliderWorkbench(Workbench):
@@ -61,6 +41,26 @@ class gliderWorkbench(Workbench):
         return "Gui::PythonWorkbench"
 
     def Initialize(self):
+        from freecad_glider import tools
+
+        Gui.addCommand('CreateGlider', tools.CreateGlider())
+        Gui.addCommand('Shape_Tool', tools.Shape_Tool())
+        Gui.addCommand('Airfoil_Tool', tools.Airfoil_Tool())
+        Gui.addCommand('Arc_Tool', tools.Arc_Tool())
+        Gui.addCommand("Aoa_Tool", tools.Aoa_Tool())
+        Gui.addCommand("Ballooning_Tool", tools.Ballooning_Tool())
+        Gui.addCommand("Line_Tool", tools.Line_Tool())
+        Gui.addCommand("Gl2d_Import", tools.Gl2d_Import())
+        Gui.addCommand("Gl2d_Export", tools.Gl2d_Export())
+        Gui.addCommand("AirfoilMergeTool", tools.AirfoilMergeTool())
+        Gui.addCommand("BallooningMergeTool", tools.BallooningMergeTool())
+
+        Gui.addCommand("Pattern_Tool", tools.Pattern_Tool())
+        Gui.addCommand("Panel_Tool", tools.Panel_Tool())
+        Gui.addCommand("Polars_Tool", tools.Polars_Tool())
+
+        Gui.addCommand("Reload", tools.Reload())
+
         self.appendToolbar("Tools", self.toolbox)
         self.appendMenu("Tools", self.toolbox)
         self.appendToolbar("Production", self.productionbox)
