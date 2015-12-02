@@ -84,12 +84,13 @@ class spline_select(QtGui.QComboBox):
 
 
 class base_tool(object):
-    def __init__(self, obj, widget_name="base_widget", hide=True):
+    def __init__(self, obj, widget_name="base_widget", hide=True, turn=True):
         self.obj = obj
         self.glider_2d = deepcopy(self.obj.glider_2d)
         self.obj.ViewObject.Visibility = not hide
         self.view = Gui.ActiveDocument.ActiveView
-        self.view.viewTop()
+        if turn:
+            self.view.viewTop()
 
         # self.view.setNavigationType('Gui::TouchpadNavigationStyle')
         # disable the rotation function

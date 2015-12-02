@@ -27,13 +27,13 @@ class gliderWorkbench(Workbench):
         "Ballooning_Tool",
         "BallooningMergeTool",
         "Line_Tool",
-        "Gl2d_Export"]
+        "Gl2d_Export",
+        "Cell_Tool"]
 
     productionbox = [
         "Pattern_Tool",
         "Panel_Tool",
-        "Polars_Tool",
-        "Reload"
+        "Polars_Tool"
         ]
 
 
@@ -58,8 +58,7 @@ class gliderWorkbench(Workbench):
         Gui.addCommand("Pattern_Tool", tools.Pattern_Tool())
         Gui.addCommand("Panel_Tool", tools.Panel_Tool())
         Gui.addCommand("Polars_Tool", tools.Polars_Tool())
-
-        Gui.addCommand("Reload", tools.Reload())
+        Gui.addCommand("Cell_Tool", tools.Cell_Tool())
 
         self.appendToolbar("Tools", self.toolbox)
         self.appendMenu("Tools", self.toolbox)

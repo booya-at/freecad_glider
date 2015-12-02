@@ -11,6 +11,7 @@ from ballooning_tool import ballooning_tool
 from line_tool import line_tool
 from merge_tool import airfoil_merge_tool, ballooning_merge_tool
 from panel_methode import panel_tool, polars
+from cell_tool import cell_tool
 import openglider
 from openglider.plots import flatten_glider
 
@@ -31,92 +32,67 @@ class BaseCommand(object):
     def IsActive(self):
         if FreeCAD.ActiveDocument is None:
             return False
+        elif not self.glider_obj:
+            return False
         else:
             return True
 
     def Activated(self):
+        Gui.Control.showDialog(self.tool(self.glider_obj))
+    
+    @property
+    def glider_obj(self):
         obj = Gui.Selection.getSelection()
         if len(obj) > 0:
             obj = obj[0]
             if check_glider(obj):
-                Gui.Control.showDialog(self.tool(obj))
+                return obj
+        return None
 
     def tool(self, obj):
         return base_tool(obj)
 
 
-class Reload(BaseCommand):
-    def Activated(self):
-        reload(openglider)
+class Cell_Tool(BaseCommand):
+    def tool(self, obj):
+        return cell_tool(obj)
+
+    def GetResources(self):
+        return {'Pixmap': 'cell_tool.svg',
+                'MenuText': 'edit cells',
+                'ToolTip': 'edit cells'}
 
 
 
-class Gl2d_Export(object):
-    def __init__(self):
-        pass
-
+class Gl2d_Export(BaseCommand):
     def GetResources(self):
         return {'Pixmap': 'gl2d_export.svg',
                 'MenuText': 'export 2D',
                 'ToolTip': 'export 2D'}
 
-    def IsActive(self):
-        if FreeCAD.ActiveDocument is None:
-            return False
-        else:
-            return True
-
     def Activated(self):
-        proceed = False
-        obj = Gui.Selection.getSelection()
-        if len(obj) > 0:
-            obj = obj[0]
-            if check_glider(obj):
-                proceed = True
-        if proceed:
+        obj = self.glider_obj
+        if obj:
             export_2d(obj)
 
 
-class Gl2d_Import(object):
-    def __init__(self):
-        pass
-
+class Gl2d_Import(BaseCommand):
     def GetResources(self):
         return {'Pixmap': 'gl2d_import.svg',
                 'MenuText': 'import 2D',
                 'ToolTip': 'import 2D'}
 
-    def IsActive(self):
-        if FreeCAD.ActiveDocument is None:
-            return False
-        else:
-            return True
-
     def Activated(self):
-        proceed = False
-        obj = Gui.Selection.getSelection()
-        if len(obj) > 0:
-            obj = obj[0]
-            if check_glider(obj):
-                proceed = True
-        if proceed:
+        obj = self.glider_obj
+        if obj:
             import_2d(obj)
 
 
-class Pattern_Tool(object):
-    def __init__(self):
-        pass
-
+class Pattern_Tool(BaseCommand):
     def GetResources(self):
         return {'Pixmap': 'pattern_tool.svg',
                 'MenuText': 'unwrap glider',
                 'ToolTip': 'unwrap glider'}
-
-    def IsActive(self):
-        if FreeCAD.ActiveDocument is None:
-            return False
-        else:
-            return True
 
     def Activated(self):
         proceed = False
@@ -155,6 +131,11 @@ class CreateGlider(BaseCommand):
         return {'Pixmap': "new_glider.svg",
                 'MenuText': 'glider',
                 'ToolTip': 'glider'}
+
+    @property
+    def glider_obj(self):
+        return True
+    
 
     def Activated(self):
         a = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "Glider")

@@ -1,11 +1,13 @@
 from __future__ import division
 import os
 import ast
+import numpy as np
 
 from pivy import coin
 import FreeCAD as App
 
 from openglider.jsonify import load, dumps, loads
+from openglider.mesh import mesh_2d
 from pivy_primitives_new_new import Line
 
 importpath = os.path.join(os.path.dirname(__file__), '..', 'demokite.ods')
@@ -84,9 +86,13 @@ class OGGliderVP(OGBaseVP):
         view_obj.addProperty("App::PropertyInteger",
                              "line_num", "accuracy",
                              "line_num")
+        view_obj.addProperty("App::PropertyBool",
+                              "outside", "visual",
+                              "outside")
         view_obj.num_ribs = 0
         view_obj.profile_num = 13
         view_obj.line_num = 5
+        view_obj.outside = True
         super(OGGliderVP, self).__init__(view_obj)
 
     def attach(self, view_obj):
@@ -104,49 +110,110 @@ class OGGliderVP(OGBaseVP):
 
     def updateData(self, fp=None, prop=None):
         if hasattr(self, "view_obj"):
-            if prop in ["num_ribs", "profile_num", None]:
+            if prop in ["num_ribs", "profile_num", "outside", None]:
                 if hasattr(self.view_obj, "profile_num"):
                     numpoints = self.view_obj.profile_num
                     if numpoints < 5:
                         numpoints = 5
                     self.update_glider(midribs=self.view_obj.num_ribs,
-                                       profile_numpoints=numpoints)
+                                       profile_numpoints=numpoints, outside=self.view_obj.outside)
             if prop in ["line_num", None]:
                 if hasattr(self.view_obj, "line_num"):
                     self.update_lines(self.view_obj.line_num)
 
-    def update_glider(self, midribs=0, profile_numpoints=20):
+    def update_glider(self, midribs=0, profile_numpoints=20, outside=True):
         self.vis_glider.removeAllChildren()
         glider = self.glider_instance.copy_complete()
         glider.profile_numpoints = profile_numpoints
-        if midribs == 0:
-            vertexproperty = coin.SoVertexProperty()
-            mesh = coin.SoQuadMesh()
-            ribs = glider.ribs
-            flat_coords = [i for rib in ribs for i in rib.profile_3d.data]
-            vertexproperty.vertex.setValues(0, len(flat_coords), flat_coords)
-            mesh.verticesPerRow = len(ribs[0].profile_3d.data)
-            mesh.verticesPerColumn = len(ribs)
-            mesh.vertexProperty = vertexproperty
-            self.vis_glider.addChild(mesh)
-            self.vis_glider.addChild(vertexproperty)
-        else:
-            for cell in glider.cells:
-                sep = coin.SoSeparator()
+        if outside:
+            if midribs == 0:
                 vertexproperty = coin.SoVertexProperty()
                 mesh = coin.SoQuadMesh()
-                ribs = [cell.midrib(pos / (midribs + 1))
-                        for pos in range(midribs + 2)]
-                flat_coords = [i for rib in ribs for i in rib]
-                vertexproperty.vertex.setValues(0,
-                                                len(flat_coords),
-                                                flat_coords)
-                mesh.verticesPerRow = len(ribs[0])
+                ribs = glider.ribs
+                flat_coords = [i for rib in ribs for i in rib.profile_3d.data]
+                vertexproperty.vertex.setValues(0, len(flat_coords), flat_coords)
+                mesh.verticesPerRow = len(ribs[0].profile_3d.data)
                 mesh.verticesPerColumn = len(ribs)
                 mesh.vertexProperty = vertexproperty
-                sep.addChild(vertexproperty)
-                sep.addChild(mesh)
-                self.vis_glider.addChild(sep)
+                self.vis_glider.addChild(mesh)
+                self.vis_glider.addChild(vertexproperty)
+            else:
+                for cell in glider.cells:
+                    sep = coin.SoSeparator()
+                    vertexproperty = coin.SoVertexProperty()
+                    mesh = coin.SoQuadMesh()
+                    ribs = [cell.midrib(pos / (midribs + 1))
+                            for pos in range(midribs + 2)]
+                    flat_coords = [i for rib in ribs for i in rib]
+                    vertexproperty.vertex.setValues(0,
+                                                    len(flat_coords),
+                                                    flat_coords)
+                    mesh.verticesPerRow = len(ribs[0])
+                    mesh.verticesPerColumn = len(ribs)
+                    mesh.vertexProperty = vertexproperty
+                    sep.addChild(vertexproperty)
+                    sep.addChild(mesh)
+                    self.vis_glider.addChild(sep)
+        else:  # show ribs
+            for rib in glider.ribs:                
+                mesh = mesh_2d.from_rib(rib)
+                if mesh.vertices is not None:
+                    verts = list(mesh.vertices)
+                    polygons = []
+                    for i in mesh.polygons:
+                        polygons += i
+                        polygons.append(-1)
+
+
+                    rib_sep = coin.SoSeparator()
+                    self.vis_glider.addChild(rib_sep)
+                    vertex_property = coin.SoVertexProperty()
+                    face_set = coin.SoIndexedFaceSet()
+
+                    shape_hint = coin.SoShapeHints()
+                    shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
+
+                    material = coin.SoMaterial()
+                    material.diffuseColor = (.0, .0, .7)
+                    rib_sep.addChild(material)
+
+                    vertex_property.vertex.setValues(0, len(verts), verts)
+                    face_set.coordIndex.setValues(0, len(polygons), list(polygons))
+                    rib_sep.addChild(shape_hint)
+                    rib_sep.addChild(vertex_property)
+                    rib_sep.addChild(face_set)
+
+            mesh = mesh_2d()
+            for cell in glider.cells:
+                for diagonal in cell.diagonals:
+                    mesh += mesh_2d.from_diagonal(diagonal, cell)
+                if mesh.vertices is not None:
+                    verts = list(mesh.vertices)
+                    polygons = []
+                    for i in mesh.polygons:
+                        polygons += i
+                        polygons.append(-1)
+
+                    diagonal_sep = coin.SoSeparator()
+                    self.vis_glider.addChild(diagonal_sep)
+                    vertex_property = coin.SoVertexProperty()
+                    face_set = coin.SoIndexedFaceSet()
+
+                    shape_hint = coin.SoShapeHints()
+                    shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
+
+                    material = coin.SoMaterial()
+                    material.diffuseColor = (.7, .0, .0)
+                    diagonal_sep.addChild(material)
+
+                    vertex_property.vertex.setValues(0, len(verts), verts)
+                    face_set.coordIndex.setValues(0, len(polygons), list(polygons))
+                    diagonal_sep.addChild(shape_hint)
+                    diagonal_sep.addChild(vertex_property)
+                    diagonal_sep.addChild(face_set)
+
+
+
 
     def update_lines(self, num=3):
         self.vis_lines.removeAllChildren()
