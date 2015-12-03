@@ -155,33 +155,34 @@ class OGGliderVP(OGBaseVP):
                     sep.addChild(mesh)
                     self.vis_glider.addChild(sep)
         else:  # show ribs
+            mesh = mesh_2d()
             for rib in glider.ribs:                
-                mesh = mesh_2d.from_rib(rib)
-                if mesh.vertices is not None:
-                    verts = list(mesh.vertices)
-                    polygons = []
-                    for i in mesh.polygons:
-                        polygons += i
-                        polygons.append(-1)
+                mesh += mesh_2d.from_rib(rib)
+            if mesh.vertices is not None:
+                verts = list(mesh.vertices)
+                polygons = []
+                for i in mesh.polygons:
+                    polygons += i
+                    polygons.append(-1)
 
 
-                    rib_sep = coin.SoSeparator()
-                    self.vis_glider.addChild(rib_sep)
-                    vertex_property = coin.SoVertexProperty()
-                    face_set = coin.SoIndexedFaceSet()
+                rib_sep = coin.SoSeparator()
+                self.vis_glider.addChild(rib_sep)
+                vertex_property = coin.SoVertexProperty()
+                face_set = coin.SoIndexedFaceSet()
 
-                    shape_hint = coin.SoShapeHints()
-                    shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
+                shape_hint = coin.SoShapeHints()
+                shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
 
-                    material = coin.SoMaterial()
-                    material.diffuseColor = (.0, .0, .7)
-                    rib_sep.addChild(material)
+                material = coin.SoMaterial()
+                material.diffuseColor = (.0, .0, .7)
+                rib_sep.addChild(material)
 
-                    vertex_property.vertex.setValues(0, len(verts), verts)
-                    face_set.coordIndex.setValues(0, len(polygons), list(polygons))
-                    rib_sep.addChild(shape_hint)
-                    rib_sep.addChild(vertex_property)
-                    rib_sep.addChild(face_set)
+                vertex_property.vertex.setValues(0, len(verts), verts)
+                face_set.coordIndex.setValues(0, len(polygons), list(polygons))
+                rib_sep.addChild(shape_hint)
+                rib_sep.addChild(vertex_property)
+                rib_sep.addChild(face_set)
 
             mesh = mesh_2d()
             for cell in glider.cells:
