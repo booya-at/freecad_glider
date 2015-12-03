@@ -184,10 +184,11 @@ class OGGliderVP(OGBaseVP):
                 rib_sep.addChild(vertex_property)
                 rib_sep.addChild(face_set)
 
+
             mesh = mesh_2d()
             for cell in glider.cells:
                 for diagonal in cell.diagonals:
-                    mesh += mesh_2d.from_diagonal(diagonal, cell)
+                    mesh += mesh_2d.from_diagonal(diagonal, cell, insert_points=4)
                 if mesh.vertices is not None:
                     verts = list(mesh.vertices)
                     polygons = []
