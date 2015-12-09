@@ -112,6 +112,7 @@ class base_tool(object):
     def update_view_glider(self):
         self.obj.glider_2d = self.glider_2d
         self.glider_2d.get_glider_3d(self.obj.glider_instance)
+        self.obj.ViewObject.Proxy.updateData()
 
     def accept(self):
         self.obj.ViewObject.Visibility = True

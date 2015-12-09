@@ -232,9 +232,9 @@ class airfoil_tool(base_tool):
             airfoil = self.QList_View.item(index).airfoil
             airfoil.apply_splines()
             profiles.append(airfoil)
+        super(airfoil_tool, self).accept()
         self.glider_2d.profiles = profiles
         self.update_view_glider()
-        super(airfoil_tool, self).accept()
 
 
 class QAirfoil_item(QtGui.QListWidgetItem):

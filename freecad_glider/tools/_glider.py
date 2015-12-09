@@ -7,7 +7,7 @@ from pivy import coin
 import FreeCAD as App
 
 from openglider.jsonify import load, dumps, loads
-from openglider.mesh import mesh_2d
+from openglider import mesh
 from pivy_primitives_new_new import Line
 
 importpath = os.path.join(os.path.dirname(__file__), '..', 'demokite.ods')
@@ -87,8 +87,11 @@ class OGGliderVP(OGBaseVP):
                              "line_num", "accuracy",
                              "line_num")
         view_obj.addProperty("App::PropertyBool",
-                              "outside", "visual",
-                              "outside")
+                             "outside", "visual",
+                             "hull = True, ribs = False")
+        view_obj.addProperty("App::PropertyBool",
+                             "panels", "visual",
+                             "show panels")
         view_obj.num_ribs = 0
         view_obj.profile_num = 13
         view_obj.line_num = 5
@@ -116,52 +119,82 @@ class OGGliderVP(OGBaseVP):
                     if numpoints < 5:
                         numpoints = 5
                     self.update_glider(midribs=self.view_obj.num_ribs,
-                                       profile_numpoints=numpoints, outside=self.view_obj.outside)
+                                       profile_numpoints=numpoints, 
+                                       outside=self.view_obj.outside,
+                                       panels=self.view_obj.panels)
             if prop in ["line_num", None]:
                 if hasattr(self.view_obj, "line_num"):
                     self.update_lines(self.view_obj.line_num)
 
-    def update_glider(self, midribs=0, profile_numpoints=20, outside=True):
+    def update_glider(self, midribs=0, profile_numpoints=20, outside=True, panels=False):
         self.vis_glider.removeAllChildren()
         glider = self.glider_instance.copy_complete()
         glider.profile_numpoints = profile_numpoints
+        count = 0
         if outside:
-            if midribs == 0:
+            if panels:
+                for cell in glider.cells:
+                    count += 1
+                    for panel in cell.panels:
+                        m = panel.get_mesh(cell, midribs + 1)
+                        verts = m.vertices.tolist()
+                        tris = m.polygons
+                        tris_coin = []
+                        for tri in tris:
+                            tris_coin += tri
+                            tris_coin.append(-1)
+                        panel_sep = coin.SoSeparator()
+                        panel_face = coin.SoIndexedFaceSet()
+                        panel_verts = coin.SoVertexProperty()
+                        panel_material = coin.SoMaterial()
+                        shape_hint = coin.SoShapeHints()
+                        shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
+                        panel_verts.vertex.setValues(0, len(verts), verts)
+                        panel_face.coordIndex.setValues(0, len(tris_coin), list(tris_coin))
+                        if panel.material_code:
+                            panel_material.diffuseColor = hex_to_rgb(panel.material_code)
+                        panel_sep.addChild(panel_material)
+                        panel_sep.addChild(shape_hint)
+                        panel_sep.addChild(panel_verts)
+                        panel_sep.addChild(panel_face)
+                        self.vis_glider.addChild(panel_sep)
+
+            elif midribs == 0:
                 vertexproperty = coin.SoVertexProperty()
-                mesh = coin.SoQuadMesh()
+                msh = coin.SoQuadMesh()
                 ribs = glider.ribs
                 flat_coords = [i for rib in ribs for i in rib.profile_3d.data]
                 vertexproperty.vertex.setValues(0, len(flat_coords), flat_coords)
-                mesh.verticesPerRow = len(ribs[0].profile_3d.data)
-                mesh.verticesPerColumn = len(ribs)
-                mesh.vertexProperty = vertexproperty
-                self.vis_glider.addChild(mesh)
+                msh.verticesPerRow = len(ribs[0].profile_3d.data)
+                msh.verticesPerColumn = len(ribs)
+                msh.vertexProperty = vertexproperty
+                self.vis_glider.addChild(msh)
                 self.vis_glider.addChild(vertexproperty)
             else:
                 for cell in glider.cells:
                     sep = coin.SoSeparator()
                     vertexproperty = coin.SoVertexProperty()
-                    mesh = coin.SoQuadMesh()
+                    msh = coin.SoQuadMesh()
                     ribs = [cell.midrib(pos / (midribs + 1))
                             for pos in range(midribs + 2)]
                     flat_coords = [i for rib in ribs for i in rib]
                     vertexproperty.vertex.setValues(0,
                                                     len(flat_coords),
                                                     flat_coords)
-                    mesh.verticesPerRow = len(ribs[0])
-                    mesh.verticesPerColumn = len(ribs)
-                    mesh.vertexProperty = vertexproperty
+                    msh.verticesPerRow = len(ribs[0])
+                    msh.verticesPerColumn = len(ribs)
+                    msh.vertexProperty = vertexproperty
                     sep.addChild(vertexproperty)
-                    sep.addChild(mesh)
+                    sep.addChild(msh)
                     self.vis_glider.addChild(sep)
         else:  # show ribs
-            mesh = mesh_2d()
+            msh = mesh.mesh()
             for rib in glider.ribs:                
-                mesh += mesh_2d.from_rib(rib)
-            if mesh.vertices is not None:
-                verts = list(mesh.vertices)
+                msh += mesh.mesh.from_rib(rib)
+            if msh.vertices is not None:
+                verts = list(msh.vertices)
                 polygons = []
-                for i in mesh.polygons:
+                for i in msh.polygons:
                     polygons += i
                     polygons.append(-1)
 
@@ -185,14 +218,14 @@ class OGGliderVP(OGBaseVP):
                 rib_sep.addChild(face_set)
 
 
-            mesh = mesh_2d()
+            msh = mesh.mesh()
             for cell in glider.cells:
                 for diagonal in cell.diagonals:
-                    mesh += mesh_2d.from_diagonal(diagonal, cell, insert_points=4)
-                if mesh.vertices is not None:
-                    verts = list(mesh.vertices)
+                    msh += mesh.mesh.from_diagonal(diagonal, cell, insert_points=4)
+                if msh.vertices is not None:
+                    verts = list(msh.vertices)
                     polygons = []
-                    for i in mesh.polygons:
+                    for i in msh.polygons:
                         polygons += i
                         polygons.append(-1)
 
@@ -207,7 +240,6 @@ class OGGliderVP(OGBaseVP):
                     material = coin.SoMaterial()
                     material.diffuseColor = (.7, .0, .0)
                     diagonal_sep.addChild(material)
-
                     vertex_property.vertex.setValues(0, len(verts), verts)
                     face_set.coordIndex.setValues(0, len(polygons), list(polygons))
                     diagonal_sep.addChild(shape_hint)
@@ -238,3 +270,12 @@ class OGGliderVP(OGBaseVP):
     def __setstate__(self, state):
         self.updateData()
         return None
+
+
+def hex_to_rgb(hex_string):
+    try:
+        value = hex_string.split('#')[1]
+        lv = len(value)
+        return tuple(int(value[i:i + lv // 3], 16) / 256. for i in range(0, lv, lv // 3))
+    except IndexError:
+        return (.7, .7, .7)

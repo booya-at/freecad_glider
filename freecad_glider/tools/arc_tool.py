@@ -67,8 +67,8 @@ class arc_tool(base_tool):
         self.obj.glider_2d = self.glider_2d
         self.glider_2d.get_glider_3d(self.obj.glider_instance)
         self.arc_cpc.remove_callbacks()
-        self.obj.ViewObject.Proxy.updateData()
         super(arc_tool, self).accept()
+        self.update_view_glider()
 
     def reject(self):
         self.arc_cpc.remove_callbacks()
