@@ -87,15 +87,24 @@ class OGGliderVP(OGBaseVP):
                              "line_num", "accuracy",
                              "line_num")
         view_obj.addProperty("App::PropertyBool",
-                             "outside", "visual",
-                             "hull = True, ribs = False")
+                             "hull", "visuals",
+                             "hull = True")
         view_obj.addProperty("App::PropertyBool",
-                             "panels", "visual",
+                             "panels", "visuals",
                              "show panels")
+        view_obj.addProperty("App::PropertyBool",
+                             "half_glider", "visuals",
+                             "show only one half")
+        view_obj.addProperty("App::PropertyBool",
+                             "ribs", "visuals",
+                             "show ribs")
         view_obj.num_ribs = 0
-        view_obj.profile_num = 13
+        view_obj.profile_num = 20
         view_obj.line_num = 5
-        view_obj.outside = True
+        view_obj.hull = True
+        view_obj.ribs = True
+        view_obj.half_glider = True
+        view_obj.panels =False
         super(OGGliderVP, self).__init__(view_obj)
 
     def attach(self, view_obj):
@@ -113,25 +122,34 @@ class OGGliderVP(OGBaseVP):
 
     def updateData(self, fp=None, prop=None):
         if hasattr(self, "view_obj"):
-            if prop in ["num_ribs", "profile_num", "outside", None]:
+            if prop in ["num_ribs", "profile_num", "hull", "panels",
+                        "half_glider", "ribs", None]:
                 if hasattr(self.view_obj, "profile_num"):
                     numpoints = self.view_obj.profile_num
                     if numpoints < 5:
                         numpoints = 5
                     self.update_glider(midribs=self.view_obj.num_ribs,
-                                       profile_numpoints=numpoints, 
-                                       outside=self.view_obj.outside,
-                                       panels=self.view_obj.panels)
-            if prop in ["line_num", None]:
+                                       profile_numpoints=numpoints,
+                                       hull=self.view_obj.hull,
+                                       panels=self.view_obj.panels,
+                                       half=self.view_obj.half_glider,
+                                       ribs=self.view_obj.ribs)
+            if prop in ["line_num", "half_glider", None]:
                 if hasattr(self.view_obj, "line_num"):
-                    self.update_lines(self.view_obj.line_num)
+                    self.update_lines(self.view_obj.line_num,
+                                      half=self.view_obj.half_glider)
 
-    def update_glider(self, midribs=0, profile_numpoints=20, outside=True, panels=False):
+    def update_glider(self, midribs=0, profile_numpoints=20,
+                      hull=True, panels=False, half=False, ribs=False):
         self.vis_glider.removeAllChildren()
-        glider = self.glider_instance.copy_complete()
+        if not half:
+            glider = self.glider_instance.copy_complete()
+        else:
+            glider = self.glider_instance.copy()
+
         glider.profile_numpoints = profile_numpoints
         count = 0
-        if outside:
+        if hull:
             if panels:
                 for cell in glider.cells:
                     count += 1
@@ -187,7 +205,7 @@ class OGGliderVP(OGBaseVP):
                     sep.addChild(vertexproperty)
                     sep.addChild(msh)
                     self.vis_glider.addChild(sep)
-        else:  # show ribs
+        if ribs:  # show ribs
             msh = mesh.mesh()
             for rib in glider.ribs:                
                 msh += mesh.mesh.from_rib(rib)
@@ -249,12 +267,12 @@ class OGGliderVP(OGBaseVP):
 
 
 
-    def update_lines(self, num=3):
+    def update_lines(self, num=3, half=False):
         self.vis_lines.removeAllChildren()
         for line in self.glider_instance.lineset.lines:
             points = line.get_line_points(numpoints=num)
-            self.vis_lines.addChild(
-                Line([[i[0], -i[1], i[2]] for i in points], dynamic=False))
+            if not half:
+                self.vis_lines.addChild(Line([[i[0], -i[1], i[2]] for i in points], dynamic=False))
             self.vis_lines.addChild(Line(points, dynamic=False))
 
     def onChanged(self, vp, prop):
