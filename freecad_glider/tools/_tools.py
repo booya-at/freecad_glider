@@ -7,6 +7,7 @@ from pivy import coin
 import FreeCADGui as Gui
 from openglider.jsonify import dump, load
 from openglider.vector.spline import BernsteinBase, BSplineBase
+from openglider.glider.glider_2d import Glider2D, import_ods_2d
 
 # from openglider.glider.glider_2d import Glider2D
 
@@ -41,13 +42,20 @@ def export_2d(glider):
 
 
 def import_2d(glider):
-    filename = QtGui.QFileDialog.getOpenFileName(
+    file_name = QtGui.QFileDialog.getOpenFileName(
         parent=None,
         caption="import glider",
         directory='~')
-    if filename[0] != "":
-        with open(filename[0], 'r') as importfile:
-            glider.glider_2d = load(importfile)["data"]
+    if file_name[0] != "":
+        file_name = file_name[0]
+        file_type = file_name.split(".")[1]
+        if file_type == "json":
+            with open(file_name, 'r') as importfile:
+                glider.glider_2d = load(importfile)["data"]
+                glider.glider_2d.get_glider_3d(glider.glider_instance)
+                glider.ViewObject.Proxy.updateData()
+        elif file_type == "ods":
+            glider.glider_2d = import_ods_2d(Glider2D, file_name)
             glider.glider_2d.get_glider_3d(glider.glider_instance)
             glider.ViewObject.Proxy.updateData()
 
