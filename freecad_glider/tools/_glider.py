@@ -1,6 +1,5 @@
 from __future__ import division
 import os
-import ast
 import numpy as np
 
 from pivy import coin
@@ -167,10 +166,13 @@ class OGGliderVP(OGBaseVP):
                         panel_material = coin.SoMaterial()
                         shape_hint = coin.SoShapeHints()
                         shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
+                        shape_hint.creaseAngle = np.pi
                         panel_verts.vertex.setValues(0, len(verts), verts)
                         panel_face.coordIndex.setValues(0, len(tris_coin), list(tris_coin))
                         if panel.material_code:
                             panel_material.diffuseColor = hex_to_rgb(panel.material_code)
+
+                        panel_verts.materialBinding = coin.SoMaterialBinding.PER_VERTEX_INDEXED
                         panel_sep.addChild(panel_material)
                         panel_sep.addChild(shape_hint)
                         panel_sep.addChild(panel_verts)

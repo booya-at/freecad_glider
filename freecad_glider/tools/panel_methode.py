@@ -33,8 +33,6 @@ class polars(base_tool):
                 distribution=Profile2D.nose_cos_distribution(0.2),
                 symmetric=True
                 )
-            progress_bar = Base.ProgressIndicator()
-            progress_bar.start("running ppm", 0)
             case = self.pan3d.DirichletDoublet0Source0Case3(self._panels, self._trailing_edges)
             case.A_ref = self.glider_2d.flat_area
             case.mom_ref_point = self.ppm.Vector3(1.25, 0, -6)
@@ -144,7 +142,7 @@ class panel_tool(base_tool):
         self.Qmin_val.setMaximum(3)
         self.Qmin_val.setMinimum(-10)
         self.Qmin_val.setValue(-3)
-        self.Qmin_val.setSingleStep(0.01)
+        self.Qmin_val.setSingleStep(0.001)
 
         self.Qmax_val.setMaximum(10)
         self.Qmax_val.setMinimum(0)
@@ -209,32 +207,36 @@ class panel_tool(base_tool):
             symmetric=symmetric)
 
     def run(self):
-        progress_bar = Base.ProgressIndicator()
-        progress_bar.start("Progress bar test...", 10)
         self.update_glider()
         self.create_panels(self.Qmidribs.value(), self.Qprofile_points.value(),
                            self.Qmean_profile.isChecked(), self.Qsymmetric.isChecked())
         self.case = self.pan3d.DirichletDoublet0Source0Case3(self._panels, self._trailing_edges)
         self.case.v_inf = self.ppm.Vector(self.glider_2d.v_inf)
         self.case.farfield = 5
-        self.case.create_wake(10000000, 20)
+        self.case.create_wake(1000, 2)
         self.case.run()
         self.show_glider()
-        progress_bar.stop()
 
     def show_glider(self):
         self.glider_result.removeAllChildren()
         verts = [list(i) for i in self.case.vertices.values]
         cols = [i.cp for i in self.case.vertices.values]
-        norms = [list(-1 * i.n) for i in self.case.panels]
         pols = []
-        for pan in self._panels:
+        pols_i =[]
+        count = 0
+        count_krit = (self.Qmidribs.value() + 1) * (self.Qprofile_points.value() - self.Qprofile_points.value() % 2)
+        for pan in self._panels[::-1]:
+            count += 1
             for vert in pan.points:
                 #verts.append(list(vert))
-                pols.append(vert.nr)
-            pols.append(-1)     # end of pol
+                pols_i.append(vert.nr)
+            pols_i.append(-1)     # end of pol
+            if count % count_krit == 0:
+                pols.append(pols_i)
+                pols_i = []
+        if pols_i:
+            pols.append(pols_i)
         vertex_property = coin.SoVertexProperty()
-        face_set = coin.SoIndexedFaceSet()
 
         for i, col in enumerate(cols):
             vertex_property.orderedRGBA.set1Value(i, coin.SbColor(self.color(col)).getPackedValue())
@@ -242,13 +244,18 @@ class panel_tool(base_tool):
         vertex_property.vertex.setValues(0, len(verts), verts)
         vertex_property.materialBinding = coin.SoMaterialBinding.PER_VERTEX_INDEXED
 
-        vertex_property.normal.setValues(0, len(norms), norms)
         vertex_property.normalBinding = coin.SoNormalBinding.PER_FACE
 
-        face_set.coordIndex.setValues(0, len(pols), pols)
-
+        shape_hint = coin.SoShapeHints()
+        shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
+        shape_hint.creaseAngle = numpy.pi / 2
+        self.glider_result.addChild(shape_hint)
         self.glider_result.addChild(vertex_property)
-        self.glider_result.addChild(face_set)
+        for panels in pols:
+            face_set = coin.SoIndexedFaceSet()
+            face_set.coordIndex.setValues(0, len(panels), panels)
+            self.glider_result.addChild(face_set)
+
 
         p1 = numpy.array(self.case.center_of_pressure)
         print(p1)
