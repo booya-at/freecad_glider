@@ -79,7 +79,6 @@ class spline_select(QtGui.QComboBox):
     @property
     def current_spline_type(self):
         base = self.spline_objects[0].basefactory
-        print(base.__class__)
         if base.__class__ == BernsteinBase.__class__:
             return "Bezier"
         else:
@@ -87,7 +86,7 @@ class spline_select(QtGui.QComboBox):
 
     def set_spline_type(self, *args):
         for spline in self.spline_objects:
-            spline.basefactory = self.spline_types[self.currentText()][0]
+            spline.change_base(self.spline_types[self.currentText()][0])
         self.update_function()
 
 

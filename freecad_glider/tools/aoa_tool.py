@@ -27,7 +27,7 @@ class aoa_tool(base_tool):
         self.QGlide = QtGui.QDoubleSpinBox(self.base_widget)
         self.Qnum_aoa = QtGui.QSpinBox(self.base_widget)
         self.spline_select = spline_select(
-            [self.glider_2d.aoa], self.update_aoa, self.base_widget)
+            [self.glider_2d.aoa], self.update_spline_type, self.base_widget)
 
         self.setup_widget()
         self.setup_pivy()
@@ -72,11 +72,19 @@ class aoa_tool(base_tool):
             numpy.array([i[:-1] for i in self.aoa_cpc.control_pos]) /
             self.scale).tolist()
         self.aoa_spline.update(
-            self.glider_2d.aoa.get_sequence(num=20) * self.scale)
+            self.glider_2d.aoa.get_sequence(num=50) * self.scale)
+
+
+    def update_spline_type(self):
+        self.aoa_cpc.control_pos = vector3D(
+            numpy.array(self.glider_2d.aoa.controlpoints) * self.scale)
+        self.aoa_cpc.control_points[-1].constraint = lambda pos: [
+            self.glider_2d.span / 2, pos[1], pos[2]]
+        self.update_aoa()
 
     def update_grid(self):
         self.coords.removeAllChildren()
-        pts = self.glider_2d.aoa.get_sequence(num=40)
+        pts = self.glider_2d.aoa.get_sequence(num=100)
         self.aoa_spline.update(pts * self.scale)
         max_x = max([i[0] for i in pts])
         max_y = max([i[1] for i in pts])

@@ -15,7 +15,7 @@ class arc_tool(base_tool):
             self.glider_2d.arc.controlpoints, self.view)
         self.Qnum_arc = QtGui.QSpinBox(self.base_widget)
         self.spline_select = spline_select(
-            [self.glider_2d.arc], self.update_spline, self.base_widget)
+            [self.glider_2d.arc], self.update_spline_type, self.base_widget)
         self.shape = coin.SoSeparator()
         self.task_separator.addChild(self.shape)
 
@@ -54,6 +54,10 @@ class arc_tool(base_tool):
         self.shape.removeAllChildren()
         self.glider_2d.arc.controlpoints = [i[:-1] for i in self.arc_cpc.control_pos]
         self.shape.addChild(Line(self.glider_2d.arc.get_sequence(num=30), color="grey").object)
+
+    def update_spline_type(self):
+        self.arc_cpc.control_pos = self.glider_2d.arc.controlpoints
+        self.update_spline()
 
     def update_real_arc(self):
         self.shape.addChild(Line(self.glider_2d.get_arc_positions(), color="red", width=2).object)
