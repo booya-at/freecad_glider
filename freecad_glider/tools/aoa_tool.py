@@ -9,6 +9,8 @@ from pivy_primitives import Line, ControlPointContainer, vector3D
 
 
 class aoa_tool(base_tool):
+    num_on_drag = 50
+    num_release = 100
 
     def __init__(self, obj):
         super(aoa_tool, self).__init__(obj)
@@ -20,7 +22,7 @@ class aoa_tool(base_tool):
         self.coords = coin.SoSeparator()
         self.grid = coin.SoSeparator()
         self.aoa_spline = Line([], color="red", width=2)
-        self.ribs, self.front, self.back = self.glider_2d.shape().ribs_front_back
+        self.ribs, self.front, self.back = self.glider_2d.shape.ribs_front_back
         self.text_scale = self.glider_2d.span / len(self.front) / 30
         self.x_grid = [i[0] for i in self.front]
 
@@ -72,7 +74,7 @@ class aoa_tool(base_tool):
             numpy.array([i[:-1] for i in self.aoa_cpc.control_pos]) /
             self.scale).tolist()
         self.aoa_spline.update(
-            self.glider_2d.aoa.get_sequence(num=50) * self.scale)
+            self.glider_2d.aoa.get_sequence(num=self.num_on_drag) * self.scale)
 
 
     def update_spline_type(self):
@@ -84,7 +86,7 @@ class aoa_tool(base_tool):
 
     def update_grid(self):
         self.coords.removeAllChildren()
-        pts = self.glider_2d.aoa.get_sequence(num=100)
+        pts = self.glider_2d.aoa.get_sequence(num=self.num_on_drag)
         self.aoa_spline.update(pts * self.scale)
         max_x = max([i[0] for i in pts])
         max_y = max([i[1] for i in pts])

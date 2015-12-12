@@ -7,7 +7,7 @@ import FreeCAD as App
 from _tools import base_tool, input_field, text_field
 from pivy_primitives_new_new import coin, Line, Marker, Container, vector3D
 from PySide import QtGui, QtCore
-from openglider.glider.glider_2d import UpperNode2D, LowerNode2D, \
+from openglider.glider.glider_2d.lines import UpperNode2D, LowerNode2D, \
     BatchNode2D, Line2D, LineSet2D
 from openglider.lines.line_types import LineType
 
@@ -25,8 +25,8 @@ class line_tool(base_tool):
         super(line_tool, self).__init__(obj, widget_name="line_tool")
 
         # get the glider_2d shape
-        self.ribs, self.front, self.back = self.glider_2d.shape().ribs_front_back
-        self.xpos = [rib[0][0] for rib in self.glider_2d.ribs()]
+        self.ribs, self.front, self.back = self.glider_2d.shape.ribs_front_back
+        self.xpos = [rib[0][0] for rib in self.glider_2d.ribs]
 
         # qt helper line
         self.Qhl_pos = QtGui.QDoubleSpinBox()
@@ -42,6 +42,8 @@ class line_tool(base_tool):
         # qt layer widget
         self.layer_widget = QtGui.QWidget()
         self.layer_layout = QtGui.QFormLayout(self.layer_widget)
+        self.layer_selection = LayerComboBox(self.layer_widget)
+        self.layer_combobox = LayerComboBox(self.layer_widget)
 
         # pivy lines, points, shape
         self.shape = Container()
@@ -128,9 +130,6 @@ class line_tool(base_tool):
 
         # layers:
 
-        self.layer_selection = LayerComboBox(self.layer_widget)
-        self.layer_combobox = LayerComboBox(self.layer_widget)
-
         add_button = QtGui.QPushButton("add layer")
         del_button = QtGui.QPushButton("delete layer")
         self.layer_layout.setWidget(
@@ -178,7 +177,6 @@ class line_tool(base_tool):
 
     def set_layer(self, text=None, objects=None, from_layer=None):
         text = text or self.layer_selection.currentText()
-        print("set text to : ", text)
         objects = objects or self.shape.select_object
         for obj in objects:
             if hasattr(obj, "layer"):
@@ -228,9 +226,9 @@ class line_tool(base_tool):
         if self.point_preview_cb:
             self.view.removeEventCallbackPivy(coin.SoLocation2Event.getClassTypeId(), self.point_preview_cb)
         if self.line_cb:
-            self.view.removeEventCallbackPivy(coin.SoLocation2Event.getClassTypeId(), self.line_cb)
+            self.view.removeEventCallbackPivy(coin.SoKeyboardEvent.getClassTypeId(), self.line_cb)
         if self.node_cb:
-            self.view.removeEventCallbackPivy(coin.SoLocation2Event.getClassTypeId(), self.node_cb)
+            self.view.removeEventCallbackPivy(coin.SoKeyboardEvent.getClassTypeId(), self.node_cb)
 
     def update_helper_line(self, pos=50):
         self.helper_line.removeAllChildren()
@@ -301,7 +299,7 @@ class line_tool(base_tool):
 
     def add_attachment_point(self, pos):
         x, y = pos
-        rib_nr = self.xpos.index(x)
+        rib_nr = self.xpos.index(x) - self.glider_2d.has_center_cell
         pos = float(self.Qhl_pos.value())
         node = UpperNode2D(rib_nr, pos / 100)
         node_pos = node.get_2d(self.glider_2d)
@@ -372,7 +370,6 @@ class line_tool(base_tool):
             obj.target_length = l
 
     def update_line_type(self, *args):
-        print("update line_type")
         for obj in self.shape.select_object:
             obj.line_type = self.Qline_list.currentItem().line_type.name
 
@@ -614,12 +611,10 @@ class LayerComboBox(QtGui.QComboBox):
             self.addItem(other.itemText(i))
 
     def currentText(self):
-        print("current Item", self.currentIndex())
-        print("current Text", self.itemText(self.currentIndex()))
-
         return self.itemText(self.currentIndex())
 
     def setItemByText(self, text):
         item = self.findText(text)
         if item != -1:
             self.setCurrentIndex(item)
+

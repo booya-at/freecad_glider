@@ -259,6 +259,7 @@ class Container(coin.SoSeparator):
             self.removeSelected()
 
     def register(self, view):
+        print("register called")
         self.view = view
         self.mouse_over = self.view.addEventCallbackPivy(
             coin.SoLocation2Event.getClassTypeId(), self.mouse_over_cb)
@@ -270,6 +271,7 @@ class Container(coin.SoSeparator):
             coin.SoKeyboardEvent.getClassTypeId(), self.delete_cb)
 
     def unregister(self):
+        print("unregister called")
         self.view.removeEventCallbackPivy(
             coin.SoLocation2Event.getClassTypeId(), self.mouse_over)
         self.view.removeEventCallbackPivy(
@@ -371,8 +373,8 @@ def vector3D(vec):
     else:
         return [vector3D(i) for i in vec]
 
-if __name__ == "__main__":
-    import FreeCADGui as Gui
-    s1 = Spline([[0,0,0],[1,1,1],[3,3,3]], dynamic=True)
-    Gui.ActiveDocument.ActiveView.getSceneGraph().addChild(s1)
-    s1.register(Gui.ActiveDocument.ActiveView)
+# if __name__ == "__main__":
+#     import FreeCADGui as Gui
+#     s1 = Spline([[0,0,0],[1,1,1],[3,3,3]], dynamic=True)
+#     Gui.ActiveDocument.ActiveView.getSceneGraph().addChild(s1)
+#     s1.register(Gui.ActiveDocument.ActiveView)

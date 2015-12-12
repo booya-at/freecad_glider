@@ -257,7 +257,7 @@ class shape_tool(base_tool):
             self.update_const()
 
     def update_const(self):
-        const_dist = list(self.glider_2d.depth_integrated())
+        const_dist = list(self.glider_2d.depth_integrated)
         self.glider_2d.cell_dist = self.glider_2d.cell_dist.fit(
             const_dist, numpoints=self.Qnum_dist.value() + 2)
         self.cell_dist_cpc.control_pos = self.glider_2d.cell_dist_controlpoints
@@ -268,7 +268,7 @@ class shape_tool(base_tool):
         self.glider_2d.back.controlpoints = [i[:-1] for i in self.back_cpc.control_pos]
         self.glider_2d.cell_dist_controlpoints = [i[:-1] for i in self.cell_dist_cpc.control_pos]
         self.shape.removeAllChildren()
-        ribs, front, back = self.glider_2d.shape(num=15).ribs_front_back
+        ribs, front, back = self.glider_2d.shape.ribs_front_back
         dist_line = self.glider_2d.cell_dist_interpolation
         self.shape.addChild(Line(front, width=2).object)
         self.shape.addChild(Line(back, width=2).object)

@@ -255,7 +255,6 @@ class OGGliderVP(OGBaseVP):
                     face_set = coin.SoIndexedFaceSet()
 
                     shape_hint = coin.SoShapeHints()
-                    shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
 
                     material = coin.SoMaterial()
                     material.diffuseColor = (.7, .0, .0)

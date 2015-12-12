@@ -44,7 +44,7 @@ class arc_tool(base_tool):
             Line(self.glider_2d.arc.get_sequence(num=30), 
                  color="grey").object)
         self.shape.addChild(
-            Line(self.glider_2d.get_arc_positions(), 
+            Line(self.glider_2d.arc_positions, 
                  color="red", width=2).object)
 
     # def set_edit(self, *arg):
@@ -60,7 +60,7 @@ class arc_tool(base_tool):
         self.update_spline()
 
     def update_real_arc(self):
-        self.shape.addChild(Line(self.glider_2d.get_arc_positions(), color="red", width=2).object)
+        self.shape.addChild(Line(self.glider_2d.arc_positions, color="red", width=2).object)
 
     def update_num(self, *arg):
         self.glider_2d.arc.numpoints = self.Qnum_arc.value()
