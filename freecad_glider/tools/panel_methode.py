@@ -1,6 +1,5 @@
 from __future__ import division
 import FreeCAD as App
-from FreeCAD import Base
 from PySide import QtGui
 from matplotlib import pyplot as plt
 import numpy

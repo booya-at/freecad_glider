@@ -51,12 +51,12 @@ class airfoil_tool(base_tool):
         self.Qairfoil_layout.addWidget(self.Qnum_points_lower)
 
 
-        self.Qnum_points_upper.setMaximum(8)
+        self.Qnum_points_upper.setMaximum(10)
         self.Qnum_points_upper.setMinimum(4)
         self.Qnum_points_upper.setDisabled(True)
         self.Qnum_points_upper.valueChanged.connect(self.fit_upper_spline)
 
-        self.Qnum_points_lower.setMaximum(8)
+        self.Qnum_points_lower.setMaximum(10)
         self.Qnum_points_lower.setMinimum(4)
         self.Qnum_points_lower.setDisabled(True)
         self.Qnum_points_lower.valueChanged.connect(self.fit_lower_spline)
@@ -199,18 +199,26 @@ class airfoil_tool(base_tool):
         self._update_lower_spline(60)
 
     @property
-    def control_line(self):
-        points = list(self.current_airfoil.upper_spline.controlpoints) +\
-                 list(self.current_airfoil.lower_spline.controlpoints)[1:]
+    def upper_control_line(self):
+        points = self.current_airfoil.upper_spline.controlpoints
         return [[p[0], p[1], -0.01] for p in points]
 
-    def _draw_spline(self, num):
+    @property
+    def lower_control_line(self):
+        points = self.current_airfoil.lower_spline.controlpoints
+        return [[p[0], p[1], -0.01] for p in points]
+
+    def draw_upper_spline(self, num):
         self.upper_spline.addChild(
-            Line(self.control_line, color="grey").object)
+            Line(self.upper_control_line, color="grey").object)
         self.upper_spline.addChild(
             Line(vector3D(
                 self.current_airfoil.upper_spline.get_sequence(num)),
                 width=2).object)
+
+    def draw_lower_spline(self, num):
+        self.lower_spline.addChild(
+            Line(self.lower_control_line, color="grey").object)
         self.lower_spline.addChild(
             Line(vector3D(
                 self.current_airfoil.lower_spline.get_sequence(num)),
@@ -218,29 +226,17 @@ class airfoil_tool(base_tool):
 
     def _update_upper_spline(self, num=20):
         self.upper_spline.removeAllChildren()
-        self.lower_spline.removeAllChildren()
+        self.upper_cpc.control_points[-2].set_x(0.)
         self.current_airfoil.upper_spline.controlpoints = [
             i[:-1] for i in self.upper_cpc.control_pos]
-        direction = normalize(
-            self.current_airfoil.upper_spline.controlpoints[-2])
-        radius = norm(self.current_airfoil.lower_spline.controlpoints[1])
-        new_point = - numpy.array(direction) * radius
-        self.current_airfoil.lower_spline.controlpoints[1] = new_point
-        self.lower_cpc.control_points[1].pos = vector3D(new_point)
-        self._draw_spline(num)
+        self.draw_upper_spline(num)
 
     def _update_lower_spline(self, num=20):
         self.lower_spline.removeAllChildren()
-        self.upper_spline.removeAllChildren()
+        self.lower_cpc.control_points[1].set_x(0.)
         self.current_airfoil.lower_spline.controlpoints = [
             i[:-1] for i in self.lower_cpc.control_pos]
-        direction = normalize(
-            self.current_airfoil.lower_spline.controlpoints[1])
-        radius = norm(self.current_airfoil.upper_spline.controlpoints[-2])
-        new_point = -numpy.array(direction) * radius
-        self.current_airfoil.upper_spline.controlpoints[-2] = new_point
-        self.upper_cpc.control_points[-2].pos = vector3D(new_point)
-        self._draw_spline(num)
+        self.draw_lower_spline(num)
 
     def unset_edit_mode(self):
         if self.is_edit:
@@ -260,6 +256,8 @@ class airfoil_tool(base_tool):
             self.current_airfoil.apply_splines()
             self.current_airfoil.upper_spline = self.current_airfoil.fit_upper(control_num=num)
             self.upper_cpc.control_pos = vector3D(self.current_airfoil.upper_spline.controlpoints)
+            self.upper_cpc.control_points[-1].fix = True
+            self.upper_cpc.control_points[0].fix = True
             self._update_upper_spline()
 
     def fit_lower_spline(self, num):
@@ -267,6 +265,8 @@ class airfoil_tool(base_tool):
             self.current_airfoil.apply_splines()
             self.current_airfoil.lower_spline = self.current_airfoil.fit_lower(control_num=num)
             self.lower_cpc.control_pos = vector3D(self.current_airfoil.lower_spline.controlpoints)
+            self.lower_cpc.control_points[-1].fix = True
+            self.lower_cpc.control_points[0].fix = True
             self._update_lower_spline()
 
     def accept(self):
