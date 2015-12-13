@@ -1,8 +1,8 @@
 from __future__ import division
 import FreeCAD as App
-import Plot
 from FreeCAD import Base
 from PySide import QtGui
+from matplotlib import pyplot as plt
 import numpy
 
 from openglider.glider.in_out.export_3d import ppm_Panels
@@ -20,7 +20,7 @@ class polars(base_tool):
         ppm = None
 
     def __init__(self, obj):
-        super(polars, self).__init__(obj, widget_name="Properties", hide=True)
+        # super(polars, self).__init__(obj, widget_name="Properties", hide=True)
         if not self.ppm:
             self.QWarning = QtGui.QLabel("no panel_methode installed")
             self.layout.addWidget(self.QWarning)
@@ -50,13 +50,13 @@ class polars(base_tool):
                 cL.append(i.cL)
                 cD.append(i.cD * 10)
                 cP.append(-i.cP)
-            Plot.plot(cL, alpha, "Lift $c_L$")
-            Plot.plot(cD, alpha, "Drag $c_D * 10$")
-            Plot.plot(cP, alpha, "Pitch -$c_P$")
-            Plot.ylabel("$\\alpha$")
-            Plot.legend()
-            Plot.grid()
-            progress_bar.stop()
+            plt.plot(cL, alpha, label="Lift $c_L$")
+            plt.plot(cD, alpha, label="Drag $c_D * 10$")
+            plt.plot(cP, alpha, label="Pitch -$c_P$")
+            plt.ylabel("$\\alpha$")
+            plt.legend()
+            plt.grid()
+            plt.show()
 
 
 

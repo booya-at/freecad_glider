@@ -209,15 +209,15 @@ class OGGliderVP(OGBaseVP):
                     self.vis_glider.addChild(sep)
         if ribs:  # show ribs
             msh = mesh.mesh()
-            for rib in glider.ribs:                
-                msh += mesh.mesh.from_rib(rib)
+            for rib in glider.ribs:    
+                if not rib.profile_2d.has_zero_thickness:
+                    msh += mesh.mesh.from_rib(rib)
             if msh.vertices is not None:
                 verts = list(msh.vertices)
                 polygons = []
                 for i in msh.polygons:
                     polygons += i
                     polygons.append(-1)
-
 
                 rib_sep = coin.SoSeparator()
                 self.vis_glider.addChild(rib_sep)
@@ -255,6 +255,7 @@ class OGGliderVP(OGBaseVP):
                     face_set = coin.SoIndexedFaceSet()
 
                     shape_hint = coin.SoShapeHints()
+                    shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
 
                     material = coin.SoMaterial()
                     material.diffuseColor = (.7, .0, .0)

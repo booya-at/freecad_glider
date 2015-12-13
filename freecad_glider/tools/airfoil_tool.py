@@ -24,6 +24,8 @@ class airfoil_tool(base_tool):
         self.Qairfoil_layout = QtGui.QFormLayout(self.Qairfoil_widget)
         self.Qimport_button = QtGui.QPushButton("import airfoil")
         self.Qfit_button = QtGui.QPushButton("modify with handles")
+        self.Qnum_points_upper = QtGui.QSpinBox(self.base_widget)
+        self.Qnum_points_lower = QtGui.QSpinBox(self.base_widget)
 
         self.airfoil_sep = coin.SoSeparator()
         self.spline_sep = coin.SoSeparator()
@@ -45,6 +47,19 @@ class airfoil_tool(base_tool):
         self.Qairfoil_layout.addWidget(self.Qairfoil_name)
         self.Qairfoil_layout.addWidget(self.Qimport_button)
         self.Qairfoil_layout.addWidget(self.Qfit_button)
+        self.Qairfoil_layout.addWidget(self.Qnum_points_upper)
+        self.Qairfoil_layout.addWidget(self.Qnum_points_lower)
+
+
+        self.Qnum_points_upper.setMaximum(8)
+        self.Qnum_points_upper.setMinimum(4)
+        self.Qnum_points_upper.setDisabled(True)
+        self.Qnum_points_upper.valueChanged.connect(self.fit_upper_spline)
+
+        self.Qnum_points_lower.setMaximum(8)
+        self.Qnum_points_lower.setMinimum(4)
+        self.Qnum_points_lower.setDisabled(True)
+        self.Qnum_points_lower.valueChanged.connect(self.fit_lower_spline)
 
         # selection widget
         self.layout.addWidget(self.QList_View)
@@ -100,6 +115,10 @@ class airfoil_tool(base_tool):
             return self.QList_View.currentItem().airfoil
         return None
 
+    @current_airfoil.setter
+    def current_airfoil(self, airfoil):
+        self.QList_View.currentItem().airfoil = airfoil
+
     def delete_airfoil(self):
         a = self.QList_View.currentRow()
         self.QList_View.takeItem(a)
@@ -130,17 +149,26 @@ class airfoil_tool(base_tool):
             self.unset_edit_mode()
             self.update_airfoil()
         else:
+            if not isinstance(self.current_airfoil, BezierProfile2D):
+                self.current_airfoil = BezierProfile2D.from_profile_2d(self.current_airfoil)
+                self.update_selection()
             self.set_edit_mode()
 
     def set_edit_mode(self):
         if self.current_airfoil is not None:
+            airfoil = self.current_airfoil
+            self.Qnum_points_upper.setValue(len(airfoil.upper_spline.controlpoints))
+            self.Qnum_points_lower.setValue(len(airfoil.lower_spline.controlpoints))
             self.is_edit = True
+            self.Qnum_points_upper.setDisabled(False)
+            self.Qnum_points_lower.setDisabled(False)
             self.airfoil_sep.removeAllChildren()
             self.spline_sep.removeAllChildren()
+            self.airfoil_sep.addChild(Line(self.current_airfoil.data).object)
             self.upper_cpc = ControlPointContainer(view=self.view)
             self.lower_cpc = ControlPointContainer(view=self.view)
-            self.upper_cpc.control_pos = self.current_airfoil.upper_spline.controlpoints
-            self.lower_cpc.control_pos = self.current_airfoil.lower_spline.controlpoints
+            self.upper_cpc.control_pos = airfoil.upper_spline.controlpoints
+            self.lower_cpc.control_pos = airfoil.lower_spline.controlpoints
             self.upper_cpc.control_points[-1].fix = True
             self.lower_cpc.control_points[-1].fix = True
             self.lower_cpc.control_points[0].fix = True
@@ -216,6 +244,8 @@ class airfoil_tool(base_tool):
 
     def unset_edit_mode(self):
         if self.is_edit:
+            self.Qnum_points_upper.setDisabled(True)
+            self.Qnum_points_lower.setDisabled(True)
             self.upper_cpc.on_drag = []
             self.lower_cpc.on_drag = []
             self.upper_cpc.drag_release = []
@@ -224,6 +254,20 @@ class airfoil_tool(base_tool):
             self.upper_cpc.remove_callbacks()
             self.lower_cpc.remove_callbacks()
             self.is_edit = False
+
+    def fit_upper_spline(self, num):
+        if self.is_edit:
+            self.current_airfoil.apply_splines()
+            self.current_airfoil.upper_spline = self.current_airfoil.fit_upper(control_num=num)
+            self.upper_cpc.control_pos = vector3D(self.current_airfoil.upper_spline.controlpoints)
+            self._update_upper_spline()
+
+    def fit_lower_spline(self, num):
+        if self.is_edit:
+            self.current_airfoil.apply_splines()
+            self.current_airfoil.lower_spline = self.current_airfoil.fit_lower(control_num=num)
+            self.lower_cpc.control_pos = vector3D(self.current_airfoil.lower_spline.controlpoints)
+            self._update_lower_spline()
 
     def accept(self):
         self.unset_edit_mode()
