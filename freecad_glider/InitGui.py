@@ -5,8 +5,8 @@ try:
 except ImportError:
     print("module not loaded with freecad")
 
-import freecad_glider
-Dir = os.path.dirname(freecad_glider.__file__)
+import glider_metadata
+Dir = os.path.dirname(glider_metadata.__file__)
 
 Gui.addIconPath(Dir + "/icons")
 
@@ -41,7 +41,7 @@ class gliderWorkbench(Workbench):
         return "Gui::PythonWorkbench"
 
     def Initialize(self):
-        from freecad_glider import tools
+        import tools
 
         Gui.addCommand('CreateGlider', tools.CreateGlider())
         Gui.addCommand('Shape_Tool', tools.Shape_Tool())

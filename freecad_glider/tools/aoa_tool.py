@@ -76,7 +76,6 @@ class aoa_tool(base_tool):
         self.aoa_spline.update(
             self.glider_2d.aoa.get_sequence(num=self.num_on_drag) * self.scale)
 
-
     def update_spline_type(self):
         self.aoa_cpc.control_pos = vector3D(
             numpy.array(self.glider_2d.aoa.controlpoints) * self.scale)

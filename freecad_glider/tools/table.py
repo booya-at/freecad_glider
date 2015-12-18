@@ -22,6 +22,7 @@ class base_table_widget(QtGui.QWidget):
     """a table which is shown infront of the mainwindow"""
     instances = []
     _last_pos = None
+
     @classmethod
     def hide_all(cls):
         print("hello")
@@ -36,7 +37,7 @@ class base_table_widget(QtGui.QWidget):
         self.setLayout(self.layout)
         label = QtGui.QLabel(name)
         label.setFont(QtGui.QFont("Arial", 20))
-        label.setAlignment(QtCore.Qt.AlignCenter);
+        label.setAlignment(QtCore.Qt.AlignCenter)
         self.layout.addWidget(label)
         self.layout.addWidget(self.table)
         self.setWindowFlags(QtCore.Qt.Window |
@@ -92,17 +93,14 @@ class base_table_widget(QtGui.QWidget):
                 super(base_table_widget, self).hide()
 
 
-
-
-
 class base_table(QtGui.QTableWidget):
     def __init__(self, parent=None):
         super(base_table, self).__init__(parent)
-        self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch);
+        self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
 
     @property
     def table_width(self):
-        w = (self.contentsMargins().left() + 
+        w = (self.contentsMargins().left() +
              self.contentsMargins().right() +
              self.verticalHeader().width())
         for i in range(self.columnCount()):
@@ -110,15 +108,14 @@ class base_table(QtGui.QTableWidget):
         return w
 
     @property
-    def table_height(self):        
-        h = (self.contentsMargins().top() + 
+    def table_height(self):
+        h = (self.contentsMargins().top() +
              self.contentsMargins().bottom() +
              self.horizontalHeader().height())
         for i in range(self.rowCount()):
             h += self.rowHeight(i)
         return h
-    
+
     def sizeHint(self):
         print("size hint got called")
         return QtCore.QSize(self.table_width, self.table_height)
-    

@@ -41,10 +41,10 @@ class arc_tool(base_tool):
         self.arc_cpc.drag_release.append(self.update_real_arc)
         self.task_separator.addChild(self.arc_cpc)
         self.shape.addChild(
-            Line(self.glider_2d.arc.get_sequence(num=30), 
+            Line(self.glider_2d.arc.get_sequence(num=30),
                  color="grey").object)
         self.shape.addChild(
-            Line(self.glider_2d.arc_positions, 
+            Line(self.glider_2d.arc_positions,
                  color="red", width=2).object)
 
     # def set_edit(self, *arg):
