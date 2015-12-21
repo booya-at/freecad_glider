@@ -187,16 +187,16 @@ class airfoil_tool(base_tool):
             self.lower_drag_release()
 
     def upper_on_change(self):
-        self._update_upper_spline(15)
+        self._update_upper_spline(100)
 
     def lower_on_change(self):
-        self._update_lower_spline(15)
+        self._update_lower_spline(100)
 
     def upper_drag_release(self):
-        self._update_upper_spline(60)
+        self._update_upper_spline(200)
 
     def lower_drag_release(self):
-        self._update_lower_spline(60)
+        self._update_lower_spline(200)
 
     @property
     def upper_control_line(self):
@@ -224,14 +224,14 @@ class airfoil_tool(base_tool):
                 self.current_airfoil.lower_spline.get_sequence(num)),
                 width=2).object)
 
-    def _update_upper_spline(self, num=20):
+    def _update_upper_spline(self, num=50):
         self.upper_spline.removeAllChildren()
         self.upper_cpc.control_points[-2].set_x(0.)
         self.current_airfoil.upper_spline.controlpoints = [
             i[:-1] for i in self.upper_cpc.control_pos]
         self.draw_upper_spline(num)
 
-    def _update_lower_spline(self, num=20):
+    def _update_lower_spline(self, num=50):
         self.lower_spline.removeAllChildren()
         self.lower_cpc.control_points[1].set_x(0.)
         self.current_airfoil.lower_spline.controlpoints = [

@@ -9,8 +9,8 @@ from pivy_primitives import Line, ControlPointContainer, vector3D
 
 
 class aoa_tool(base_tool):
-    num_on_drag = 50
-    num_release = 100
+    num_on_drag = 80
+    num_release = 200
 
     def __init__(self, obj):
         super(aoa_tool, self).__init__(obj)
@@ -140,7 +140,7 @@ class aoa_tool(base_tool):
             textsep.addChild(trans)
             self.grid.addChild(textsep)
             textsep.addChild(text)
-        aoa_int = self.glider_2d.aoa.interpolation(30)
+        aoa_int = self.glider_2d.aoa.interpolation(50)
         for i in self.back:
             textsep = coin.SoSeparator()
             scale = coin.SoScale()

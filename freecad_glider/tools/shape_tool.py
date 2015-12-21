@@ -263,7 +263,7 @@ class shape_tool(base_tool):
         self.cell_dist_cpc.control_pos = self.glider_2d.cell_dist_controlpoints
         self.update_shape()
 
-    def update_shape(self, arg=None, num=30):
+    def update_shape(self):
         self.glider_2d.front.controlpoints = [i[:-1] for i in self.front_cpc.control_pos]
         self.glider_2d.back.controlpoints = [i[:-1] for i in self.back_cpc.control_pos]
         self.glider_2d.cell_dist_controlpoints = [i[:-1] for i in self.cell_dist_cpc.control_pos]
