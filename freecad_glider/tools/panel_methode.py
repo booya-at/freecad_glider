@@ -212,7 +212,7 @@ class panel_tool(base_tool):
         self.case = self.pan3d.DirichletDoublet0Source0Case3(self._panels, self._trailing_edges)
         self.case.v_inf = self.ppm.Vector(self.glider_2d.v_inf)
         self.case.farfield = 5
-        self.case.create_wake(1000, 2)
+        self.case.create_wake(9999, 10)
         self.case.run()
         self.show_glider()
 

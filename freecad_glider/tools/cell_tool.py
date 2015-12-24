@@ -1,6 +1,7 @@
 from __future__ import division
 from PySide import QtCore, QtGui
 from _tools import base_tool, text_field, input_field
+from _glider import draw_glider
 
 from table import base_table_widget, base_table
 
@@ -17,7 +18,7 @@ from table import base_table_widget, base_table
 
 class cell_tool(base_tool):
     def __init__(self, obj):
-        super(cell_tool, self).__init__(obj, hide=False, turn=False)
+        super(cell_tool, self).__init__(obj, hide=True, turn=False)
         self.diagonals_table = diagonals_table()
         self.diagonals_button = QtGui.QPushButton("diagonals")
         self.diagonals_button.clicked.connect(self.diagonals_table.show)
@@ -27,6 +28,8 @@ class cell_tool(base_tool):
         self.vector_button = QtGui.QPushButton("vector strap")
         self.vector_button.clicked.connect(self.vector_table.show)
         self.layout.setWidget(1, input_field, self.vector_button)
+        draw_glider(self.glider_2d.get_glider_3d(), self.task_separator, hull=False, ribs=True)
+
 
     def accept(self):
         super(cell_tool, self).accept()
@@ -47,14 +50,12 @@ class diagonals_table(base_table_widget):
     def __init__(self):
         super(diagonals_table, self).__init__(name="diagonals")
         self.table.setRowCount(10)
-        self.table.setColumnCount(6)
-        self.table.setHorizontalHeaderLabels(["left", "right", "size-left", "size-right", "pos-left", "pos-right"])
+        self.table.setColumnCount(7)
+        self.table.setHorizontalHeaderLabels(["left", "right", "size-left", "size-right", "pos-left", "pos-right", "ribs"])
 
 class vector_table(base_table_widget):
     def __init__(self):
         super(vector_table, self).__init__(name="vector straps")
         self.table.setRowCount(10)
-        self.table.setColumnCount(2)
-        self.table.setHorizontalHeaderLabels(["left", "right"])
-
-
+        self.table.setColumnCount(3)
+        self.table.setHorizontalHeaderLabels(["left", "right", "ribs"])

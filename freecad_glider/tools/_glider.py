@@ -145,128 +145,7 @@ class OGGliderVP(OGBaseVP):
             glider = self.glider_instance.copy_complete()
         else:
             glider = self.glider_instance.copy()
-
-        glider.profile_numpoints = profile_numpoints
-        count = 0
-        if hull:
-            if panels:
-                for cell in glider.cells:
-                    count += 1
-                    for panel in cell.panels:
-                        m = panel.get_mesh(cell, midribs + 1)
-                        verts = m.vertices.tolist()
-                        tris = m.polygons
-                        tris_coin = []
-                        for tri in tris:
-                            tris_coin += tri
-                            tris_coin.append(-1)
-                        panel_sep = coin.SoSeparator()
-                        panel_face = coin.SoIndexedFaceSet()
-                        panel_verts = coin.SoVertexProperty()
-                        panel_material = coin.SoMaterial()
-                        shape_hint = coin.SoShapeHints()
-                        shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
-                        shape_hint.creaseAngle = np.pi
-                        panel_verts.vertex.setValues(0, len(verts), verts)
-                        panel_face.coordIndex.setValues(0, len(tris_coin), list(tris_coin))
-                        if panel.material_code:
-                            panel_material.diffuseColor = hex_to_rgb(panel.material_code)
-
-                        panel_verts.materialBinding = coin.SoMaterialBinding.PER_VERTEX_INDEXED
-                        panel_sep.addChild(panel_material)
-                        panel_sep.addChild(shape_hint)
-                        panel_sep.addChild(panel_verts)
-                        panel_sep.addChild(panel_face)
-                        self.vis_glider.addChild(panel_sep)
-
-            elif midribs == 0:
-                vertexproperty = coin.SoVertexProperty()
-                msh = coin.SoQuadMesh()
-                ribs = glider.ribs
-                flat_coords = [i for rib in ribs for i in rib.profile_3d.data]
-                vertexproperty.vertex.setValues(0, len(flat_coords), flat_coords)
-                msh.verticesPerRow = len(ribs[0].profile_3d.data)
-                msh.verticesPerColumn = len(ribs)
-                msh.vertexProperty = vertexproperty
-                self.vis_glider.addChild(msh)
-                self.vis_glider.addChild(vertexproperty)
-            else:
-                for cell in glider.cells:
-                    sep = coin.SoSeparator()
-                    vertexproperty = coin.SoVertexProperty()
-                    msh = coin.SoQuadMesh()
-                    ribs = [cell.midrib(pos / (midribs + 1))
-                            for pos in range(midribs + 2)]
-                    flat_coords = [i for rib in ribs for i in rib]
-                    vertexproperty.vertex.setValues(0,
-                                                    len(flat_coords),
-                                                    flat_coords)
-                    msh.verticesPerRow = len(ribs[0])
-                    msh.verticesPerColumn = len(ribs)
-                    msh.vertexProperty = vertexproperty
-                    sep.addChild(vertexproperty)
-                    sep.addChild(msh)
-                    self.vis_glider.addChild(sep)
-        if ribs:  # show ribs
-            msh = mesh.mesh()
-            for rib in glider.ribs:    
-                if not rib.profile_2d.has_zero_thickness:
-                    msh += mesh.mesh.from_rib(rib)
-            if msh.vertices is not None:
-                verts = list(msh.vertices)
-                polygons = []
-                for i in msh.polygons:
-                    polygons += i
-                    polygons.append(-1)
-
-                rib_sep = coin.SoSeparator()
-                self.vis_glider.addChild(rib_sep)
-                vertex_property = coin.SoVertexProperty()
-                face_set = coin.SoIndexedFaceSet()
-
-                shape_hint = coin.SoShapeHints()
-                shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
-
-                material = coin.SoMaterial()
-                material.diffuseColor = (.0, .0, .7)
-                rib_sep.addChild(material)
-
-                vertex_property.vertex.setValues(0, len(verts), verts)
-                face_set.coordIndex.setValues(0, len(polygons), list(polygons))
-                rib_sep.addChild(shape_hint)
-                rib_sep.addChild(vertex_property)
-                rib_sep.addChild(face_set)
-
-
-            msh = mesh.mesh()
-            for cell in glider.cells:
-                for diagonal in cell.diagonals:
-                    msh += mesh.mesh.from_diagonal(diagonal, cell, insert_points=4)
-                if msh.vertices is not None:
-                    verts = list(msh.vertices)
-                    polygons = []
-                    for i in msh.polygons:
-                        polygons += i
-                        polygons.append(-1)
-
-                    diagonal_sep = coin.SoSeparator()
-                    self.vis_glider.addChild(diagonal_sep)
-                    vertex_property = coin.SoVertexProperty()
-                    face_set = coin.SoIndexedFaceSet()
-
-                    shape_hint = coin.SoShapeHints()
-                    shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
-
-                    material = coin.SoMaterial()
-                    material.diffuseColor = (.7, .0, .0)
-                    diagonal_sep.addChild(material)
-                    vertex_property.vertex.setValues(0, len(verts), verts)
-                    face_set.coordIndex.setValues(0, len(polygons), list(polygons))
-                    diagonal_sep.addChild(shape_hint)
-                    diagonal_sep.addChild(vertex_property)
-                    diagonal_sep.addChild(face_set)
-
-
+        draw_glider(glider, self.vis_glider, midribs, profile_numpoints, hull, panels, half, ribs)
 
 
     def update_lines(self, num=3, half=False):
@@ -299,3 +178,128 @@ def hex_to_rgb(hex_string):
         return tuple(int(value[i:i + lv // 3], 16) / 256. for i in range(0, lv, lv // 3))
     except IndexError:
         return (.7, .7, .7)
+
+
+def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
+                hull=True, panels=False, half=False, ribs=False):
+    """draw the glider to the visglider seperator"""
+
+    glider.profile_numpoints = profile_numpoints
+    count = 0
+    if hull:
+        if panels:
+            for cell in glider.cells:
+                count += 1
+                for panel in cell.panels:
+                    m = panel.get_mesh(cell, midribs + 1)
+                    verts = m.vertices.tolist()
+                    tris = m.polygons
+                    tris_coin = []
+                    for tri in tris:
+                        tris_coin += tri
+                        tris_coin.append(-1)
+                    panel_sep = coin.SoSeparator()
+                    panel_face = coin.SoIndexedFaceSet()
+                    panel_verts = coin.SoVertexProperty()
+                    panel_material = coin.SoMaterial()
+                    shape_hint = coin.SoShapeHints()
+                    shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
+                    shape_hint.creaseAngle = np.pi
+                    panel_verts.vertex.setValues(0, len(verts), verts)
+                    panel_face.coordIndex.setValues(0, len(tris_coin), list(tris_coin))
+                    if panel.material_code:
+                        panel_material.diffuseColor = hex_to_rgb(panel.material_code)
+
+                    panel_verts.materialBinding = coin.SoMaterialBinding.PER_VERTEX_INDEXED
+                    panel_sep.addChild(panel_material)
+                    panel_sep.addChild(shape_hint)
+                    panel_sep.addChild(panel_verts)
+                    panel_sep.addChild(panel_face)
+                    vis_glider.addChild(panel_sep)
+
+        elif midribs == 0:
+            vertexproperty = coin.SoVertexProperty()
+            msh = coin.SoQuadMesh()
+            ribs = glider.ribs
+            flat_coords = [i for rib in ribs for i in rib.profile_3d.data]
+            vertexproperty.vertex.setValues(0, len(flat_coords), flat_coords)
+            msh.verticesPerRow = len(ribs[0].profile_3d.data)
+            msh.verticesPerColumn = len(ribs)
+            msh.vertexProperty = vertexproperty
+            vis_glider.addChild(msh)
+            vis_glider.addChild(vertexproperty)
+        else:
+            for cell in glider.cells:
+                sep = coin.SoSeparator()
+                vertexproperty = coin.SoVertexProperty()
+                msh = coin.SoQuadMesh()
+                ribs = [cell.midrib(pos / (midribs + 1))
+                        for pos in range(midribs + 2)]
+                flat_coords = [i for rib in ribs for i in rib]
+                vertexproperty.vertex.setValues(0,
+                                                len(flat_coords),
+                                                flat_coords)
+                msh.verticesPerRow = len(ribs[0])
+                msh.verticesPerColumn = len(ribs)
+                msh.vertexProperty = vertexproperty
+                sep.addChild(vertexproperty)
+                sep.addChild(msh)
+                vis_glider.addChild(sep)
+    if ribs:  # show ribs
+        msh = mesh.mesh()
+        for rib in glider.ribs:
+            if not rib.profile_2d.has_zero_thickness:
+                msh += mesh.mesh.from_rib(rib)
+        if msh.vertices is not None:
+            verts = list(msh.vertices)
+            polygons = []
+            for i in msh.polygons:
+                polygons += i
+                polygons.append(-1)
+
+            rib_sep = coin.SoSeparator()
+            vis_glider.addChild(rib_sep)
+            vertex_property = coin.SoVertexProperty()
+            face_set = coin.SoIndexedFaceSet()
+
+            shape_hint = coin.SoShapeHints()
+            shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
+
+            material = coin.SoMaterial()
+            material.diffuseColor = (.0, .0, .7)
+            rib_sep.addChild(material)
+
+            vertex_property.vertex.setValues(0, len(verts), verts)
+            face_set.coordIndex.setValues(0, len(polygons), list(polygons))
+            rib_sep.addChild(shape_hint)
+            rib_sep.addChild(vertex_property)
+            rib_sep.addChild(face_set)
+
+
+        msh = mesh.mesh()
+        for cell in glider.cells:
+            for diagonal in cell.diagonals:
+                msh += mesh.mesh.from_diagonal(diagonal, cell, insert_points=4)
+            if msh.vertices is not None:
+                verts = list(msh.vertices)
+                polygons = []
+                for i in msh.polygons:
+                    polygons += i
+                    polygons.append(-1)
+
+                diagonal_sep = coin.SoSeparator()
+                vis_glider.addChild(diagonal_sep)
+                vertex_property = coin.SoVertexProperty()
+                face_set = coin.SoIndexedFaceSet()
+
+                shape_hint = coin.SoShapeHints()
+                shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
+
+                material = coin.SoMaterial()
+                material.diffuseColor = (.7, .0, .0)
+                diagonal_sep.addChild(material)
+                vertex_property.vertex.setValues(0, len(verts), verts)
+                face_set.coordIndex.setValues(0, len(polygons), list(polygons))
+                diagonal_sep.addChild(shape_hint)
+                diagonal_sep.addChild(vertex_property)
+                diagonal_sep.addChild(face_set)

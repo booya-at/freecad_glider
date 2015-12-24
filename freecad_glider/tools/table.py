@@ -117,5 +117,4 @@ class base_table(QtGui.QTableWidget):
         return h
 
     def sizeHint(self):
-        print("size hint got called")
         return QtCore.QSize(self.table_width, self.table_height)
