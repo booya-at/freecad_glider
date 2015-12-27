@@ -51,6 +51,7 @@ class diagonals_table(base_table_widget):
         super(diagonals_table, self).__init__(name="diagonals")
         self.table.setRowCount(10)
         self.table.setColumnCount(7)
+        self.table.setItem(1, 1, QtGui.QTableWidgetItem("hello world"))
         self.table.setHorizontalHeaderLabels(["left", "right", "size-left", "size-right", "pos-left", "pos-right", "ribs"])
 
 class vector_table(base_table_widget):
@@ -58,4 +59,5 @@ class vector_table(base_table_widget):
         super(vector_table, self).__init__(name="vector straps")
         self.table.setRowCount(10)
         self.table.setColumnCount(3)
+        self.table.set
         self.table.setHorizontalHeaderLabels(["left", "right", "ribs"])
