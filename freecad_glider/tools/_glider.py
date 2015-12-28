@@ -246,10 +246,10 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                 sep.addChild(msh)
                 vis_glider.addChild(sep)
     if ribs:  # show ribs
-        msh = mesh.mesh()
+        msh = mesh.Mesh()
         for rib in glider.ribs:
             if not rib.profile_2d.has_zero_thickness:
-                msh += mesh.mesh.from_rib(rib)
+                msh += mesh.Mesh.from_rib(rib)
         if msh.vertices is not None:
             verts = list(msh.vertices)
             polygons = []
@@ -276,10 +276,10 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
             rib_sep.addChild(face_set)
 
 
-        msh = mesh.mesh()
+        msh = mesh.Mesh()
         for cell in glider.cells:
             for diagonal in cell.diagonals:
-                msh += mesh.mesh.from_diagonal(diagonal, cell, insert_points=4)
+                msh += mesh.Mesh.from_diagonal(diagonal, cell, insert_points=4)
             if msh.vertices is not None:
                 verts = list(msh.vertices)
                 polygons = []
