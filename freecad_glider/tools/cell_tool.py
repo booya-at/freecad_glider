@@ -20,6 +20,15 @@ class cell_tool(base_tool):
     def __init__(self, obj):
         super(cell_tool, self).__init__(obj, hide=True, turn=False)
         self.diagonals_table = diagonals_table()
+        if "diagonals" in self.glider_2d.elements:
+            diags = self.glider_2d.elements["diagonals"]
+            for row, element in enumerate(diags):
+                self.diagonals_table.table.setRow(row, [
+                    element["right_front"],
+                    element["right_back"],
+                    element["left_front"],
+                    element["left_back"],
+                    element["cells"]])
         self.diagonals_button = QtGui.QPushButton("diagonals")
         self.diagonals_button.clicked.connect(self.diagonals_table.show)
         self.layout.setWidget(0, input_field, self.diagonals_button)
@@ -46,12 +55,15 @@ class cell_tool(base_tool):
         del self.vector_table
 
 
+def number_input(number):
+    return QtGui.QTableWidgetItem(str(number))
+
 class diagonals_table(base_table_widget):
     def __init__(self):
         super(diagonals_table, self).__init__(name="diagonals")
         self.table.setRowCount(10)
         self.table.setColumnCount(7)
-        self.table.setItem(1, 1, QtGui.QTableWidgetItem("hello world"))
+        self.table.setItem(0, 0, 10)
         self.table.setHorizontalHeaderLabels(["left", "right", "size-left", "size-right", "pos-left", "pos-right", "ribs"])
 
 class vector_table(base_table_widget):
@@ -59,5 +71,4 @@ class vector_table(base_table_widget):
         super(vector_table, self).__init__(name="vector straps")
         self.table.setRowCount(10)
         self.table.setColumnCount(3)
-        self.table.set
         self.table.setHorizontalHeaderLabels(["left", "right", "ribs"])

@@ -118,3 +118,12 @@ class base_table(QtGui.QTableWidget):
 
     def sizeHint(self):
         return QtCore.QSize(self.table_width, self.table_height)
+
+    def setItem(self, row, col, entry):
+        if hasattr(entry,"__iter__") and not isinstance(entry, str):
+            entry = str(entry)[1:-2]
+        super(base_table, self).setItem(row, col, QtGui.QTableWidgetItem(entry))
+
+    def setRow(self, row, items, start=0):
+        for col, item in enumerate(items):
+            self.setItem(row, col + start, item)
