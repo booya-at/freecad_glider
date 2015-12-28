@@ -102,24 +102,27 @@ class Pattern_Tool(BaseCommand):
             if check_glider(obj):
                 proceed = True
         if proceed:
-            pattern_doc = FreeCAD.newDocument()
+            import openglider.plots
             import Part
-            flat_glider = flatten_glider(obj.glider_instance)
-            draw_area = flat_glider['panels']
-            draw_area.join(flat_glider['ribs'])
-            if flat_glider['dribs']:
-                if flat_glider['dribs'].parts:
-                    draw_area.join(flat_glider['dribs'])
-            for i, part in enumerate(draw_area.parts):
-                grp = pattern_doc.addObject("App::DocumentObjectGroup",
-                                            "Panel_" + str(i))
-                layer_dict = part.layers
-                for layer in layer_dict:
-                    for j, line in enumerate(layer_dict[layer]):
-                        obj = FreeCAD.ActiveDocument.addObject("Part::Feature", layer + str(j))
-                        obj.Shape = Part.makePolygon(map(Pattern_Tool.fcvec, line))
-                        grp.addObject(obj)
-            pattern_doc.recompute()
+            unwrapper = openglider.plots.PlotMaker(obj.glider_instance)
+            unwrapper.unwrap()
+
+            areas = unwrapper.get_all_parts().group_materials()
+
+            for material_name, draw_area in areas.items():
+                pattern_doc = FreeCAD.newDocument("plots_{}".format(material_name))
+                draw_area.rasterize()
+                draw_area.scale(1000)
+                for i, part in enumerate(draw_area.parts):
+                    grp = pattern_doc.addObject("App::DocumentObjectGroup", part.name)
+                    layer_dict = part.layers
+                    for layer in layer_dict:
+                        for j, line in enumerate(layer_dict[layer]):
+                            obj = FreeCAD.ActiveDocument.addObject("Part::Feature", layer + str(j))
+                            obj.Shape = Part.makePolygon(map(Pattern_Tool.fcvec, line))
+                            grp.addObject(obj)
+
+                    pattern_doc.recompute()
 
     @staticmethod
     def fcvec(vec):

@@ -1,7 +1,7 @@
 from __future__ import division
 import FreeCAD as App
 from PySide import QtGui
-from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
 import numpy
 
 from openglider.glider.in_out.export_3d import ppm_Panels
