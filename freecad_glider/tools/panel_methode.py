@@ -196,7 +196,6 @@ class panel_tool(base_tool):
         return [[p.x, p.y, p.z] for p in flow_path.values]
 
     def create_panels(self, midribs=0, profile_numpoints=10, mean=False, symmetric=True):
-        print(mean)
         self._vertices, self._panels, self._trailing_edges = ppm_Panels(
             self.glider_2d.get_glider_3d(),
             midribs=midribs,
@@ -257,7 +256,6 @@ class panel_tool(base_tool):
 
 
         p1 = numpy.array(self.case.center_of_pressure)
-        print(p1)
         f = numpy.array(self.case.force)
         line = Line([p1, p1 + f])
         self.glider_result.addChild(line)

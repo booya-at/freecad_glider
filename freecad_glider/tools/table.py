@@ -25,7 +25,6 @@ class base_table_widget(QtGui.QWidget):
 
     @classmethod
     def hide_all(cls):
-        print("hello")
         for obj in cls.instances:
             obj.hide()
 
@@ -52,7 +51,6 @@ class base_table_widget(QtGui.QWidget):
             base_table_widget.hide_all()
             super(base_table_widget, self).show()
             if base_table_widget._last_pos:
-                print(base_table_widget._last_pos)
                 self.move(base_table_widget._last_pos)
         else:
             self.hide()
@@ -128,5 +126,4 @@ class base_table(QtGui.QTableWidget):
 
     def setRow(self, row, items, start=0):
         for col, item in enumerate(items):
-            print(col, item)
             self.setItem(row, col + start, item)

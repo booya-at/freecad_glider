@@ -26,6 +26,7 @@ class cell_tool(base_tool):
         self.layout.setWidget(0, input_field, self.diagonals_button)
 
         self.vector_table = vector_table()
+        self.vector_table.get_from_glider_2d(self.glider_2d)
         self.vector_button = QtGui.QPushButton("vector strap")
         self.vector_button.clicked.connect(self.vector_table.show)
         self.layout.setWidget(1, input_field, self.vector_button)
@@ -43,6 +44,7 @@ class cell_tool(base_tool):
     
     def apply_elements(self):
         self.diagonals_table.apply_to_glider(self.glider_2d)
+        self.vector_table.apply_to_glider(self.glider_2d)
 
     def accept(self):
         super(cell_tool, self).accept()
@@ -110,8 +112,7 @@ class diagonals_table(base_table_widget):
 
     def get_row(self, n_row):
         str_row = [self.table.item(n_row, i).text() for i in range(9) if self.table.item(n_row, i)]
-        # str_row = [item for item in str_row if item != ""]
-        print(str_row)
+        str_row = [item for item in str_row if item != ""]
         if len(str_row) != 9:
             print("something wrong with row " + str(n_row))
             return None
@@ -128,3 +129,39 @@ class vector_table(base_table_widget):
         self.table.setRowCount(10)
         self.table.setColumnCount(3)
         self.table.setHorizontalHeaderLabels(["left", "right", "ribs"])
+
+    def get_from_glider_2d(self, glider_2d):
+        if "straps" in glider_2d.elements:
+            straps = glider_2d.elements["straps"]
+            for row, element in enumerate(straps):
+                entries = [element["right"], element["left"]]
+                entries.append(element["cells"])
+                self.table.setRow(row, entries)
+
+
+    def apply_to_glider(self, glider_2d):
+        num_rows = self.table.rowCount()
+        # remove all diagonals from the glide_2d
+        glider_2d.elements["straps"] = []
+        for n_row in range(num_rows):
+            row = self.get_row(n_row)
+            if row:
+                strap = {}
+                strap["right"] = row[0]
+                strap["left"] = row[1]
+                strap["cells"] = row[2]
+                glider_2d.elements["straps"].append(strap)
+
+    def get_row(self, n_row):
+        str_row = [self.table.item(n_row, i).text() for i in range(3) if self.table.item(n_row, i)]
+        
+        print(str_row)
+        str_row = [item for item in str_row if item != ""]
+        if len(str_row) != 3:
+            print("something wrong with row " + str(n_row))
+            return None
+        try:
+            return map(float, str_row[:-1]) + [map(int, str_row[-1].split(","))]
+        except TypeError:
+            print("something wrong with row " + str(n_row))
+            return None

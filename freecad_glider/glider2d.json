@@ -20,20 +20,71 @@
                             10
                         ], 
                         "right_front": [
-                            0.1, 
-                            -0.9
+                            0.4, 
+                            -1.0
                         ], 
                         "right_back": [
-                            0.2, 
-                            -0.9
+                            0.5, 
+                            -1.0
+                        ], 
+                        "left_back": [
+                            0.5, 
+                            -1.0
+                        ], 
+                        "left_front": [
+                            0.4, 
+                            -1.0
+                        ]
+                    }, 
+                    {
+                        "cells": [
+                            0, 
+                            2, 
+                            4, 
+                            6, 
+                            8, 
+                            10
+                        ], 
+                        "right_front": [
+                            0.14, 
+                            -1.0
+                        ], 
+                        "right_back": [
+                            0.16, 
+                            -1.0
                         ], 
                         "left_back": [
                             0.2, 
-                            -0.9
+                            1.0
                         ], 
                         "left_front": [
                             0.1, 
-                            -0.9
+                            1.0
+                        ]
+                    }, 
+                    {
+                        "cells": [
+                            1, 
+                            3, 
+                            5, 
+                            7, 
+                            9
+                        ], 
+                        "right_front": [
+                            0.1, 
+                            1.0
+                        ], 
+                        "right_back": [
+                            0.2, 
+                            1.0
+                        ], 
+                        "left_back": [
+                            0.16, 
+                            -1.0
+                        ], 
+                        "left_front": [
+                            0.14, 
+                            -1.0
                         ]
                     }
                 ]
@@ -930,9 +981,9 @@
         }
     }, 
     "MetaData": {
-        "date_created": "04.01.16 16:18", 
+        "date_created": "04.01.16 16:43", 
         "application": "openglider", 
-        "date_modified": "04.01.16 16:18", 
+        "date_modified": "04.01.16 16:43", 
         "version": "0.01", 
         "author": "lo-K50IN/lo"
     }
