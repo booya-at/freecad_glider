@@ -76,6 +76,9 @@ class OGGlider(OGBaseObject):
 
 class OGGliderVP(OGBaseVP):
     def __init__(self, view_obj):
+        view_obj.addProperty("App::PropertyBool",
+                             "ribs", "visuals",
+                             "show ribs")
         view_obj.addProperty("App::PropertyInteger",
                              "num_ribs", "accuracy",
                              "num_ribs")
@@ -94,9 +97,6 @@ class OGGliderVP(OGBaseVP):
         view_obj.addProperty("App::PropertyBool",
                              "half_glider", "visuals",
                              "show only one half")
-        view_obj.addProperty("App::PropertyBool",
-                             "ribs", "visuals",
-                             "show ribs")
         view_obj.num_ribs = 0
         view_obj.profile_num = 20
         view_obj.line_num = 5
@@ -119,25 +119,26 @@ class OGGliderVP(OGBaseVP):
         self.seperator.addChild(self.material)
         view_obj.addDisplayMode(self.seperator, 'out')
 
-    def updateData(self, fp=None, prop=None):
-        if hasattr(self, "view_obj"):
+    def updateData(self, prop="all", *args):
+        self._updateData(self.view_obj, prop)
+
+    def _updateData(self, fp, prop="all"):
+        if hasattr(fp, "ribs"):      # check for last attribute to be restored
             if prop in ["num_ribs", "profile_num", "hull", "panels",
-                        "half_glider", "ribs", None]:
-                if (hasattr(self.view_obj, "profile_num") and
-                    hasattr(self.view_obj, "ribs")):
-                    numpoints = self.view_obj.profile_num
-                    if numpoints < 5:
-                        numpoints = 5
-                    self.update_glider(midribs=self.view_obj.num_ribs,
-                                       profile_numpoints=numpoints,
-                                       hull=self.view_obj.hull,
-                                       panels=self.view_obj.panels,
-                                       half=self.view_obj.half_glider,
-                                       ribs=self.view_obj.ribs)
-            if prop in ["line_num", "half_glider", None]:
-                if hasattr(self.view_obj, "line_num"):
-                    self.update_lines(self.view_obj.line_num,
-                                      half=self.view_obj.half_glider)
+                        "half_glider", "ribs", "all"]:
+                numpoints = fp.profile_num
+                if numpoints < 5:
+                    numpoints = 5
+                self.update_glider(midribs=fp.num_ribs,
+                                   profile_numpoints=numpoints,
+                                   hull=fp.hull,
+                                   panels=fp.panels,
+                                   half=fp.half_glider,
+                                   ribs=fp.ribs)
+        if hasattr(fp, "line_num"):
+            if prop in ["line_num", "half_glider", "all"]:
+                self.update_lines(fp.line_num,
+                                  half=fp.half_glider)
 
     def update_glider(self, midribs=0, profile_numpoints=20,
                       hull=True, panels=False, half=False, ribs=False):
@@ -158,8 +159,7 @@ class OGGliderVP(OGBaseVP):
             self.vis_lines.addChild(Line(points, dynamic=False))
 
     def onChanged(self, vp, prop):
-        print("onChanged")
-        self.updateData(vp, prop)
+        self._updateData(vp, prop)
 
     def getIcon(self):
         return "new_glider.svg"
