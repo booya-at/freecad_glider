@@ -96,7 +96,7 @@ class base_table_widget(QtGui.QWidget):
 class base_table(QtGui.QTableWidget):
     def __init__(self, parent=None):
         super(base_table, self).__init__(parent)
-        self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+        #self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
 
     @property
     def table_width(self):
@@ -121,9 +121,12 @@ class base_table(QtGui.QTableWidget):
 
     def setItem(self, row, col, entry):
         if hasattr(entry,"__iter__") and not isinstance(entry, str):
-            entry = str(entry)[1:-2]
+            entry = str(entry)[1:-1]
+        else:
+            entry = str(entry)
         super(base_table, self).setItem(row, col, QtGui.QTableWidgetItem(entry))
 
     def setRow(self, row, items, start=0):
         for col, item in enumerate(items):
+            print(col, item)
             self.setItem(row, col + start, item)

@@ -43,6 +43,7 @@ class OGBaseVP(object):
 
 class OGGlider(OGBaseObject):
     def __init__(self, obj):
+        self.obj = obj
         obj.addProperty("App::PropertyPythonObject",
                         "glider_instance", "object",
                         "glider_instance", 2)
@@ -53,7 +54,6 @@ class OGGlider(OGBaseObject):
             obj.glider_2d = load(importfile)["data"]
         obj.glider_instance = obj.glider_2d.get_glider_3d()
         obj.Proxy = self
-        self.obj = obj
         super(OGGlider, self).__init__(obj)
 
     def __getstate__(self):
@@ -123,7 +123,8 @@ class OGGliderVP(OGBaseVP):
         if hasattr(self, "view_obj"):
             if prop in ["num_ribs", "profile_num", "hull", "panels",
                         "half_glider", "ribs", None]:
-                if hasattr(self.view_obj, "profile_num"):
+                if (hasattr(self.view_obj, "profile_num") and
+                    hasattr(self.view_obj, "ribs")):
                     numpoints = self.view_obj.profile_num
                     if numpoints < 5:
                         numpoints = 5
@@ -167,7 +168,7 @@ class OGGliderVP(OGBaseVP):
         return None
 
     def __setstate__(self, state):
-        self.updateData()
+        # self.updateData()
         return None
 
 
@@ -220,11 +221,11 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
         elif midribs == 0:
             vertexproperty = coin.SoVertexProperty()
             msh = coin.SoQuadMesh()
-            ribs = glider.ribs
-            flat_coords = [i for rib in ribs for i in rib.profile_3d.data]
+            _ribs = glider.ribs
+            flat_coords = [i for rib in _ribs for i in rib.profile_3d.data]
             vertexproperty.vertex.setValues(0, len(flat_coords), flat_coords)
-            msh.verticesPerRow = len(ribs[0].profile_3d.data)
-            msh.verticesPerColumn = len(ribs)
+            msh.verticesPerRow = len(_ribs[0].profile_3d.data)
+            msh.verticesPerColumn = len(_ribs)
             msh.vertexProperty = vertexproperty
             vis_glider.addChild(msh)
             vis_glider.addChild(vertexproperty)
@@ -233,14 +234,14 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                 sep = coin.SoSeparator()
                 vertexproperty = coin.SoVertexProperty()
                 msh = coin.SoQuadMesh()
-                ribs = [cell.midrib(pos / (midribs + 1))
+                _ribs = [cell.midrib(pos / (midribs + 1))
                         for pos in range(midribs + 2)]
-                flat_coords = [i for rib in ribs for i in rib]
+                flat_coords = [i for rib in _ribs for i in rib]
                 vertexproperty.vertex.setValues(0,
                                                 len(flat_coords),
                                                 flat_coords)
-                msh.verticesPerRow = len(ribs[0])
-                msh.verticesPerColumn = len(ribs)
+                msh.verticesPerRow = len(_ribs[0])
+                msh.verticesPerColumn = len(_ribs)
                 msh.vertexProperty = vertexproperty
                 sep.addChild(vertexproperty)
                 sep.addChild(msh)
@@ -279,7 +280,7 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
         msh = mesh.Mesh()
         for cell in glider.cells:
             for diagonal in cell.diagonals:
-                msh += mesh.Mesh.from_diagonal(diagonal, cell, insert_points=4)
+                msh += mesh.Mesh.from_diagonal(diagonal, cell, insert_points=0)
             if msh.vertices is not None:
                 verts = list(msh.vertices)
                 polygons = []

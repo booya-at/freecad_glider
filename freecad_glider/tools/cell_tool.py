@@ -20,15 +20,7 @@ class cell_tool(base_tool):
     def __init__(self, obj):
         super(cell_tool, self).__init__(obj, hide=True, turn=False)
         self.diagonals_table = diagonals_table()
-        if "diagonals" in self.glider_2d.elements:
-            diags = self.glider_2d.elements["diagonals"]
-            for row, element in enumerate(diags):
-                self.diagonals_table.table.setRow(row, [
-                    element["right_front"],
-                    element["right_back"],
-                    element["left_front"],
-                    element["left_back"],
-                    element["cells"]])
+        self.diagonals_table.get_from_glider_2d(self.glider_2d)
         self.diagonals_button = QtGui.QPushButton("diagonals")
         self.diagonals_button.clicked.connect(self.diagonals_table.show)
         self.layout.setWidget(0, input_field, self.diagonals_button)
@@ -37,8 +29,20 @@ class cell_tool(base_tool):
         self.vector_button = QtGui.QPushButton("vector strap")
         self.vector_button.clicked.connect(self.vector_table.show)
         self.layout.setWidget(1, input_field, self.vector_button)
+
+
+        self.update_button = QtGui.QPushButton("update glider")
+        self.update_button.clicked.connect(self.update_glider)
+        self.layout.setWidget(2, input_field, self.update_button)
         draw_glider(self.glider_2d.get_glider_3d(), self.task_separator, hull=False, ribs=True)
 
+    def update_glider(self):
+        self.task_separator.removeAllChildren()
+        self.apply_elements()
+        draw_glider(self.glider_2d.get_glider_3d(), self.task_separator, hull=False, ribs=True)
+    
+    def apply_elements(self):
+        self.diagonals_table.apply_to_glider(self.glider_2d)
 
     def accept(self):
         super(cell_tool, self).accept()
@@ -46,6 +50,7 @@ class cell_tool(base_tool):
         self.vector_table.hide()
         del self.diagonals_table
         del self.vector_table
+        self.update_view_glider()
 
     def reject(self):
         super(cell_tool, self).reject()
@@ -62,9 +67,60 @@ class diagonals_table(base_table_widget):
     def __init__(self):
         super(diagonals_table, self).__init__(name="diagonals")
         self.table.setRowCount(10)
-        self.table.setColumnCount(7)
-        self.table.setItem(0, 0, 10)
-        self.table.setHorizontalHeaderLabels(["left", "right", "size-left", "size-right", "pos-left", "pos-right", "ribs"])
+        self.table.setColumnCount(9)
+        self.table.setHorizontalHeaderLabels([
+            "right\nfront",
+            "rf\nheight",
+            "right\nback",
+            "rb\nheight",
+            "left\nback",
+            "lb\nheight",
+            "left\nfront",
+            "lf\nheight",
+            "ribs"])
+        diags_map = [[]]
+
+    def get_from_glider_2d(self, glider_2d):
+        if "diagonals" in glider_2d.elements:
+            diags = glider_2d.elements["diagonals"]
+            for row, element in enumerate(diags):
+                entries = list(
+                    element["right_front"] +
+                    element["right_back"] +
+                    element["left_back"] +
+                    element["left_front"])
+                entries.append(element["cells"])
+                self.table.setRow(row, entries)
+
+
+    def apply_to_glider(self, glider_2d):
+        num_rows = self.table.rowCount()
+        # remove all diagonals from the glide_2d
+        glider_2d.elements["diagonals"] = []
+        for n_row in range(num_rows):
+            row = self.get_row(n_row)
+            if row:
+                diagonal = {}
+                diagonal["right_front"] = (row[0], row[1])
+                diagonal["right_back"] = (row[2], row[3])
+                diagonal["left_back"] = (row[4], row[5])
+                diagonal["left_front"] = (row[6], row[7])
+                diagonal["cells"] = row[-1]
+                glider_2d.elements["diagonals"].append(diagonal)
+
+    def get_row(self, n_row):
+        str_row = [self.table.item(n_row, i).text() for i in range(9) if self.table.item(n_row, i)]
+        # str_row = [item for item in str_row if item != ""]
+        print(str_row)
+        if len(str_row) != 9:
+            print("something wrong with row " + str(n_row))
+            return None
+        try:
+            return map(float, str_row[:-1]) + [map(int, str_row[-1].split(","))]
+        except TypeError:
+            print("something wrong with row " + str(n_row))
+            return None
+
 
 class vector_table(base_table_widget):
     def __init__(self):

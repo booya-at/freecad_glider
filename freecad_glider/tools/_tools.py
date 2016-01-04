@@ -116,7 +116,7 @@ class base_tool(object):
         self.task_separator.setName("task_seperator")
         self.scene.addChild(self.task_separator)
 
-    def update_view_glider(self):
+    def update_view_glider(self):  # rename
         self.obj.glider_2d = self.glider_2d
         self.glider_2d.get_glider_3d(self.obj.glider_instance)
         self.obj.ViewObject.Proxy.updateData()
