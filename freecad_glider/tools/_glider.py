@@ -304,3 +304,25 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                 diagonal_sep.addChild(shape_hint)
                 diagonal_sep.addChild(vertex_property)
                 diagonal_sep.addChild(face_set)
+
+        _strap_verts = []
+        _strap_lines = []
+        _strap_count = 0
+        for cell in glider.cells:
+            for i, strap in enumerate(cell.straps):
+                _strap_verts += strap.get_3d(cell)
+                _strap_lines += [_strap_count * 2, _strap_count * 2 + 1, -1]
+                _strap_count += 1
+        strap_sep = coin.SoSeparator()
+        vis_glider.addChild(strap_sep)
+        strap_material = coin.SoMaterial()
+        strap_material.diffuseColor = (0., 0., 0.)
+        strap_verts = coin.SoVertexProperty()
+        strap_set = coin.SoIndexedLineSet()
+        strap_verts.vertex.setValues(0, len(_strap_verts), _strap_verts)
+        strap_set.coordIndex.setValues(0, len(_strap_lines), _strap_lines)
+
+        strap_sep.addChild(strap_material)
+        strap_sep.addChild(strap_verts)
+        strap_sep.addChild(strap_set)
+
