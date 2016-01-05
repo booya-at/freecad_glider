@@ -7,7 +7,8 @@ from pivy import coin
 import FreeCADGui as Gui
 from openglider.jsonify import dump, load
 from openglider.vector.spline import BernsteinBase, BSplineBase
-from openglider.glider.glider_2d import Glider2D, import_ods_2d
+from openglider.glider.glider_2d import Glider2D
+from openglider.glider.glider_2d.import_ods import import_ods_2d
 
 # from openglider.glider.glider_2d import Glider2D
 

@@ -1,8 +1,25 @@
 {
     "data": {
-        "_module": "openglider.glider.glider_2d", 
+        "_module": "openglider.glider.glider_2d.glider", 
         "_type": "Glider2D", 
         "data": {
+            "zrot": {
+                "_module": "openglider.vector.spline", 
+                "_type": "SymmetricGenericSpline", 
+                "data": {
+                    "degree": 0, 
+                    "controlpoints": [
+                        [
+                            1.1999480724334717, 
+                            0.00035573248169384897
+                        ], 
+                        [
+                            3.316624879837036, 
+                            0.00035573248169384897
+                        ]
+                    ]
+                }
+            }, 
             "elements": {
                 "straps": [
                     {
@@ -54,11 +71,11 @@
                             0.4, 
                             -1.0
                         ], 
-                        "right_back": [
+                        "left_back": [
                             0.5, 
                             -1.0
                         ], 
-                        "left_back": [
+                        "right_back": [
                             0.5, 
                             -1.0
                         ], 
@@ -79,13 +96,13 @@
                             0.14, 
                             -1.0
                         ], 
-                        "right_back": [
-                            0.16, 
-                            -1.0
-                        ], 
                         "left_back": [
                             0.2, 
                             1.0
+                        ], 
+                        "right_back": [
+                            0.16, 
+                            -1.0
                         ], 
                         "left_front": [
                             0.1, 
@@ -104,13 +121,13 @@
                             0.1, 
                             1.0
                         ], 
-                        "right_back": [
-                            0.2, 
-                            1.0
-                        ], 
                         "left_back": [
                             0.16, 
                             -1.0
+                        ], 
+                        "right_back": [
+                            0.2, 
+                            1.0
                         ], 
                         "left_front": [
                             0.14, 
@@ -168,12 +185,12 @@
                     "degree": 2, 
                     "controlpoints": [
                         [
-                            2.1423400618411113, 
-                            0.4409259965754246
+                            2.1423886626700614, 
+                            0.4409359993613133
                         ], 
                         [
-                            2.4709348607919503, 
-                            -1.2804877066249643
+                            2.470990916076849, 
+                            -1.2805167555911443
                         ]
                     ]
                 }
@@ -1011,9 +1028,9 @@
         }
     }, 
     "MetaData": {
-        "date_created": "04.01.16 19:04", 
+        "date_created": "05.01.16 14:12", 
         "application": "openglider", 
-        "date_modified": "04.01.16 19:04", 
+        "date_modified": "05.01.16 14:12", 
         "version": "0.01", 
         "author": "lo-K50IN/lo"
     }

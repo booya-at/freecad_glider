@@ -6,7 +6,7 @@ from _tools import base_tool, export_2d, import_2d
 from airfoil_tool import airfoil_tool
 from shape_tool import shape_tool
 from arc_tool import arc_tool
-from aoa_tool import aoa_tool
+from aoa_tool import aoa_tool, zrot_tool
 from ballooning_tool import ballooning_tool
 from line_tool import line_tool
 from merge_tool import airfoil_merge_tool, ballooning_merge_tool
@@ -177,6 +177,16 @@ class Aoa_Tool(BaseCommand):
 
     def tool(self, obj):
         return aoa_tool(obj)
+
+
+class Zrot_Tool(BaseCommand):
+    def GetResources(self):
+        return {'Pixmap': 'z_rot.svg',
+                'MenuText': 'zrot',
+                'ToolTip': 'zrot'}
+
+    def tool(self, obj):
+        return zrot_tool(obj)
 
 
 class Airfoil_Tool(BaseCommand):
