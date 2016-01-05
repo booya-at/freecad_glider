@@ -25,6 +25,8 @@ class base_merge_tool(base_tool):
         self.setup_widget()
         self.setup_pivy()
 
+        # add the spline controls
+
     def setup_pivy(self):
         self.task_separator.addChild(self.bezier_cpc)
         self.task_separator.addChild(self.shape)

@@ -116,6 +116,7 @@ class zrot_tool(base_tool):
         self.obj.glider_2d = self.glider_2d
         self.glider_2d.get_glider_3d(self.obj.glider_instance)
         super(zrot_tool, self).accept()
+        self.update_view_glider()
 
     def reject(self):
         self.aoa_cpc.remove_callbacks()
