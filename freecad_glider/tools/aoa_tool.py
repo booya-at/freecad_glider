@@ -8,15 +8,14 @@ from _tools import base_tool, text_field, input_field, spline_select
 from pivy_primitives import Line, ControlPointContainer, vector3D
 
 
-class aoa_tool(base_tool):
+class zrot_tool(base_tool):
     num_on_drag = 80
     num_release = 200
 
     def __init__(self, obj):
-        super(aoa_tool, self).__init__(obj)
-        self.scale = numpy.array([1., 8.])
+        super(zrot_tool, self).__init__(obj)
         pts = vector3D(
-            numpy.array(self.glider_2d.aoa.controlpoints) * self.scale)
+            numpy.array(self.spline.controlpoints) * self.scale)
         self.aoa_cpc = ControlPointContainer(pts, self.view)
         self.shape = coin.SoSeparator()
         self.coords = coin.SoSeparator()
@@ -28,13 +27,21 @@ class aoa_tool(base_tool):
         self.text_scale = self.glider_2d.shape.span / len(self.front) / 15
         self.x_grid = [i[0] for i in self.front]
 
-        self.QGlide = QtGui.QDoubleSpinBox(self.base_widget)
         self.Qnum_aoa = QtGui.QSpinBox(self.base_widget)
         self.spline_select = spline_select(
-            [self.glider_2d.aoa], self.update_spline_type, self.base_widget)
+            [self.spline], self.update_spline_type, self.base_widget)
 
         self.setup_widget()
         self.setup_pivy()
+
+    @property
+    def spline(self):
+        return self.glider_2d.zrot
+
+    @property
+    def scale(self):
+        return numpy.array([1., 1.])
+    
 
     def setup_pivy(self):
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
@@ -49,15 +56,12 @@ class aoa_tool(base_tool):
         self.draw_shape()
 
     def setup_widget(self):
-        self.QGlide.setValue(self.glider_2d.glide)
-        self.layout.setWidget(0, text_field, QtGui.QLabel("glidenumber"))
-        self.layout.setWidget(0, input_field, self.QGlide)
-        self.layout.setWidget(1, text_field, QtGui.QLabel("num_points"))
-        self.layout.setWidget(1, input_field, self.Qnum_aoa)
-        self.layout.setWidget(2, text_field, QtGui.QLabel("spline type"))
-        self.layout.setWidget(2, input_field, self.spline_select)
+        self.layout.setWidget(0, text_field, QtGui.QLabel("num_points"))
+        self.layout.setWidget(0, input_field, self.Qnum_aoa)
+        self.layout.setWidget(1, text_field, QtGui.QLabel("spline type"))
+        self.layout.setWidget(1, input_field, self.spline_select)
 
-        self.Qnum_aoa.setValue(len(self.glider_2d.aoa.controlpoints))
+        self.Qnum_aoa.setValue(len(self.spline.controlpoints))
         self.Qnum_aoa.setMaximum(5)
         self.Qnum_aoa.setMinimum(2)
         self.Qnum_aoa.valueChanged.connect(self.update_num)
@@ -72,22 +76,22 @@ class aoa_tool(base_tool):
             self.shape.addChild(Line(rib, color="grey").object)
 
     def update_aoa(self):
-        self.glider_2d.aoa.controlpoints = (
+        self.spline.controlpoints = (
             numpy.array([i[:-1] for i in self.aoa_cpc.control_pos]) /
             self.scale).tolist()
         self.aoa_spline.update(
-            self.glider_2d.aoa.get_sequence(num=self.num_on_drag) * self.scale)
+            self.spline.get_sequence(num=self.num_on_drag) * self.scale)
 
     def update_spline_type(self):
         self.aoa_cpc.control_pos = vector3D(
-            numpy.array(self.glider_2d.aoa.controlpoints) * self.scale)
+            numpy.array(self.spline.controlpoints) * self.scale)
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
             self.glider_2d.shape.span, pos[1], pos[2]]
         self.update_aoa()
 
     def update_grid(self):
         self.coords.removeAllChildren()
-        pts = self.glider_2d.aoa.get_sequence(num=self.num_on_drag)
+        pts = self.spline.get_sequence(num=self.num_on_drag)
         self.aoa_spline.update(pts * self.scale)
         max_x = max([i[0] for i in pts])
         max_y = max([i[1] for i in pts])
@@ -111,14 +115,14 @@ class aoa_tool(base_tool):
 
     def accept(self):
         self.aoa_cpc.remove_callbacks()
-        self.glider_2d.glide = self.QGlide.value()
         self.obj.glider_2d = self.glider_2d
         self.glider_2d.get_glider_3d(self.obj.glider_instance)
-        super(aoa_tool, self).accept()
+        super(zrot_tool, self).accept()
+        self.update_view_glider()
 
     def reject(self):
         self.aoa_cpc.remove_callbacks()
-        super(aoa_tool, self).reject()
+        super(zrot_tool, self).reject()
 
     def grid_points(self, grid_x, grid_y):
         return [[x, y] for y in grid_y for x in grid_x]
@@ -142,7 +146,7 @@ class aoa_tool(base_tool):
             textsep.addChild(trans)
             self.grid.addChild(textsep)
             textsep.addChild(text)
-        aoa_int = self.glider_2d.aoa.interpolation(50)
+        aoa_int = self.spline.interpolation(50)
         for i in self.back:
             textsep = coin.SoSeparator()
             scale = coin.SoScale()
@@ -162,9 +166,30 @@ class aoa_tool(base_tool):
             textsep.addChild(text)
 
     def update_num(self):
-        self.glider_2d.aoa.numpoints = self.Qnum_aoa.value()
+        self.spline.numpoints = self.Qnum_aoa.value()
         self.aoa_cpc.control_pos = vector3D(
-            numpy.array(self.glider_2d.aoa.controlpoints) * self.scale)
+            numpy.array(self.spline.controlpoints) * self.scale)
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
             self.glider_2d.shape.span, pos[1], pos[2]]
         self.update_aoa()
+
+
+class aoa_tool(zrot_tool):
+    @property
+    def spline(self):
+        return self.glider_2d.aoa
+
+    @property
+    def scale(self):
+        return numpy.array([1., 8.])
+
+    def setup_widget(self):
+        super(aoa_tool, self).setup_widget()
+        self.QGlide = QtGui.QDoubleSpinBox(self.base_widget)
+        self.QGlide.setValue(self.glider_2d.glide)
+        self.layout.setWidget(3, text_field, QtGui.QLabel("glidenumber"))
+        self.layout.setWidget(3, input_field, self.QGlide)
+
+    def accept(self):
+        self.glider_2d.glide = self.QGlide.value()
+        super(aoa_tool, self).accept()

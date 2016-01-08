@@ -43,6 +43,7 @@ class OGBaseVP(object):
 
 class OGGlider(OGBaseObject):
     def __init__(self, obj):
+        self.obj = obj
         obj.addProperty("App::PropertyPythonObject",
                         "glider_instance", "object",
                         "glider_instance", 2)
@@ -53,7 +54,6 @@ class OGGlider(OGBaseObject):
             obj.glider_2d = load(importfile)["data"]
         obj.glider_instance = obj.glider_2d.get_glider_3d()
         obj.Proxy = self
-        self.obj = obj
         super(OGGlider, self).__init__(obj)
 
     def __getstate__(self):
@@ -76,6 +76,9 @@ class OGGlider(OGBaseObject):
 
 class OGGliderVP(OGBaseVP):
     def __init__(self, view_obj):
+        view_obj.addProperty("App::PropertyBool",
+                             "ribs", "visuals",
+                             "show ribs")
         view_obj.addProperty("App::PropertyInteger",
                              "num_ribs", "accuracy",
                              "num_ribs")
@@ -94,9 +97,6 @@ class OGGliderVP(OGBaseVP):
         view_obj.addProperty("App::PropertyBool",
                              "half_glider", "visuals",
                              "show only one half")
-        view_obj.addProperty("App::PropertyBool",
-                             "ribs", "visuals",
-                             "show ribs")
         view_obj.num_ribs = 0
         view_obj.profile_num = 20
         view_obj.line_num = 5
@@ -119,23 +119,25 @@ class OGGliderVP(OGBaseVP):
         self.seperator.addChild(self.material)
         view_obj.addDisplayMode(self.seperator, 'out')
 
-    def updateData(self, fp=None, prop=None):
-        if hasattr(self, "view_obj"):
+    def updateData(self, prop="all", *args):
+        self._updateData(self.view_obj, prop)
+
+    def _updateData(self, fp, prop="all"):
+        if hasattr(fp, "ribs"):      # check for last attribute to be restored
             if prop in ["num_ribs", "profile_num", "hull", "panels",
-                        "half_glider", "ribs", None]:
-                if hasattr(self.view_obj, "profile_num"):
-                    numpoints = self.view_obj.profile_num
-                    numpoints = max(numpoints, 5)  # lower limit
-                    self.update_glider(midribs=self.view_obj.num_ribs,
-                                       profile_numpoints=numpoints,
-                                       hull=self.view_obj.hull,
-                                       panels=self.view_obj.panels,
-                                       half=self.view_obj.half_glider,
-                                       ribs=self.view_obj.ribs)
-            if prop in ["line_num", "half_glider", None]:
-                if hasattr(self.view_obj, "line_num"):
-                    self.update_lines(self.view_obj.line_num,
-                                      half=self.view_obj.half_glider)
+                        "half_glider", "ribs", "all"]:
+                numpoints = fp.profile_num
+                numpoints = max(numpoints, 5)
+                self.update_glider(midribs=fp.num_ribs,
+                                   profile_numpoints=numpoints,
+                                   hull=fp.hull,
+                                   panels=fp.panels,
+                                   half=fp.half_glider,
+                                   ribs=fp.ribs)
+        if hasattr(fp, "line_num"):
+            if prop in ["line_num", "half_glider", "all"]:
+                self.update_lines(fp.line_num,
+                                  half=fp.half_glider)
 
     def update_glider(self, midribs=0, profile_numpoints=20,
                       hull=True, panels=False, half=False, ribs=False):
@@ -156,8 +158,7 @@ class OGGliderVP(OGBaseVP):
             self.vis_lines.addChild(Line(points, dynamic=False))
 
     def onChanged(self, vp, prop):
-        print("onChanged")
-        self.updateData(vp, prop)
+        self._updateData(vp, prop)
 
     def getIcon(self):
         return "new_glider.svg"
@@ -166,7 +167,7 @@ class OGGliderVP(OGBaseVP):
         return None
 
     def __setstate__(self, state):
-        self.updateData()
+        # self.updateData()
         return None
 
 
@@ -219,11 +220,11 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
         elif midribs == 0:
             vertexproperty = coin.SoVertexProperty()
             msh = coin.SoQuadMesh()
-            ribs = glider.ribs
-            flat_coords = [i for rib in ribs for i in rib.profile_3d.data]
+            _ribs = glider.ribs
+            flat_coords = [i for rib in _ribs for i in rib.profile_3d.data]
             vertexproperty.vertex.setValues(0, len(flat_coords), flat_coords)
-            msh.verticesPerRow = len(ribs[0].profile_3d.data)
-            msh.verticesPerColumn = len(ribs)
+            msh.verticesPerRow = len(_ribs[0].profile_3d.data)
+            msh.verticesPerColumn = len(_ribs)
             msh.vertexProperty = vertexproperty
             vis_glider.addChild(msh)
             vis_glider.addChild(vertexproperty)
@@ -232,14 +233,14 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                 sep = coin.SoSeparator()
                 vertexproperty = coin.SoVertexProperty()
                 msh = coin.SoQuadMesh()
-                ribs = [cell.midrib(pos / (midribs + 1))
+                _ribs = [cell.midrib(pos / (midribs + 1))
                         for pos in range(midribs + 2)]
-                flat_coords = [i for rib in ribs for i in rib]
+                flat_coords = [i for rib in _ribs for i in rib]
                 vertexproperty.vertex.setValues(0,
                                                 len(flat_coords),
                                                 flat_coords)
-                msh.verticesPerRow = len(ribs[0])
-                msh.verticesPerColumn = len(ribs)
+                msh.verticesPerRow = len(_ribs[0])
+                msh.verticesPerColumn = len(_ribs)
                 msh.vertexProperty = vertexproperty
                 sep.addChild(vertexproperty)
                 sep.addChild(msh)
@@ -278,7 +279,7 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
         msh = mesh.Mesh()
         for cell in glider.cells:
             for diagonal in cell.diagonals:
-                msh += mesh.Mesh.from_diagonal(diagonal, cell, insert_points=4)
+                msh += mesh.Mesh.from_diagonal(diagonal, cell, insert_points=0)
             if msh.vertices is not None:
                 verts = list(msh.vertices)
                 polygons = []
@@ -302,3 +303,25 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                 diagonal_sep.addChild(shape_hint)
                 diagonal_sep.addChild(vertex_property)
                 diagonal_sep.addChild(face_set)
+
+        _strap_verts = []
+        _strap_lines = []
+        _strap_count = 0
+        for cell in glider.cells:
+            for i, strap in enumerate(cell.straps):
+                _strap_verts += strap.get_3d(cell)
+                _strap_lines += [_strap_count * 2, _strap_count * 2 + 1, -1]
+                _strap_count += 1
+        strap_sep = coin.SoSeparator()
+        vis_glider.addChild(strap_sep)
+        strap_material = coin.SoMaterial()
+        strap_material.diffuseColor = (0., 0., 0.)
+        strap_verts = coin.SoVertexProperty()
+        strap_set = coin.SoIndexedLineSet()
+        strap_verts.vertex.setValues(0, len(_strap_verts), _strap_verts)
+        strap_set.coordIndex.setValues(0, len(_strap_lines), _strap_lines)
+
+        strap_sep.addChild(strap_material)
+        strap_sep.addChild(strap_verts)
+        strap_sep.addChild(strap_set)
+

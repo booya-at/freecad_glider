@@ -25,7 +25,6 @@ class base_table_widget(QtGui.QWidget):
 
     @classmethod
     def hide_all(cls):
-        print("hello")
         for obj in cls.instances:
             obj.hide()
 
@@ -52,7 +51,6 @@ class base_table_widget(QtGui.QWidget):
             base_table_widget.hide_all()
             super(base_table_widget, self).show()
             if base_table_widget._last_pos:
-                print(base_table_widget._last_pos)
                 self.move(base_table_widget._last_pos)
         else:
             self.hide()
@@ -96,7 +94,7 @@ class base_table_widget(QtGui.QWidget):
 class base_table(QtGui.QTableWidget):
     def __init__(self, parent=None):
         super(base_table, self).__init__(parent)
-        self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+        #self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
 
     @property
     def table_width(self):
@@ -118,3 +116,14 @@ class base_table(QtGui.QTableWidget):
 
     def sizeHint(self):
         return QtCore.QSize(self.table_width, self.table_height)
+
+    def setItem(self, row, col, entry):
+        if hasattr(entry,"__iter__") and not isinstance(entry, str):
+            entry = str(entry)[1:-1]
+        else:
+            entry = str(entry)
+        super(base_table, self).setItem(row, col, QtGui.QTableWidgetItem(entry))
+
+    def setRow(self, row, items, start=0):
+        for col, item in enumerate(items):
+            self.setItem(row, col + start, item)

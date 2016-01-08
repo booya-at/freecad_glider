@@ -11,7 +11,7 @@ Dir = os.path.dirname(glider_metadata.__file__)
 Gui.addIconPath(Dir + "/icons")
 
 
-class gliderWorkbench(Workbench):
+class gliderWorkbench(Gui.Workbench):
     """probe workbench object"""
     MenuText = "glider"
     ToolTip = "glider workbench"
@@ -22,13 +22,14 @@ class gliderWorkbench(Workbench):
         "Shape_Tool",
         "Arc_Tool",
         "Aoa_Tool",
+        "Zrot_Tool",
         "Airfoil_Tool",
         "AirfoilMergeTool",
         "Ballooning_Tool",
         "BallooningMergeTool",
+        "Cell_Tool",
         "Line_Tool",
-        "Gl2d_Export",
-        "Cell_Tool"]
+        "Gl2d_Export"]
 
     productionbox = [
         "Pattern_Tool",
@@ -54,11 +55,12 @@ class gliderWorkbench(Workbench):
         Gui.addCommand("Gl2d_Export", tools.Gl2d_Export())
         Gui.addCommand("AirfoilMergeTool", tools.AirfoilMergeTool())
         Gui.addCommand("BallooningMergeTool", tools.BallooningMergeTool())
+        Gui.addCommand("Cell_Tool", tools.Cell_Tool())
+        Gui.addCommand("Zrot_Tool", tools.Zrot_Tool())
 
         Gui.addCommand("Pattern_Tool", tools.Pattern_Tool())
         Gui.addCommand("Panel_Tool", tools.Panel_Tool())
         Gui.addCommand("Polars_Tool", tools.Polars_Tool())
-        Gui.addCommand("Cell_Tool", tools.Cell_Tool())
 
         self.appendToolbar("Tools", self.toolbox)
         self.appendMenu("Tools", self.toolbox)
