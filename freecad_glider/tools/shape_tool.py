@@ -174,7 +174,7 @@ class shape_tool(base_tool):
         self.Qaspect_ratio.blockSignals(True)
         self.Qspan.setValue(self.glider_2d.shape.span)
         self.Qaspect_ratio.setValue(self.glider_2d.shape.aspect_ratio)
-        self.Qarea.setValue(self.glider_2d.flat_area)
+        self.Qarea.setValue(self.glider_2d.shape.area)
         self.Qspan.blockSignals(False)
         self.Qarea.blockSignals(False)
         self.Qaspect_ratio.blockSignals(False)
@@ -203,14 +203,14 @@ class shape_tool(base_tool):
 
     def set_span(self):
         fixed = self.set_fixed_property()
-        self.glider_2d.set_span(self.Qspan.value())#, fixed)
+        self.glider_2d.set_flat_span(self.Qspan.value(), fixed)
         self.update_properties()
         self.update_controls()
         self.update_shape()
 
     def set_aspect_ratio(self):
         fixed = self.set_fixed_property()
-        self.glider_2d.set_aspect_ratio(self.Qaspect_ratio.value(), fixed)
+        self.glider_2d.set_flat_aspect_ratio(self.Qaspect_ratio.value(), fixed)
         self.update_properties()
         self.update_controls()
         self.update_shape()
