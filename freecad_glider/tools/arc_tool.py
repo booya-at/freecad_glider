@@ -54,7 +54,6 @@ class arc_tool(base_tool):
         self.shape.removeAllChildren()
         self.glider_2d.arc.curve.controlpoints = [i[:-1] for i in self.arc_cpc.control_pos]
         self.shape.addChild(Line(self.glider_2d.arc.curve.get_sequence(num=30), color="grey").object)
-        self.update_real_arc()
 
     def update_spline_type(self):
         self.arc_cpc.control_pos = self.glider_2d.arc.curve.controlpoints
