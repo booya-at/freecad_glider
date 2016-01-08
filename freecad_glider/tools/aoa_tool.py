@@ -22,8 +22,10 @@ class aoa_tool(base_tool):
         self.coords = coin.SoSeparator()
         self.grid = coin.SoSeparator()
         self.aoa_spline = Line([], color="red", width=2)
-        self.ribs, self.front, self.back = self.glider_2d.shape.ribs_front_back
-        self.text_scale = self.glider_2d.span / len(self.front) / 30
+        self.ribs = self.glider_2d.shape.ribs
+        self.front = [rib[0] for rib in self.ribs]
+        self.back = [rib[1] for rib in self.ribs]
+        self.text_scale = self.glider_2d.shape.span / len(self.front) / 15
         self.x_grid = [i[0] for i in self.front]
 
         self.QGlide = QtGui.QDoubleSpinBox(self.base_widget)
@@ -36,7 +38,7 @@ class aoa_tool(base_tool):
 
     def setup_pivy(self):
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
-            self.glider_2d.span / 2, pos[1], pos[2]]
+            self.glider_2d.shape.span, pos[1], pos[2]]
         self.task_separator.addChild(self.aoa_cpc)
         self.task_separator.addChild(self.shape)
         self.task_separator.addChild(self.aoa_spline.object)
@@ -80,7 +82,7 @@ class aoa_tool(base_tool):
         self.aoa_cpc.control_pos = vector3D(
             numpy.array(self.glider_2d.aoa.controlpoints) * self.scale)
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
-            self.glider_2d.span / 2, pos[1], pos[2]]
+            self.glider_2d.shape.span, pos[1], pos[2]]
         self.update_aoa()
 
     def update_grid(self):
@@ -164,5 +166,5 @@ class aoa_tool(base_tool):
         self.aoa_cpc.control_pos = vector3D(
             numpy.array(self.glider_2d.aoa.controlpoints) * self.scale)
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
-            self.glider_2d.span / 2, pos[1], pos[2]]
+            self.glider_2d.shape.span, pos[1], pos[2]]
         self.update_aoa()

@@ -125,8 +125,7 @@ class OGGliderVP(OGBaseVP):
                         "half_glider", "ribs", None]:
                 if hasattr(self.view_obj, "profile_num"):
                     numpoints = self.view_obj.profile_num
-                    if numpoints < 5:
-                        numpoints = 5
+                    numpoints = max(numpoints, 5)  # lower limit
                     self.update_glider(midribs=self.view_obj.num_ribs,
                                        profile_numpoints=numpoints,
                                        hull=self.view_obj.hull,

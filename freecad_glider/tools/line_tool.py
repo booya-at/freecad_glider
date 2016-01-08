@@ -7,7 +7,7 @@ import FreeCAD as App
 from _tools import base_tool, input_field, text_field
 from pivy_primitives_new_new import coin, Line, Marker, Container, vector3D
 from PySide import QtGui, QtCore
-from openglider.glider.glider_2d.lines import UpperNode2D, LowerNode2D, \
+from openglider.glider.parametric.lines import UpperNode2D, LowerNode2D, \
     BatchNode2D, Line2D, LineSet2D
 from openglider.lines.line_types import LineType
 
@@ -24,9 +24,9 @@ class line_tool(base_tool):
     def __init__(self, obj):
         super(line_tool, self).__init__(obj, widget_name="line_tool")
 
-        # get the glider_2d shape
+        # get the parametric shape
         self.ribs, self.front, self.back = self.glider_2d.shape.ribs_front_back
-        self.xpos = [rib[0][0] for rib in self.glider_2d.ribs]
+        self.xpos = self.glider_2d.shape.rib_x_values
 
         # qt helper line
         self.Qhl_pos = QtGui.QDoubleSpinBox()
@@ -299,10 +299,10 @@ class line_tool(base_tool):
 
     def add_attachment_point(self, pos):
         x, y = pos
-        rib_nr = self.xpos.index(x) - self.glider_2d.has_center_cell
+        rib_nr = self.xpos.index(x) - self.glider_2d.shape.has_center_cell
         pos = float(self.Qhl_pos.value())
         node = UpperNode2D(rib_nr, pos / 100)
-        node_pos = node.get_2d(self.glider_2d)
+        node_pos = node.get_2d(self.glider_2d.shape.get_half_shape())
         ap = Upper_Att_Marker(node, node_pos)
         ap.layer = self.layer_combobox.currentText()
         self.shape.addChild(ap)
@@ -389,12 +389,13 @@ class line_tool(base_tool):
         self.shape.addChild(Line(vector3D(self.front)))
         self.shape.addChild(Line(vector3D(self.back)))
         self.shape.addChildren(map(Line, vector3D(self.ribs)))
+        shape = self.glider_2d.shape.get_half_shape()
         # make own seperator for shape
         nodes = {}
         for node in self.glider_2d.lineset.nodes:
             if isinstance(node, UpperNode2D):
                 # coord = self.glider_2d.shape_point(node.rib_no, node.position/100)
-                pos = node.get_2d(self.glider_2d)
+                pos = node.get_2d(shape)
                 obj = Upper_Att_Marker(node, pos)
                 obj.force = node.force
                 self.shape.addChild(obj)
@@ -470,7 +471,8 @@ class NodeMarker(Marker):
     sel_col = "yellow"
 
     def __init__(self, node, pos=None):
-        pos = pos or node.pos_2D
+        if pos is None:
+            pos = node.pos_2D
         pos = vector3D(pos)
         super(NodeMarker, self).__init__([pos], dynamic=True)
         self._node = node

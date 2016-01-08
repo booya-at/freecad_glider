@@ -12,10 +12,10 @@ class arc_tool(base_tool):
         super(arc_tool, self).__init__(obj, widget_name="arc_tool")
 
         self.arc_cpc = ControlPointContainer(
-            self.glider_2d.arc.controlpoints, self.view)
+            self.glider_2d.arc.curve.controlpoints, self.view)
         self.Qnum_arc = QtGui.QSpinBox(self.base_widget)
         self.spline_select = spline_select(
-            [self.glider_2d.arc], self.update_spline_type, self.base_widget)
+            [self.glider_2d.arc.curve], self.update_spline_type, self.base_widget)
         self.shape = coin.SoSeparator()
         self.task_separator.addChild(self.shape)
 
@@ -26,8 +26,8 @@ class arc_tool(base_tool):
 
         self.Qnum_arc.setMaximum(5)
         self.Qnum_arc.setMinimum(2)
-        self.Qnum_arc.setValue(len(self.glider_2d.arc.controlpoints))
-        self.glider_2d.arc.numpoints = self.Qnum_arc.value()
+        self.Qnum_arc.setValue(len(self.glider_2d.arc.curve.controlpoints))
+        self.glider_2d.arc.curve.numpoints = self.Qnum_arc.value()
 
         self.layout.setWidget(0, text_field, QtGui.QLabel("arc num_points"))
         self.layout.setWidget(0, input_field, self.Qnum_arc)
@@ -41,30 +41,34 @@ class arc_tool(base_tool):
         self.arc_cpc.drag_release.append(self.update_real_arc)
         self.task_separator.addChild(self.arc_cpc)
         self.shape.addChild(
-            Line(self.glider_2d.arc.get_sequence(num=30),
-                 color="grey").object)
+            Line(self.glider_2d.arc.curve.get_sequence(num=30), color="grey").object
+        )
         self.shape.addChild(
-            Line(self.glider_2d.arc_positions,
-                 color="red", width=2).object)
+            Line(self.get_arc_positions(), color="red", width=2).object
+        )
 
     # def set_edit(self, *arg):
     #     self.arc_cpc.set_edit_mode(self.view)
 
     def update_spline(self):
         self.shape.removeAllChildren()
-        self.glider_2d.arc.controlpoints = [i[:-1] for i in self.arc_cpc.control_pos]
-        self.shape.addChild(Line(self.glider_2d.arc.get_sequence(num=30), color="grey").object)
+        self.glider_2d.arc.curve.controlpoints = [i[:-1] for i in self.arc_cpc.control_pos]
+        self.shape.addChild(Line(self.glider_2d.arc.curve.get_sequence(num=30), color="grey").object)
+        self.update_real_arc()
 
     def update_spline_type(self):
-        self.arc_cpc.control_pos = self.glider_2d.arc.controlpoints
+        self.arc_cpc.control_pos = self.glider_2d.arc.curve.controlpoints
         self.update_spline()
 
+    def get_arc_positions(self):
+        return self.glider_2d.arc.get_arc_positions(self.glider_2d.shape.rib_x_values)
+
     def update_real_arc(self):
-        self.shape.addChild(Line(self.glider_2d.arc_positions, color="red", width=2).object)
+        self.shape.addChild(Line(self.get_arc_positions(), color="red", width=2).object)
 
     def update_num(self, *arg):
-        self.glider_2d.arc.numpoints = self.Qnum_arc.value()
-        self.arc_cpc.control_pos = self.glider_2d.arc.controlpoints
+        self.glider_2d.arc.curve.numpoints = self.Qnum_arc.value()
+        self.arc_cpc.control_pos = self.glider_2d.arc.curve.controlpoints
         self.update_spline()
 
     def accept(self):

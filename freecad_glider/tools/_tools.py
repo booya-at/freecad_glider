@@ -7,9 +7,9 @@ from pivy import coin
 import FreeCADGui as Gui
 from openglider.jsonify import dump, load
 from openglider.vector.spline import BernsteinBase, BSplineBase
-from openglider.glider.glider_2d import Glider2D, import_ods_2d
+from openglider.glider import ParametricGlider
 
-# from openglider.glider.glider_2d import Glider2D
+# from openglider.glider.parametric import Glider2D
 
 
 text_field = QtGui.QFormLayout.LabelRole
@@ -55,7 +55,7 @@ def import_2d(glider):
                 glider.glider_2d.get_glider_3d(glider.glider_instance)
                 glider.ViewObject.Proxy.updateData()
         elif file_type == "ods":
-            glider.glider_2d = import_ods_2d(Glider2D, file_name)
+            glider.glider_2d = ParametricGlider.import_ods(file_name)
             glider.glider_2d.get_glider_3d(glider.glider_instance)
             glider.ViewObject.Proxy.updateData()
 

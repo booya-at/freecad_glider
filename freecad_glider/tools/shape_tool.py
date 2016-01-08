@@ -19,9 +19,9 @@ class shape_tool(base_tool):
 
         # scene components
         self.shape = coin.SoSeparator()
-        self.front_cpc = ControlPointContainer(vector3D(self.glider_2d.front.controlpoints), self.view)
-        self.back_cpc = ControlPointContainer(vector3D(self.glider_2d.back.controlpoints), self.view)
-        self.cell_dist_cpc = ControlPointContainer(vector3D(self.glider_2d.cell_dist_controlpoints), self.view)
+        self.front_cpc = ControlPointContainer(vector3D(self.glider_2d.shape.front_curve.controlpoints), self.view)
+        self.back_cpc = ControlPointContainer(vector3D(self.glider_2d.shape.back_curve.controlpoints), self.view)
+        self.cell_dist_cpc = ControlPointContainer(vector3D(self.glider_2d.shape.cell_dist_controlpoints), self.view)
 
         # form components
         self.Qnum_front = QtGui.QSpinBox(self.base_widget)
@@ -47,6 +47,7 @@ class shape_tool(base_tool):
         try:
             self.glider_2d.get_glider_3d(self.obj.glider_instance)
         except Exception as e:
+            print("verdammt")
             App.Console.PrintError(e)
             self.glider_2d.get_glider_3d(self.obj.glider_instance)
             return
@@ -63,11 +64,16 @@ class shape_tool(base_tool):
         self.cell_dist_cpc.remove_callbacks()
         super(shape_tool, self).reject()
 
+    def update_controls(self):
+        self.front_cpc.control_pos = self.glider_2d.shape.front_curve.controlpoints
+        self.back_cpc.control_pos = self.glider_2d.shape.back_curve.controlpoints
+        self.cell_dist_cpc.control_pos = self.glider_2d.shape.rib_distribution.controlpoints[1:-1]
+
     def setup_widget(self):
-        self.Qnum_cells.setValue(int(self.glider_2d.cell_num))
-        self.Qnum_front.setValue(len(self.glider_2d.front.controlpoints))
-        self.Qnum_back.setValue(len(self.glider_2d.back.controlpoints))
-        self.Qnum_dist.setValue(len(self.glider_2d.cell_dist_controlpoints))
+        self.Qnum_cells.setValue(int(self.glider_2d.shape.cell_num))
+        self.Qnum_front.setValue(len(self.glider_2d.shape.front_curve.controlpoints))
+        self.Qnum_back.setValue(len(self.glider_2d.shape.back_curve.controlpoints))
+        self.Qnum_dist.setValue(len(self.glider_2d.shape.cell_dist_controlpoints))
         self.Qnum_cells.valueChanged.connect(self.update_num_cells)
         self.Qset_const_fixed.clicked.connect(self.auto_update_const_dist)
         self.Qset_const.clicked.connect(self.update_const)
@@ -168,8 +174,8 @@ class shape_tool(base_tool):
         self.Qspan.blockSignals(True)
         self.Qarea.blockSignals(True)
         self.Qaspect_ratio.blockSignals(True)
-        self.Qspan.setValue(self.glider_2d.span)
-        self.Qaspect_ratio.setValue(self.glider_2d.aspect_ratio)
+        self.Qspan.setValue(self.glider_2d.shape.span)
+        self.Qaspect_ratio.setValue(self.glider_2d.shape.aspect_ratio)
         self.Qarea.setValue(self.glider_2d.flat_area)
         self.Qspan.blockSignals(False)
         self.Qarea.blockSignals(False)
@@ -194,62 +200,56 @@ class shape_tool(base_tool):
         fixed = self.set_fixed_property()
         self.glider_2d.set_flat_area(self.Qarea.value(), fixed)
         self.update_properties()
-        self.front_cpc.control_pos = self.glider_2d.front.controlpoints
-        self.back_cpc.control_pos = self.glider_2d.back.controlpoints
-        self.cell_dist_cpc.control_pos = self.glider_2d.cell_dist.controlpoints[1:-1]
+        self.update_controls()
         self.update_shape()
 
     def set_span(self):
         fixed = self.set_fixed_property()
-        self.glider_2d.set_span_1(self.Qspan.value() / 2, fixed)
+        self.glider_2d.set_span(self.Qspan.value())#, fixed)
         self.update_properties()
-        self.front_cpc.control_pos = self.glider_2d.front.controlpoints
-        self.back_cpc.control_pos = self.glider_2d.back.controlpoints
-        self.cell_dist_cpc.control_pos = self.glider_2d.cell_dist.controlpoints[1:-1]
+        self.update_controls()
         self.update_shape()
 
     def set_aspect_ratio(self):
         fixed = self.set_fixed_property()
         self.glider_2d.set_aspect_ratio(self.Qaspect_ratio.value(), fixed)
         self.update_properties()
-        self.front_cpc.control_pos = self.glider_2d.front.controlpoints
-        self.back_cpc.control_pos = self.glider_2d.back.controlpoints
-        self.cell_dist_cpc.control_pos = self.glider_2d.cell_dist.controlpoints[1:-1]
+        self.update_controls()
         self.update_shape()
 
     def update_num_dist(self, val):
-        self.glider_2d.cell_dist.numpoints = val + 2
-        self.cell_dist_cpc.control_pos = vector3D(self.glider_2d.cell_dist.controlpoints[1:-1])
+        self.glider_2d.shape.rib_distribution.numpoints = val + 2
+        self.cell_dist_cpc.control_pos = vector3D(self.glider_2d.shape.rib_distribution.controlpoints[1:-1])
         self.update_shape()
 
     def update_num_front(self, val):
-        self.glider_2d.front.numpoints = val
-        self.front_cpc.control_pos = vector3D(self.glider_2d.front.controlpoints)
+        self.glider_2d.shape.front_curve.numpoints = val
+        self.front_cpc.control_pos = vector3D(self.glider_2d.shape.front_curve.controlpoints)
         self.update_shape()
 
     def update_num_back(self, val):
-        self.glider_2d.back.numpoints = val
-        self.back_cpc.control_pos = vector3D(self.glider_2d.back.controlpoints)
+        self.glider_2d.shape.back_curve.numpoints = val
+        self.back_cpc.control_pos = vector3D(self.glider_2d.shape.back_curve.controlpoints)
         self.update_shape()
 
     def update_data_back(self):
-        old_value = self.glider_2d.back.controlpoints[-1][0]
+        old_value = self.glider_2d.shape.back_curve.controlpoints[-1][0]
         new_value = self.front_cpc.control_points[-1].pos[0]
         self.back_cpc.control_points[-1].set_x(new_value)
-        self.glider_2d.cell_dist._data[:, 0] *= (new_value / old_value)
-        self.cell_dist_cpc.control_pos = self.glider_2d.cell_dist_controlpoints
+        self.glider_2d.shape.rib_distribution._data[:, 0] *= (new_value / old_value)
+        self.cell_dist_cpc.control_pos = self.glider_2d.shape.cell_dist_controlpoints
         self.update_shape()
 
     def update_data_front(self):
-        old_value = self.glider_2d.front.controlpoints[-1][0]
+        old_value = self.glider_2d.shape.front_curve.controlpoints[-1][0]
         new_value = self.back_cpc.control_points[-1].pos[0]
         self.front_cpc.control_points[-1].set_x(new_value)
-        self.glider_2d.cell_dist._data[:, 0] *= (new_value / old_value)
-        self.cell_dist_cpc.control_pos = self.glider_2d.cell_dist_controlpoints
+        self.glider_2d.shape.rib_distribution._data[:, 0] *= (new_value / old_value)
+        self.cell_dist_cpc.control_pos = self.glider_2d.shape.cell_dist_controlpoints
         self.update_shape()
 
     def update_num_cells(self, val):
-        self.glider_2d.cell_num = val
+        self.glider_2d.shape.cell_num = val
         self.update_shape()
 
     def auto_update_const_dist(self):
@@ -257,23 +257,25 @@ class shape_tool(base_tool):
             self.update_const()
 
     def update_const(self):
-        const_dist = list(self.glider_2d.depth_integrated)
-        self.glider_2d.cell_dist = self.glider_2d.cell_dist.fit(
-            const_dist, numpoints=self.Qnum_dist.value() + 2)
-        self.cell_dist_cpc.control_pos = self.glider_2d.cell_dist_controlpoints
+        self.glider_2d.shape.set_const_cell_dist(self.Qnum_dist.value() + 2)
+        self.cell_dist_cpc.control_pos = self.glider_2d.shape.rib_distribution.controlpoints
         self.update_shape()
 
     def update_shape(self):
-        self.glider_2d.front.controlpoints = [i[:-1] for i in self.front_cpc.control_pos]
-        self.glider_2d.back.controlpoints = [i[:-1] for i in self.back_cpc.control_pos]
-        self.glider_2d.cell_dist_controlpoints = [i[:-1] for i in self.cell_dist_cpc.control_pos]
+        print("jo")
+        self.glider_2d.shape.front_curve.controlpoints = [i[:-1] for i in self.front_cpc.control_pos]
+        self.glider_2d.shape.back_curve.controlpoints = [i[:-1] for i in self.back_cpc.control_pos]
+        self.glider_2d.shape.cell_dist_controlpoints = [i[:-1] for i in self.cell_dist_cpc.control_pos]
         self.shape.removeAllChildren()
-        ribs, front, back = self.glider_2d.shape.ribs_front_back
-        dist_line = self.glider_2d.cell_dist_interpolation
+        ribs = self.glider_2d.shape.ribs
+        front = [rib[0] for rib in ribs]
+        back = [rib[1] for rib in ribs]
+        print("jo2")
+        dist_line = self.glider_2d.shape.rib_dist_interpolation
         self.shape.addChild(Line(front, width=2).object)
         self.shape.addChild(Line(back, width=2).object)
-        self.shape.addChild(Line(vector3D(self.glider_2d.front.data), color="grey").object)
-        self.shape.addChild(Line(vector3D(self.glider_2d.back.data), color="grey").object)
+        self.shape.addChild(Line(vector3D(self.glider_2d.shape.front_curve.data), color="grey").object)
+        self.shape.addChild(Line(vector3D(self.glider_2d.shape.back_curve.data), color="grey").object)
         for rib in ribs:
             width = 1
             col = "grey"

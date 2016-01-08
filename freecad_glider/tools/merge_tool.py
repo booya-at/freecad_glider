@@ -42,7 +42,7 @@ class base_merge_tool(base_tool):
 
     def update_num_control_points(self, numpoints):
         self.bezier_curve.numpoints = numpoints
-        self.bezier_cpc.control_points[-1].constraint = lambda pos: [self.glider_2d.span / 2, pos[1], pos[2]]
+        self.bezier_cpc.control_points[-1].constraint = lambda pos: [self.glider_2d.shape.span, pos[1], pos[2]]
 
     def update_spline(self):
         pass
@@ -84,7 +84,7 @@ class airfoil_merge_tool(base_merge_tool):
 
     def set_end_points(self):
         self.glider_2d.profile_merge_curve.controlpoints[0][0] = 0
-        self.glider_2d.profile_merge_curve.controlpoints[-1][0] = self.glider_2d.span / 2
+        self.glider_2d.profile_merge_curve.controlpoints[-1][0] = self.glider_2d.shape.span
 
     def update_spline(self):
         self.bezier_curve.controlpoints = [point[:2] for point in self.bezier_cpc.control_pos]
@@ -103,7 +103,7 @@ class airfoil_merge_tool(base_merge_tool):
 
         def c2(pos):
             pos = y_constraint(pos)
-            return [self.glider_2d.span / 2, pos[1], pos[2]]
+            return [self.glider_2d.shape.span, pos[1], pos[2]]
 
         for i, cp in enumerate(self.bezier_cpc.control_points):
             if i == 0:
@@ -132,7 +132,7 @@ class ballooning_merge_tool(base_merge_tool):
 
     def set_end_points(self):
         self.glider_2d.ballooning_merge_curve.controlpoints[0][0] = 0
-        self.glider_2d.ballooning_merge_curve.controlpoints[-1][0] = self.glider_2d.span / 2
+        self.glider_2d.ballooning_merge_curve.controlpoints[-1][0] = self.glider_2d.shape.span
 
     def update_spline(self):
         self.bezier_curve.controlpoints = [point[:2] for point in self.bezier_cpc.control_pos]
@@ -151,7 +151,7 @@ class ballooning_merge_tool(base_merge_tool):
 
         def c2(pos):
             pos = y_constraint(pos)
-            return [self.glider_2d.span / 2, pos[1], pos[2]]
+            return [self.glider_2d.shape.span, pos[1], pos[2]]
 
         for i, cp in enumerate(self.bezier_cpc.control_points):
             if i == 0:
