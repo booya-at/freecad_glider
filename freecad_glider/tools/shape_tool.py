@@ -81,8 +81,6 @@ class shape_tool(base_tool):
         self.Qnum_back.valueChanged.connect(self.update_num_back)
         self.Qnum_front.valueChanged.connect(self.update_num_front)
 
-
-
         self.Qnum_cells.setMaximum(150)
         self.Qnum_back.setMaximum(5)
         self.Qnum_front.setMaximum(5)
@@ -257,8 +255,8 @@ class shape_tool(base_tool):
             self.update_const()
 
     def update_const(self):
-        self.glider_2d.shape.set_const_cell_dist(self.Qnum_dist.value() + 2)
-        self.cell_dist_cpc.control_pos = self.glider_2d.shape.rib_distribution.controlpoints
+        self.glider_2d.shape.set_const_cell_dist()
+        self.cell_dist_cpc.control_pos = self.glider_2d.shape.rib_dist_controlpoints
         self.update_shape()
 
     def update_shape(self):
@@ -266,9 +264,10 @@ class shape_tool(base_tool):
         self.glider_2d.shape.back_curve.controlpoints = [i[:-1] for i in self.back_cpc.control_pos]
         self.glider_2d.shape.rib_dist_controlpoints = [i[:-1] for i in self.cell_dist_cpc.control_pos]
         self.shape.removeAllChildren()
-        ribs = self.glider_2d.shape.ribs
-        front = [rib[0] for rib in ribs]
-        back = [rib[1] for rib in ribs]
+        _shape = self.glider_2d.shape.get_shape()
+        ribs = _shape.ribs
+        front = _shape.front
+        back = _shape.back
         dist_line = self.glider_2d.shape.rib_dist_interpolation
         self.shape.addChild(Line(front, width=2).object)
         self.shape.addChild(Line(back, width=2).object)
