@@ -19,7 +19,11 @@ class base_merge_tool(base_tool):
         self.grid = coin.SoSeparator()
         self.coords = coin.SoSeparator()
         self.expl_curve = Line([])
-        self.ribs, self.front, self.back = self.glider_2d.shape.ribs_front_back
+
+        _shape = self.glider_2d.shape.get_half_shape()
+        self.ribs = _shape.ribs
+        self.front = _shape.front
+        self.back = _shape.back
 
         self.bezier_cpc.on_drag.append(self.update_spline)
         self.setup_widget()

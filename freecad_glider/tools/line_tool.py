@@ -25,7 +25,10 @@ class line_tool(base_tool):
         super(line_tool, self).__init__(obj, widget_name="line_tool")
 
         # get the parametric shape
-        self.ribs, self.front, self.back = self.glider_2d.shape.ribs_front_back
+        _shape = self.glider_2d.shape.get_half_shape()
+        self.ribs = _shape.ribs
+        self.front = _shape.front
+        self.back = _shape.back
         self.xpos = self.glider_2d.shape.rib_x_values
 
         # qt helper line
@@ -299,10 +302,11 @@ class line_tool(base_tool):
 
     def add_attachment_point(self, pos):
         x, y = pos
+        print(dir(shape))
         rib_nr = self.xpos.index(x) - self.glider_2d.shape.has_center_cell
         pos = float(self.Qhl_pos.value())
         node = UpperNode2D(rib_nr, pos / 100)
-        node_pos = node.get_2d(self.glider_2d.shape.get_half_shape())
+        node_pos = node.get_2d(self.glider_2d.shape)
         ap = Upper_Att_Marker(node, node_pos)
         ap.layer = self.layer_combobox.currentText()
         self.shape.addChild(ap)
@@ -389,7 +393,7 @@ class line_tool(base_tool):
         self.shape.addChild(Line(vector3D(self.front)))
         self.shape.addChild(Line(vector3D(self.back)))
         self.shape.addChildren(map(Line, vector3D(self.ribs)))
-        shape = self.glider_2d.shape.get_half_shape()
+        shape = self.glider_2d.shape
         # make own seperator for shape
         nodes = {}
         for node in self.glider_2d.lineset.nodes:
