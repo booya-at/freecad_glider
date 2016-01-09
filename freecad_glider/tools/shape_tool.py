@@ -44,6 +44,7 @@ class shape_tool(base_tool):
         Gui.SendMsgToActiveView("ViewFit")
 
     def accept(self):
+        self.glider_2d.rescale_curves()
         try:
             self.glider_2d.get_glider_3d(self.obj.glider_instance)
         except Exception as e:
@@ -196,21 +197,21 @@ class shape_tool(base_tool):
 
     def set_area(self):
         fixed = self.set_fixed_property()
-        self.glider_2d.set_flat_area(self.Qarea.value(), fixed)
+        self.glider_2d.shape.set_area(self.Qarea.value(), fixed)
         self.update_properties()
         self.update_controls()
         self.update_shape()
 
     def set_span(self):
         fixed = self.set_fixed_property()
-        self.glider_2d.set_flat_span(self.Qspan.value(), fixed)
+        self.glider_2d.shape.set_span(self.Qspan.value(), fixed)
         self.update_properties()
         self.update_controls()
         self.update_shape()
 
     def set_aspect_ratio(self):
         fixed = self.set_fixed_property()
-        self.glider_2d.set_flat_aspect_ratio(self.Qaspect_ratio.value(), fixed)
+        self.glider_2d.shape.set_aspect_ratio(self.Qaspect_ratio.value(), fixed)
         self.update_properties()
         self.update_controls()
         self.update_shape()
