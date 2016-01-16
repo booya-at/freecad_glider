@@ -1,6 +1,10 @@
 from pivy import coin
 import FreeCAD as App
 
+
+def depth(l):
+    return isinstance(l, list) and max(map(depth, l))+1
+
 COLORS = {
     "black": (0, 0, 0),
     "white": (1., 1., 1.),
@@ -109,6 +113,8 @@ class Marker(Object3D):
         super(Marker, self).__init__(dynamic)
         self.marker = coin.SoMarkerSet()
         self.marker.markerIndex = coin.SoMarkerSet.CIRCLE_FILLED_9_9
+        if depth(points) != 2:
+            raise AttributeError("depth of list should be 2")
         self.points = points
         self.addChild(self.marker)
 
@@ -205,10 +211,27 @@ class Container(coin.SoSeparator):
 
     def select_cb(self, event_callback):
         event = event_callback.getEvent()
-        if event.getState() == coin.SoMouseButtonEvent.DOWN:
+        if (event.getState() == coin.SoMouseButtonEvent.DOWN and
+                event.getButton() == event.BUTTON1):
             pos = event.getPosition()
             obj = self.SendRay(pos)
             self.Select(obj, event.wasCtrlDown())
+
+    def select_all_cb(self, event_callback):
+        event = event_callback.getEvent()
+        if (event.getKey() == ord("a")):
+            if event.getState() == event.DOWN:
+                if self.select_object:
+                    for o in self.select_object:
+                        o.unselect()
+                    self.select_object = []
+                else:
+                    for obj in self.objects:
+                        if obj.dynamic:
+                            self.select_object.append(obj)
+                self.ColorSelected()
+                self.selection_changed()
+
 
     def drag_cb(self, event_callback):
         event = event_callback.getEvent()
@@ -269,6 +292,8 @@ class Container(coin.SoSeparator):
             coin.SoKeyboardEvent.getClassTypeId(), self.grab_cb)
         self.delete = self.view.addEventCallbackPivy(
             coin.SoKeyboardEvent.getClassTypeId(), self.delete_cb)
+        self.delete = self.view.addEventCallbackPivy(
+            coin.SoKeyboardEvent.getClassTypeId(), self.select_all_cb)
 
     def unregister(self):
         print("unregister called")

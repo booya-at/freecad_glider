@@ -1,20 +1,10 @@
 from __future__ import division
-from PySide import QtCore, QtGui
-from _tools import base_tool, text_field, input_field
+from PySide import QtGui
+from _tools import base_tool, input_field
 from _glider import draw_glider
 
-from table import base_table_widget, base_table
+from table import base_table_widget
 
-
-# 1 cell tool:
-#   new cell (empty, copy)
-#   delete cell
-#   list cell (selection)
-#   diagonals
-#   vectors_straps
-
-# 2 apply tool
-#   table which applies the different cells to the glider
 
 class cell_tool(base_tool):
     def __init__(self, obj):
@@ -31,7 +21,6 @@ class cell_tool(base_tool):
         self.vector_button.clicked.connect(self.vector_table.show)
         self.layout.setWidget(1, input_field, self.vector_button)
 
-
         self.update_button = QtGui.QPushButton("update glider")
         self.update_button.clicked.connect(self.update_glider)
         self.layout.setWidget(2, input_field, self.update_button)
@@ -41,7 +30,7 @@ class cell_tool(base_tool):
         self.task_separator.removeAllChildren()
         self.apply_elements()
         draw_glider(self.glider_2d.get_glider_3d(), self.task_separator, hull=False, ribs=True)
-    
+
     def apply_elements(self):
         self.diagonals_table.apply_to_glider(self.glider_2d)
         self.vector_table.apply_to_glider(self.glider_2d)
@@ -65,6 +54,7 @@ class cell_tool(base_tool):
 def number_input(number):
     return QtGui.QTableWidgetItem(str(number))
 
+
 class diagonals_table(base_table_widget):
     def __init__(self):
         super(diagonals_table, self).__init__(name="diagonals")
@@ -80,7 +70,6 @@ class diagonals_table(base_table_widget):
             "left\nfront",
             "lf\nheight",
             "ribs"])
-        diags_map = [[]]
 
     def get_from_glider_2d(self, glider_2d):
         if "diagonals" in glider_2d.elements:
@@ -93,7 +82,6 @@ class diagonals_table(base_table_widget):
                     element["left_front"])
                 entries.append(element["cells"])
                 self.table.setRow(row, entries)
-
 
     def apply_to_glider(self, glider_2d):
         num_rows = self.table.rowCount()
@@ -138,7 +126,6 @@ class vector_table(base_table_widget):
                 entries.append(element["cells"])
                 self.table.setRow(row, entries)
 
-
     def apply_to_glider(self, glider_2d):
         num_rows = self.table.rowCount()
         # remove all diagonals from the glide_2d
@@ -154,7 +141,7 @@ class vector_table(base_table_widget):
 
     def get_row(self, n_row):
         str_row = [self.table.item(n_row, i).text() for i in range(3) if self.table.item(n_row, i)]
-        
+
         print(str_row)
         str_row = [item for item in str_row if item != ""]
         if len(str_row) != 3:

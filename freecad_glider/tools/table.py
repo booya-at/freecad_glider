@@ -94,7 +94,7 @@ class base_table_widget(QtGui.QWidget):
 class base_table(QtGui.QTableWidget):
     def __init__(self, parent=None):
         super(base_table, self).__init__(parent)
-        #self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+        # self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
 
     @property
     def table_width(self):

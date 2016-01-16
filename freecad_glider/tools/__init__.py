@@ -130,6 +130,15 @@ class Pattern_Tool(BaseCommand):
 
 
 class CreateGlider(BaseCommand):
+    @staticmethod
+    def create_glider():
+        a = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "Glider")
+        OGGlider(a)
+        vp = OGGliderVP(a.ViewObject)
+        vp.updateData()
+        FreeCAD.ActiveDocument.recompute()
+        Gui.SendMsgToActiveView("ViewFit")
+
     def GetResources(self):
         return {'Pixmap': "new_glider.svg",
                 'MenuText': 'glider',
@@ -138,15 +147,9 @@ class CreateGlider(BaseCommand):
     @property
     def glider_obj(self):
         return True
-    
 
     def Activated(self):
-        a = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "Glider")
-        OGGlider(a)
-        vp = OGGliderVP(a.ViewObject)
-        vp.updateData()
-        FreeCAD.ActiveDocument.recompute()
-        Gui.SendMsgToActiveView("ViewFit")
+        self.create_glider()
 
 
 class Shape_Tool(BaseCommand):

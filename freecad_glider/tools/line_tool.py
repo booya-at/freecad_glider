@@ -201,9 +201,9 @@ class line_tool(base_tool):
         App.Console.PrintMessage("Use this commands to rule the lineinput\n")
         App.Console.PrintMessage("g...grap element and move it\n")
         App.Console.PrintMessage("l...create line from 2 points\n")
-        App.Console.PrintMessage("a...add a new point\n")
+        App.Console.PrintMessage("p...add a new point\n")
         App.Console.PrintMessage("x...delete a point or a line\n")
-        App.Console.PrintMessage("cltr + a...attachment point\n")
+        App.Console.PrintMessage("cltr + p...attachment point\n")
         App.Console.PrintMessage("cltr...multiselection\n")
 
     def setup_pivy(self):
@@ -281,7 +281,7 @@ class line_tool(base_tool):
 
     def add_node(self, event_callback, force=False):
         event = event_callback.getEvent()
-        if ((event.getKey() == ord("a") or force) and
+        if ((event.getKey() == ord("p") or force) and
             (event.getState() == 1 or event.wasCtrlDown())):
             if self.upper_preview_node:
                 self.add_attachment_point(self.upper_preview_node[0])
