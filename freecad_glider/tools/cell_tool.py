@@ -1,9 +1,9 @@
 from __future__ import division
 from PySide import QtGui
-from _tools import base_tool, input_field
-from _glider import draw_glider
 
-from table import base_table_widget
+from ._tools import base_tool, input_field
+from ._glider import draw_glider
+from .table import base_table_widget
 
 
 class cell_tool(base_tool):

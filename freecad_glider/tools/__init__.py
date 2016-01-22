@@ -1,17 +1,17 @@
 import FreeCAD
 import FreeCADGui as Gui
 
-from _glider import OGGlider, OGGliderVP
-from _tools import base_tool, export_2d, import_2d
-from airfoil_tool import airfoil_tool
-from shape_tool import shape_tool
-from arc_tool import arc_tool
-from aoa_tool import aoa_tool, zrot_tool
-from ballooning_tool import ballooning_tool
-from line_tool import line_tool
-from merge_tool import airfoil_merge_tool, ballooning_merge_tool
-from panel_methode import panel_tool, polars
-from cell_tool import cell_tool
+from ._glider import OGGlider, OGGliderVP
+from ._tools import base_tool, export_2d, import_2d
+from .airfoil_tool import airfoil_tool
+from .shape_tool import shape_tool
+from .arc_tool import arc_tool
+from .aoa_tool import aoa_tool, zrot_tool
+from .ballooning_tool import ballooning_tool
+from .line_tool import line_tool
+from .merge_tool import airfoil_merge_tool, ballooning_merge_tool
+from .panel_methode import panel_tool, polars
+from .cell_tool import cell_tool
 import openglider
 from openglider.plots import flatten_glider
 

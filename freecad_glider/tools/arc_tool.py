@@ -1,8 +1,8 @@
 from pivy import coin
 from PySide import QtGui
 
-from _tools import base_tool, text_field, input_field, spline_select
-from pivy_primitives import Line, ControlPointContainer
+from ._tools import base_tool, text_field, input_field, spline_select
+from .pivy_primitives import Line, ControlPointContainer
 
 
 class arc_tool(base_tool):

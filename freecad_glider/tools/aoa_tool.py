@@ -4,8 +4,8 @@ import numpy
 from pivy import coin
 from PySide import QtGui
 
-from _tools import base_tool, text_field, input_field, spline_select
-from pivy_primitives import Line, ControlPointContainer, vector3D
+from ._tools import base_tool, text_field, input_field, spline_select
+from .pivy_primitives import Line, ControlPointContainer, vector3D
 
 
 class zrot_tool(base_tool):

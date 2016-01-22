@@ -2,8 +2,8 @@ from __future__ import division
 
 import numpy
 import FreeCADGui as Gui
-from _tools import base_tool, QtGui
-from pivy_primitives import Line, vector3D, ControlPointContainer, coin
+from ._tools import base_tool, QtGui
+from .pivy_primitives import Line, vector3D, ControlPointContainer, coin
 from openglider.glider.ballooning import BallooningBezier
 
 

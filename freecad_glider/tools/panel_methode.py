@@ -6,8 +6,8 @@ import numpy
 
 from openglider.glider.in_out.export_3d import ppm_Panels
 from openglider.airfoil import Profile2D
-from _tools import base_tool, input_field, text_field
-from pivy_primitives_new_new import Container, Marker, coin, Line, COLORS
+from ._tools import base_tool, input_field, text_field
+from .pivy_primitives_new_new import Container, Marker, coin, Line, COLORS
 
 
 class polars(base_tool):

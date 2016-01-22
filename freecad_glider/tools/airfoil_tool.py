@@ -6,8 +6,8 @@ import FreeCADGui as Gui
 
 from openglider.airfoil import BezierProfile2D
 from openglider.vector import normalize, norm
-from _tools import base_tool
-from pivy_primitives import Line, vector3D, ControlPointContainer
+from ._tools import base_tool
+from .pivy_primitives import Line, vector3D, ControlPointContainer
 
 
 class airfoil_tool(base_tool):

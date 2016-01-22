@@ -7,7 +7,7 @@ import FreeCAD as App
 
 from openglider.jsonify import load, dumps, loads
 from openglider import mesh
-from pivy_primitives_new_new import Line
+from .pivy_primitives_new_new import Line
 
 importpath = os.path.join(os.path.dirname(__file__), '..', 'demokite.ods')
 

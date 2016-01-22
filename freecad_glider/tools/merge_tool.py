@@ -2,12 +2,12 @@ from __future__ import division
 
 import numpy
 from pivy import coin
-from PySide import QtGui
 
-from _tools import base_tool, text_field, input_field
-from pivy_primitives import Line, ControlPointContainer, vector3D
+from openglider.vector.spline import Bezier
 
-from openglider.vector.spline import Bezier, SymmetricBezier
+
+from ._tools import base_tool
+from .pivy_primitives import Line, ControlPointContainer, vector3D
 
 
 class base_merge_tool(base_tool):

@@ -8,8 +8,8 @@ import FreeCADGui as Gui
 
 from openglider.vector.spline import Bezier
 
-from _tools import base_tool, text_field, input_field
-from pivy_primitives import Line, vector3D, ControlPointContainer
+from ._tools import base_tool, text_field, input_field
+from .pivy_primitives import Line, vector3D, ControlPointContainer
 
 
 class shape_tool(base_tool):

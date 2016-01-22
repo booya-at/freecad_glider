@@ -1,12 +1,12 @@
 from __future__ import division
 
+from PySide import QtGui, QtCore
 import traceback
 import numpy as np
 import FreeCAD as App
 
-from _tools import base_tool, input_field, text_field
-from pivy_primitives_new_new import coin, Line, Marker, Container, vector3D
-from PySide import QtGui, QtCore
+from ._tools import base_tool, input_field, text_field
+from .pivy_primitives_new_new import coin, Line, Marker, Container, vector3D
 from openglider.glider.parametric.lines import UpperNode2D, LowerNode2D, \
     BatchNode2D, Line2D, LineSet2D
 from openglider.lines.line_types import LineType
