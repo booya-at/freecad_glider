@@ -260,16 +260,11 @@ class Container(coin.SoSeparator):
         # get all drag objects, every selected object can add some drag objects
         # but the eventhandler is not allowed to call the drag twice on an object
         if event.getKey() == ord("g"):
-            print("g pressed")
-            self.drag_objects = []
+            self.drag_objects = set()
             for i in self.select_object:
                 for j in i.drag_objects:
-                    print()
-                    self.drag_objects.append(j)
-                    print("added")
+                    self.drag_objects.add(j)
             # check if something is selected
-            print(len(self.drag_objects))
-            print(self.drag_objects)
             if self.drag_objects:
                 # first delete the selection_cb, and higlight_cb
                 self.unregister()
