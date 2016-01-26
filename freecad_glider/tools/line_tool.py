@@ -196,7 +196,6 @@ class line_tool(base_tool):
                     if not obj.enabled:
                         obj.set_enabled()
 
-
     def show_help(self):
         App.Console.PrintMessage("Use this commands to rule the lineinput\n")
         App.Console.PrintMessage("g...grap element and move it\n")
@@ -302,7 +301,6 @@ class line_tool(base_tool):
 
     def add_attachment_point(self, pos):
         x, y = pos
-        print(dir(shape))
         rib_nr = self.xpos.index(x) - self.glider_2d.shape.has_center_cell
         pos = float(self.Qhl_pos.value())
         node = UpperNode2D(rib_nr, pos / 100)
@@ -347,7 +345,7 @@ class line_tool(base_tool):
             if show_line_widget(selected_objs):
                 self.tool_widget.setCurrentWidget(self.line_widget)
                 if has_uppermost_line(selected_objs):
-                    self.target_length.setEnabled(False)                    
+                    self.target_length.setEnabled(False)
                 else:
                     self.target_length.setValue(selected_objs[0].target_length)
                 line_type_item = self.Qline_list.findItems(
@@ -382,7 +380,7 @@ class line_tool(base_tool):
         y = self.attach_y_val.value()
         z = self.attach_z_val.value()
         for obj in self.shape.select_object:
-            obj.pos_3D = [x,y,z]
+            obj.pos_3D = [x, y, z]
 
     def update_up_att_force(self, *args):
         for obj in self.shape.select_object:
@@ -392,7 +390,7 @@ class line_tool(base_tool):
         self.shape.removeAllChildren()
         self.shape.addChild(Line(vector3D(self.front)))
         self.shape.addChild(Line(vector3D(self.back)))
-        self.shape.addChildren(map(Line, vector3D(self.ribs)))
+        self.shape.addChildren(list(map(Line, vector3D(self.ribs))))
         shape = self.glider_2d.shape
         # make own seperator for shape
         nodes = {}

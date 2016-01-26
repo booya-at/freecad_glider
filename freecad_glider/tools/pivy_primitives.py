@@ -126,6 +126,7 @@ class ControlPointContainer(coin.SoSeparator):
                 self._current_point.set_edit()
 
     def highlight_cb(self, event_callback):
+        print("highlight")
         if not ControlPoint.lock or self.current_point is not None:
             event = event_callback.getEvent()
             pos = event.getPosition()
@@ -140,7 +141,7 @@ class ControlPointContainer(coin.SoSeparator):
                 path = point.getPath()
                 length = path.getLength()
                 point = path.getNode(length - 2)
-                point = filter(lambda ctrl: ctrl.getNodeId() == point.getNodeId(), self.control_points)
+                point = list(filter(lambda ctrl: ctrl.getNodeId() == point.getNodeId(), self.control_points))
                 if point != []:
                     self.current_point = point[0]
                     break

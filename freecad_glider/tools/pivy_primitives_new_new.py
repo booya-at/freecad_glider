@@ -202,9 +202,9 @@ class Container(coin.SoSeparator):
             path = point.getPath()
             length = path.getLength()
             point = path.getNode(length - 2)
-            point = filter(
+            point = list(filter(
                 lambda ctrl: ctrl.getNodeId() == point.getNodeId(),
-                self.objects)
+                self.objects))
             if point != []:
                 return point[0]
         return None
@@ -249,8 +249,8 @@ class Container(coin.SoSeparator):
             self.start_pos = self.cursor_pos(event)
             for obj in self.drag_objects:
                 obj.drag(diff, fact)
-        #get the mouse position
-        #call the drag function of the selected entities
+        # get the mouse position
+        # call the drag function of the selected entities
         pass
 
     def grab_cb(self, event_callback):
@@ -260,12 +260,16 @@ class Container(coin.SoSeparator):
         # get all drag objects, every selected object can add some drag objects
         # but the eventhandler is not allowed to call the drag twice on an object
         if event.getKey() == ord("g"):
+            print("g pressed")
             self.drag_objects = []
             for i in self.select_object:
                 for j in i.drag_objects:
+                    print()
                     self.drag_objects.append(j)
-            self.drag_objects = set(self.drag_objects)
+                    print("added")
             # check if something is selected
+            print(len(self.drag_objects))
+            print(self.drag_objects)
             if self.drag_objects:
                 # first delete the selection_cb, and higlight_cb
                 self.unregister()
@@ -273,6 +277,7 @@ class Container(coin.SoSeparator):
                 self.start_pos = self.cursor_pos(event)
                 self.drag = self.view.addEventCallbackPivy(
                     coin.SoEvent.getClassTypeId(), self.drag_cb)
+                print("drag started")
 
     def delete_cb(self, event_callback):
         event = event_callback.getEvent()

@@ -5,6 +5,7 @@ try:
 except ImportError:
     print("module not loaded with freecad")
 
+import tools
 import glider_metadata
 Dir = os.path.dirname(glider_metadata.__file__)
 
