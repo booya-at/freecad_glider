@@ -9,7 +9,7 @@ import FreeCADGui as Gui
 from openglider.vector.spline import Bezier
 
 from ._tools import base_tool, text_field, input_field
-from .pivy_primitives import Line, vector3D, ControlPointContainer
+from .pivy_primitives import Line, vector3D, vector2D, ControlPointContainer
 
 
 class shape_tool(base_tool):
@@ -19,9 +19,14 @@ class shape_tool(base_tool):
 
         # scene components
         self.shape = coin.SoSeparator()
-        self.front_cpc = ControlPointContainer(vector3D(self.glider_2d.shape.front_curve.controlpoints), self.view)
-        self.back_cpc = ControlPointContainer(vector3D(self.glider_2d.shape.back_curve.controlpoints), self.view)
-        self.cell_dist_cpc = ControlPointContainer(vector3D(self.glider_2d.shape.rib_dist_controlpoints), self.view)
+        print(self.glider_2d.shape.front_curve.controlpoints)
+        points = list(map(vector3D, self.glider_2d.shape.front_curve.controlpoints))
+        print(points)
+        self.front_cpc = ControlPointContainer(points, self.view)
+        points = list(map(vector3D, self.glider_2d.shape.back_curve.controlpoints))
+        self.back_cpc = ControlPointContainer(points, self.view)
+        points = list(map(vector3D, self.glider_2d.shape.rib_dist_controlpoints))
+        self.cell_dist_cpc = ControlPointContainer(points, self.view)
 
         # form components
         self.Qnum_front = QtGui.QSpinBox(self.base_widget)
@@ -155,6 +160,9 @@ class shape_tool(base_tool):
         self.task_separator.addChild(self.cell_dist_cpc)
         self.update_shape()
 
+        # set drag_release callbacks
+        self.front_cpc.drag_release.append(self.update_shape)
+        self.back_cpc.drag_release.append(self.update_shape)
         self.front_cpc.drag_release.append(self.update_properties)
         self.back_cpc.drag_release.append(self.update_properties)
         self.cell_dist_cpc.drag_release.append(self.update_properties)
@@ -218,34 +226,36 @@ class shape_tool(base_tool):
 
     def update_num_dist(self, val):
         self.glider_2d.shape.rib_distribution.numpoints = val + 2
-        self.cell_dist_cpc.control_pos = vector3D(self.glider_2d.shape.rib_distribution.controlpoints[1:-1])
+        self.cell_dist_cpc.control_pos = list(map(vector3D, self.glider_2d.shape.rib_distribution.controlpoints[1:-1]))
         self.update_shape()
 
     def update_num_front(self, val):
         self.glider_2d.shape.front_curve.numpoints = val
-        self.front_cpc.control_pos = vector3D(self.glider_2d.shape.front_curve.controlpoints)
+        self.front_cpc.control_pos = list(map(vector3D, self.glider_2d.shape.front_curve.controlpoints))
         self.update_shape()
 
     def update_num_back(self, val):
         self.glider_2d.shape.back_curve.numpoints = val
-        self.back_cpc.control_pos = vector3D(self.glider_2d.shape.back_curve.controlpoints)
+        self.back_cpc.control_pos = list(map(vector3D, self.glider_2d.shape.back_curve.controlpoints))
         self.update_shape()
 
     def update_data_back(self):
-        old_value = self.glider_2d.shape.back_curve.controlpoints[-1][0]
-        new_value = self.front_cpc.control_points[-1].pos[0]
-        self.back_cpc.control_points[-1].set_x(new_value)
-        self.glider_2d.shape.rib_distribution._data[:, 0] *= (new_value / old_value)
-        self.cell_dist_cpc.control_pos = self.glider_2d.shape.rib_dist_controlpoints
-        self.update_shape()
+        if self.front_cpc.current_point == self.front_cpc.control_points[-1]:
+            old_value = self.glider_2d.shape.back_curve.controlpoints[-1][0]
+            new_value = self.front_cpc.control_points[-1].pos[0]
+            self.back_cpc.control_points[-1].set_x(new_value)
+            self.glider_2d.shape.rib_distribution._data[:, 0] *= (new_value / old_value)
+            self.cell_dist_cpc.control_pos = self.glider_2d.shape.rib_dist_controlpoints
+        self.update_shape(preview=True)
 
     def update_data_front(self):
-        old_value = self.glider_2d.shape.front_curve.controlpoints[-1][0]
-        new_value = self.back_cpc.control_points[-1].pos[0]
-        self.front_cpc.control_points[-1].set_x(new_value)
-        self.glider_2d.shape.rib_distribution._data[:, 0] *= (new_value / old_value)
-        self.cell_dist_cpc.control_pos = self.glider_2d.shape.rib_dist_controlpoints
-        self.update_shape()
+        if self.back_cpc.current_point == self.back_cpc.control_points[-1]:
+            old_value = self.glider_2d.shape.front_curve.controlpoints[-1][0]
+            new_value = self.back_cpc.control_points[-1].pos[0]
+            self.front_cpc.control_points[-1].set_x(new_value)
+            self.glider_2d.shape.rib_distribution._data[:, 0] *= (new_value / old_value)
+            self.cell_dist_cpc.control_pos = self.glider_2d.shape.rib_dist_controlpoints
+        self.update_shape(preview=True)
 
     def update_num_cells(self, val):
         self.glider_2d.shape.cell_num = val
@@ -260,10 +270,10 @@ class shape_tool(base_tool):
         self.cell_dist_cpc.control_pos = self.glider_2d.shape.rib_dist_controlpoints
         self.update_shape()
 
-    def update_shape(self):
-        self.glider_2d.shape.front_curve.controlpoints = [i[:-1] for i in self.front_cpc.control_pos]
-        self.glider_2d.shape.back_curve.controlpoints = [i[:-1] for i in self.back_cpc.control_pos]
-        self.glider_2d.shape.rib_dist_controlpoints = [i[:-1] for i in self.cell_dist_cpc.control_pos]
+    def update_shape(self, preview=False):
+        self.glider_2d.shape.front_curve.controlpoints = list(map(vector2D, self.front_cpc.control_pos))
+        self.glider_2d.shape.back_curve.controlpoints = list(map(vector2D, self.back_cpc.control_pos))
+        self.glider_2d.shape.rib_dist_controlpoints = list(map(vector2D, self.cell_dist_cpc.control_pos))
         self.shape.removeAllChildren()
         _shape = self.glider_2d.shape.get_shape()
         ribs = _shape.ribs
@@ -272,16 +282,19 @@ class shape_tool(base_tool):
         dist_line = self.glider_2d.shape.rib_dist_interpolation
         self.shape.addChild(Line(front, width=2).object)
         self.shape.addChild(Line(back, width=2).object)
-        self.shape.addChild(Line(vector3D(self.glider_2d.shape.front_curve.data), color="grey").object)
-        self.shape.addChild(Line(vector3D(self.glider_2d.shape.back_curve.data), color="grey").object)
-        for rib in ribs:
-            width = 1
-            col = "grey"
-            if list(rib) in (ribs[0], ribs[-1]):
-                width = 2
-                col = "black"
-            self.shape.addChild(Line(rib, color=col, width=width).object)
-        self.shape.addChild(Line(dist_line, color="red", width=2).object)
-        for i in dist_line:
-            self.shape.addChild(Line([[0, i[1]], i, [i[0], 0]], color="grey").object)
+        points = list(map(vector3D, self.glider_2d.shape.front_curve.data))
+        self.shape.addChild(Line(points, color="grey").object)
+        points = list(map(vector3D, self.glider_2d.shape.back_curve.data))
+        self.shape.addChild(Line(points, color="grey").object)
+        if not preview:
+            for rib in ribs:
+                width = 1
+                col = "grey"
+                if list(rib) in (ribs[0], ribs[-1]):
+                    width = 2
+                    col = "black"
+                self.shape.addChild(Line(rib, color=col, width=width).object)
+            self.shape.addChild(Line(dist_line, color="red", width=2).object)
+            for i in dist_line:
+                self.shape.addChild(Line([[0, i[1]], i, [i[0], 0]], color="grey").object)
 

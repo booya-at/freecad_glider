@@ -126,7 +126,6 @@ class ControlPointContainer(coin.SoSeparator):
                 self._current_point.set_edit()
 
     def highlight_cb(self, event_callback):
-        print("highlight")
         if not ControlPoint.lock or self.current_point is not None:
             event = event_callback.getEvent()
             pos = event.getPosition()
@@ -196,7 +195,7 @@ class Line(object):
         self.data = coin.SoCoordinate3()
         self.color = coin.SoMaterial()
         self.drawstyle = coin.SoDrawStyle()
-        self.points = vector3D(points)
+        self.points = list(map(vector3D, points))
         self.color.diffuseColor = COLORS[color]
         self.drawstyle.lineWidth = width
         self.update()
@@ -207,7 +206,7 @@ class Line(object):
 
     def update(self, points=None):
         if points is not None:
-            self.points = vector3D(points)
+            self.points = list(map(vector3D, points))
         self.data.point.setValue(0, 0, 0)
         self.data.point.setValues(0, len(self.points), self.points)
 
@@ -216,7 +215,7 @@ class Line1(coin.SoSeparator):
         self.ls = coin.SoLineSet()
         self.data = coin.SoCoordinate3()
         self.color = coin.SoMaterial()
-        self.points = vector3D(points)
+        self.points = list(map(vector3D, points))
         self.color.diffuseColor = COLORS[color]
         self.update()
         self.addChild(self.color)
@@ -225,7 +224,7 @@ class Line1(coin.SoSeparator):
 
     def update(self, points=None):
         if points is not None:
-            self.points = vector3D(points)
+            self.points = list(map(vector3D, points))
         self.data.point.setValue(0, 0, 0)
         self.data.point.setValues(0, len(self.points), self.points)
 
@@ -248,7 +247,7 @@ class Marker(coin.SoSeparator):
 
     def update(self, points=None):
         if points is not None:
-            self.points = vector3D(points)
+            self.points = list(map(vector3D, points))
         self.data.point.setValue(0, 0, 0)
         self.data.point.setValues(0, len(self.points), self.points)
 
@@ -279,18 +278,13 @@ class Spline(Line):
 
 
 def vector3D(vec):
-    if len(vec) == 0:
-        return(vec)
-    elif not isinstance(vec[0], (list, tuple, numpy.ndarray, App.Vector)):
-        if len(vec) == 3:
-            return vec
-        elif len(vec) == 2:
-            return numpy.array(vec).tolist() + [0.]
-        else:
-            print("something wrong with this list: ", vec)
+    if len(vec) == 2:
+        return list(vec) + [0.]
     else:
-        return [vector3D(i) for i in vec]
+        return vec
 
+def vector2D(vec):
+    return vec[0:2]
 
 if __name__ == "__main__":
     print(vector3D([[0, 1], [2, 3]]))
