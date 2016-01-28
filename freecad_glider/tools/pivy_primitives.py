@@ -34,9 +34,7 @@ class ControlPoint(coin.SoSeparator):
         self.mat.setName("mat")
         self.marker.markerIndex = coin.SoMarkerSet.CIRCLE_FILLED_9_9
         self.mat.diffuseColor.setValue(*COL_STD)
-        self.addChild(self.coordinate)
-        self.addChild(self.mat)
-        self.addChild(self.marker)
+        self += self.coordinate, self.mat, self.marker
         self.pos = [x, y, z]
 
     @property
@@ -89,7 +87,7 @@ class ControlPointContainer(coin.SoSeparator):
             for point in points:
                 cp = ControlPoint(*point)
                 self.control_points.append(cp)
-                self.addChild(cp)
+                self += cp
         self.view = view
         self._current_point = None
         self.drag = None
@@ -109,8 +107,7 @@ class ControlPointContainer(coin.SoSeparator):
     def control_pos(self, points):
         self.control_points = [ControlPoint(*point) for point in points]
         self.removeAllChildren()
-        for i in self.control_points:
-            self.addChild(i)
+        self += self.control_points
 
     @property
     def current_point(self):
@@ -199,10 +196,7 @@ class Line(object):
         self.color.diffuseColor = COLORS[color]
         self.drawstyle.lineWidth = width
         self.update()
-        self.object.addChild(self.color)
-        self.object.addChild(self.drawstyle)
-        self.object.addChild(self.data)
-        self.object.addChild(self.ls)
+        self.object += self.color, self.drawstyle, self.data, self.ls
 
     def update(self, points=None):
         if points is not None:
@@ -218,9 +212,7 @@ class Line1(coin.SoSeparator):
         self.points = list(map(vector3D, points))
         self.color.diffuseColor = COLORS[color]
         self.update()
-        self.addChild(self.color)
-        self.addChild(self.data)
-        self.addChild(self.ls)
+        self += self.color, self.data, self.ls
 
     def update(self, points=None):
         if points is not None:
@@ -241,9 +233,7 @@ class Marker(coin.SoSeparator):
         self.color = coin.SoMaterial()
         self.color.diffuseColor = COLORS[color]
         self.update(points)
-        self.addChild(self.color)
-        self.addChild(self.data)
-        self.addChild(self.marker)
+        self += self.color, self.data, self.marker
 
     def update(self, points=None):
         if points is not None:

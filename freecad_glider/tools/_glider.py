@@ -114,9 +114,7 @@ class OGGliderVP(OGBaseVP):
         self.view_obj = view_obj
         self.glider_instance = view_obj.Object.glider_instance
         self.material.diffuseColor = (.7, .7, .7)
-        self.seperator.addChild(self.vis_glider)
-        self.seperator.addChild(self.vis_lines)
-        self.seperator.addChild(self.material)
+        self.seperator += (self.vis_glider, self.vis_glider, self.vis_lines)
         view_obj.addDisplayMode(self.seperator, 'out')
 
     def updateData(self, prop="all", *args):
@@ -154,8 +152,8 @@ class OGGliderVP(OGBaseVP):
         for line in self.glider_instance.lineset.lines:
             points = line.get_line_points(numpoints=num)
             if not half:
-                self.vis_lines.addChild(Line([[i[0], -i[1], i[2]] for i in points], dynamic=False))
-            self.vis_lines.addChild(Line(points, dynamic=False))
+                self.vis_lines += (Line([[i[0], -i[1], i[2]] for i in points], dynamic=False))
+            self.vis_lines += (Line(points, dynamic=False))
 
     def onChanged(self, vp, prop):
         self._updateData(vp, prop)
@@ -211,11 +209,8 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                         panel_material.diffuseColor = hex_to_rgb(panel.material_code)
 
                     panel_verts.materialBinding = coin.SoMaterialBinding.PER_VERTEX_INDEXED
-                    panel_sep.addChild(panel_material)
-                    panel_sep.addChild(shape_hint)
-                    panel_sep.addChild(panel_verts)
-                    panel_sep.addChild(panel_face)
-                    vis_glider.addChild(panel_sep)
+                    panel_sep += panel_material, shape_hint, panel_verts, panel_face
+                    vis_glider += panel_sep
 
         elif midribs == 0:
             vertexproperty = coin.SoVertexProperty()
@@ -226,8 +221,7 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
             msh.verticesPerRow = len(_ribs[0].profile_3d.data)
             msh.verticesPerColumn = len(_ribs)
             msh.vertexProperty = vertexproperty
-            vis_glider.addChild(msh)
-            vis_glider.addChild(vertexproperty)
+            vis_glider += msh, vertexproperty
         else:
             for cell in glider.cells:
                 sep = coin.SoSeparator()
@@ -242,9 +236,8 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                 msh.verticesPerRow = len(_ribs[0])
                 msh.verticesPerColumn = len(_ribs)
                 msh.vertexProperty = vertexproperty
-                sep.addChild(vertexproperty)
-                sep.addChild(msh)
-                vis_glider.addChild(sep)
+                sep += vertexproperty, msh
+                vis_glider += sep
     if ribs:  # show ribs
         msh = mesh.Mesh()
         for rib in glider.ribs:
@@ -258,7 +251,7 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                 polygons.append(-1)
 
             rib_sep = coin.SoSeparator()
-            vis_glider.addChild(rib_sep)
+            vis_glider += rib_sep
             vertex_property = coin.SoVertexProperty()
             face_set = coin.SoIndexedFaceSet()
 
@@ -267,13 +260,11 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
 
             material = coin.SoMaterial()
             material.diffuseColor = (.0, .0, .7)
-            rib_sep.addChild(material)
+            rib_sep += material
 
             vertex_property.vertex.setValues(0, len(verts), verts)
             face_set.coordIndex.setValues(0, len(polygons), list(polygons))
-            rib_sep.addChild(shape_hint)
-            rib_sep.addChild(vertex_property)
-            rib_sep.addChild(face_set)
+            rib_sep += shape_hint, vertex_property, face_set
 
 
         msh = mesh.Mesh()
@@ -288,7 +279,7 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                     polygons.append(-1)
 
                 diagonal_sep = coin.SoSeparator()
-                vis_glider.addChild(diagonal_sep)
+                vis_glider += diagonal_sep
                 vertex_property = coin.SoVertexProperty()
                 face_set = coin.SoIndexedFaceSet()
 
@@ -297,12 +288,10 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
 
                 material = coin.SoMaterial()
                 material.diffuseColor = (.7, .0, .0)
-                diagonal_sep.addChild(material)
+                diagonal_sep += material
                 vertex_property.vertex.setValues(0, len(verts), verts)
                 face_set.coordIndex.setValues(0, len(polygons), list(polygons))
-                diagonal_sep.addChild(shape_hint)
-                diagonal_sep.addChild(vertex_property)
-                diagonal_sep.addChild(face_set)
+                diagonal_sep += shape_hint, vertex_property, face_set
 
         _strap_verts = []
         _strap_lines = []
@@ -313,7 +302,7 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                 _strap_lines += [_strap_count * 2, _strap_count * 2 + 1, -1]
                 _strap_count += 1
         strap_sep = coin.SoSeparator()
-        vis_glider.addChild(strap_sep)
+        vis_glider += strap_sep
         strap_material = coin.SoMaterial()
         strap_material.diffuseColor = (0., 0., 0.)
         strap_verts = coin.SoVertexProperty()
@@ -321,7 +310,4 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
         strap_verts.vertex.setValues(0, len(_strap_verts), _strap_verts)
         strap_set.coordIndex.setValues(0, len(_strap_lines), _strap_lines)
 
-        strap_sep.addChild(strap_material)
-        strap_sep.addChild(strap_verts)
-        strap_sep.addChild(strap_set)
-
+        strap_sep += strap_material, strap_verts, strap_set

@@ -200,7 +200,7 @@ class line_tool(base_tool):
         App.Console.PrintMessage("Use this commands to rule the lineinput\n")
         App.Console.PrintMessage("g...grap element and move it\n")
         App.Console.PrintMessage("l...create line from 2 points\n")
-        App.Console.PrintMessage("p...add a new point\n")
+        App.Console.PrintMessage("v...add a new point\n")
         App.Console.PrintMessage("x...delete a point or a line\n")
         App.Console.PrintMessage("cltr + p...attachment point\n")
         App.Console.PrintMessage("cltr...multiselection\n")
@@ -208,9 +208,8 @@ class line_tool(base_tool):
     def setup_pivy(self):
         self.shape.setName("shape")
         self.shape.register(self.view)
-        self.task_separator.addChild(self.shape)
-        self.task_separator.addChild(self.helper_line)
-        self.task_separator.addChild(self.temp_point)
+        self.task_separator += (self.shape, self.helper_line)
+        self.task_separator += (self.temp_point)
         self.draw_shape()
 
         self.update_helper_line()
@@ -236,7 +235,7 @@ class line_tool(base_tool):
         self.helper_line.removeAllChildren()
         l = Line(vector3D(self.help_line(pos / 100)), dynamic=False)
         l.set_color("red")
-        self.helper_line.addChild(l)
+        self.helper_line += l
 
     def help_line(self, pos=0.5):
         return [fr + pos * (ba - fr) for fr, ba in np.array(self.ribs)]
@@ -254,7 +253,7 @@ class line_tool(base_tool):
                     self.upper_preview_node = (point, i)
                     m = Marker(vector3D([point]), dynamic=False)
                     m.set_color("blue")
-                    self.temp_point.addChild(m)
+                    self.temp_point += m
                     break
 
     def add_line(self, event_callback):
@@ -267,21 +266,22 @@ class line_tool(base_tool):
                     isinstance(objs[1], NodeMarker)):
                     line = ConnectionLine(objs[0], objs[1])
                     line.layer = self.layer_combobox.currentText()
-                    self.shape.addChild(line)
+                    self.shape += line
             elif len(objs) == 1:
                 if (isinstance(objs[0], NodeMarker)):
                     marker2 = self.node_cb(event_callback, force=True)
                     if marker2:
                         line = ConnectionLine(objs[0], marker2)
-                        self.shape.addChild(line)
+                        self.shape += line
                         self.shape.Select(marker2)
                         self.shape.selection_changed()
                         line.layer = self.layer_combobox.currentText()
 
     def add_node(self, event_callback, force=False):
         event = event_callback.getEvent()
-        if ((event.getKey() == ord("p") or force) and
-            (event.getState() == 1 or event.wasCtrlDown())):
+        if ((event.getKey() == ord("v") or force) and
+            (event.getState() == 1)):
+            print("v pressed")
             if self.upper_preview_node:
                 self.add_attachment_point(self.upper_preview_node[0])
             else:
@@ -296,7 +296,7 @@ class line_tool(base_tool):
                     node = BatchNode2D(pos_3D[:-1])
                     point = NodeMarker(node)
                     point.layer = self.layer_combobox.currentText()
-                self.shape.addChild(point)
+                self.shape += point
                 return point
 
     def add_attachment_point(self, pos):
@@ -307,7 +307,7 @@ class line_tool(base_tool):
         node_pos = node.get_2d(self.glider_2d.shape)
         ap = Upper_Att_Marker(node, node_pos)
         ap.layer = self.layer_combobox.currentText()
-        self.shape.addChild(ap)
+        self.shape += ap
 
     def selection_changed(self):
         # je nach dem welches widget grad selektiert ist
@@ -388,9 +388,9 @@ class line_tool(base_tool):
 
     def draw_shape(self):
         self.shape.removeAllChildren()
-        self.shape.addChild(Line(vector3D(self.front)))
-        self.shape.addChild(Line(vector3D(self.back)))
-        self.shape.addChildren(list(map(Line, vector3D(self.ribs))))
+        self.shape += (Line(vector3D(self.front)),
+                        Line(vector3D(self.back)),
+                        list(map(Line, vector3D(self.ribs))))
         shape = self.glider_2d.shape
         # make own seperator for shape
         nodes = {}
@@ -400,15 +400,15 @@ class line_tool(base_tool):
                 pos = node.get_2d(shape)
                 obj = Upper_Att_Marker(node, pos)
                 obj.force = node.force
-                self.shape.addChild(obj)
+                self.shape += obj
             elif isinstance(node, BatchNode2D):
                 obj = NodeMarker(node)
-                self.shape.addChild(obj)
+                self.shape += obj
             elif isinstance(node, LowerNode2D):
                 obj = Lower_Att_Marker(node)
                 obj.pos_3D = node.pos_3D
                 obj._node = node
-                self.shape.addChild(obj)
+                self.shape += obj
             nodes[node] = obj
             self.layer_combobox.addItem(node.layer)
 
@@ -420,7 +420,7 @@ class line_tool(base_tool):
             obj.line_type = line.line_type.name
             obj.target_length = target_length
             obj.layer = line.layer
-            self.shape.addChild(obj)
+            self.shape += obj
             self.layer_combobox.addItem(line.layer)
         self.show_layer()
 

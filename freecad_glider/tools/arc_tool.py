@@ -17,7 +17,7 @@ class arc_tool(base_tool):
         self.spline_select = spline_select(
             [self.glider_2d.arc.curve], self.update_spline_type, self.base_widget)
         self.shape = coin.SoSeparator()
-        self.task_separator.addChild(self.shape)
+        self.task_separator += self.shape
 
         self.setup_widget()
         self.setup_pivy()
@@ -39,11 +39,11 @@ class arc_tool(base_tool):
     def setup_pivy(self):
         self.arc_cpc.on_drag.append(self.update_spline)
         self.arc_cpc.drag_release.append(self.update_real_arc)
-        self.task_separator.addChild(self.arc_cpc)
-        self.shape.addChild(
+        self.task_separator += self.arc_cpc
+        self.shape += (
             Line(self.glider_2d.arc.curve.get_sequence(num=30), color="grey").object
         )
-        self.shape.addChild(
+        self.shape += (
             Line(self.get_arc_positions(), color="red", width=2).object
         )
 
@@ -53,7 +53,7 @@ class arc_tool(base_tool):
     def update_spline(self):
         self.shape.removeAllChildren()
         self.glider_2d.arc.curve.controlpoints = [i[:-1] for i in self.arc_cpc.control_pos]
-        self.shape.addChild(Line(self.glider_2d.arc.curve.get_sequence(num=30), color="grey").object)
+        self.shape += (Line(self.glider_2d.arc.curve.get_sequence(num=30), color="grey").object)
 
     def update_spline_type(self):
         self.arc_cpc.control_pos = self.glider_2d.arc.curve.controlpoints
@@ -63,7 +63,7 @@ class arc_tool(base_tool):
         return self.glider_2d.arc.get_arc_positions(self.glider_2d.shape.rib_x_values)
 
     def update_real_arc(self):
-        self.shape.addChild(Line(self.get_arc_positions(), color="red", width=2).object)
+        self.shape += (Line(self.get_arc_positions(), color="red", width=2).object)
 
     def update_num(self, *arg):
         self.glider_2d.arc.curve.numpoints = self.Qnum_arc.value()
