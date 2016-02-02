@@ -301,7 +301,7 @@ class line_tool(base_tool):
 
     def add_attachment_point(self, pos):
         x, y = pos
-        rib_nr = self.xpos.index(x) - self.glider_2d.shape.has_center_cell
+        rib_nr = self.xpos.index(x)
         pos = float(self.Qhl_pos.value())
         node = UpperNode2D(rib_nr, pos / 100)
         node_pos = node.get_2d(self.glider_2d.shape)
@@ -397,7 +397,7 @@ class line_tool(base_tool):
         for node in self.glider_2d.lineset.nodes:
             if isinstance(node, UpperNode2D):
                 # coord = self.glider_2d.shape_point(node.rib_no, node.position/100)
-                pos = node.get_2d(shape)
+                pos = node.get_2d(self.glider_2d.shape)
                 obj = Upper_Att_Marker(node, pos)
                 obj.force = node.force
                 self.shape += obj

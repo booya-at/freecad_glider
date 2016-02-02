@@ -282,7 +282,6 @@ class Container(coin.SoSeparator):
             self.removeSelected()
 
     def register(self, view):
-        print("register called")
         self.view = view
         self.mouse_over = self.view.addEventCallbackPivy(
             coin.SoLocation2Event.getClassTypeId(), self.mouse_over_cb)
@@ -296,7 +295,6 @@ class Container(coin.SoSeparator):
             coin.SoKeyboardEvent.getClassTypeId(), self.select_all_cb)
 
     def unregister(self):
-        print("unregister called")
         self.view.removeEventCallbackPivy(
             coin.SoLocation2Event.getClassTypeId(), self.mouse_over)
         self.view.removeEventCallbackPivy(
