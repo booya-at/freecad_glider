@@ -13,8 +13,8 @@ from .pivy_primitives_new_new import Container, Marker, coin, Line, COLORS
 class polars(base_tool):
     try:
         ppm = __import__("ppm")
-        pan3d = __import__("ppm.pan3d", globals(), locals(), ["abc"], -1)
-        ppm_utils = __import__("ppm.utils", globals(), locals(), ["abc"], -1)
+        pan3d = __import__("ppm.pan3d", globals(), locals(), ["abc"])
+        ppm_utils = __import__("ppm.utils", globals(), locals(), ["abc"])
     except ImportError:
         ppm = None
 
@@ -57,12 +57,10 @@ class polars(base_tool):
             plt.grid()
             plt.show()
 
-
-
 class panel_tool(base_tool):
     try:
         ppm = __import__("ppm")
-        pan3d = __import__("ppm.pan3d", globals(), locals(), ["abc"], -1)
+        pan3d = __import__("ppm.pan3d", globals(), locals(), ["abc"])
     except ImportError:
         ppm = None
 

@@ -35,6 +35,7 @@ class shape_tool(base_tool):
         self.Qnum_cells = QtGui.QSpinBox(self.base_widget)
         self.Qset_const_fixed = QtGui.QCheckBox(self.base_widget)
         self.Qset_const = QtGui.QPushButton(self.base_widget)
+        self.Qset_zero = QtGui.QPushButton("set zero", self.base_widget)
 
         # add another form widget displaying data
         self.Qarea = QtGui.QDoubleSpinBox(self.base_widget)
@@ -121,12 +122,13 @@ class shape_tool(base_tool):
         self.layout.setWidget(3, input_field, self.Qnum_back)
         # self.layout.setWidget(4, text_field, QtGui.QLabel("manual cell pos"))
         # self.layout.setWidget(4, input_field, self.Qcheck1)
-        self.layout.setWidget(5, text_field, QtGui.QLabel("num_cells"))
-        self.layout.setWidget(5, input_field, self.Qnum_cells)
-        self.layout.setWidget(6, text_field, QtGui.QLabel("dist num_points"))
-        self.layout.setWidget(6, input_field, self.Qnum_dist)
-        self.layout.setWidget(7, text_field, QtGui.QLabel("constant AR"))
-        self.layout.setLayout(7, input_field, Qset_const_layout)
+        self.layout.setWidget(4, text_field, QtGui.QLabel("num_cells"))
+        self.layout.setWidget(4, input_field, self.Qnum_cells)
+        self.layout.setWidget(5, text_field, QtGui.QLabel("dist num_points"))
+        self.layout.setWidget(5, input_field, self.Qnum_dist)
+        self.layout.setWidget(6, text_field, QtGui.QLabel("constant AR"))
+        self.layout.setLayout(6, input_field, Qset_const_layout)
+        self.layout.setWidget(7, input_field, self.Qset_zero)
         self.layout.setWidget(8, text_field, QtGui.QLabel("span:"))
         self.layout.setLayout(8, input_field, Qspan_layout)
 
@@ -246,7 +248,7 @@ class shape_tool(base_tool):
             self.back_cpc.control_points[-1].set_x(new_value)
             self.glider_2d.shape.rib_distribution._data[:, 0] *= (new_value / old_value)
             self.cell_dist_cpc.control_pos = self.glider_2d.shape.rib_dist_controlpoints
-        self.update_shape(preview=False)
+        self.update_shape(preview=True)
 
     def update_data_front(self):
         if self.back_cpc.current_point == self.back_cpc.control_points[-1]:
@@ -255,7 +257,7 @@ class shape_tool(base_tool):
             self.front_cpc.control_points[-1].set_x(new_value)
             self.glider_2d.shape.rib_distribution._data[:, 0] *= (new_value / old_value)
             self.cell_dist_cpc.control_pos = self.glider_2d.shape.rib_dist_controlpoints
-        self.update_shape(preview=False)
+        self.update_shape(preview=True)
 
     def update_num_cells(self, val):
         self.glider_2d.shape.cell_num = val
@@ -296,6 +298,5 @@ class shape_tool(base_tool):
                 self.shape.addChild(Line(rib, color=col, width=width).object)
             self.shape.addChild(Line(dist_line, color="red", width=2).object)
             for i in dist_line:
-                a = Line([[0, i[1]], i, [i[0], 0]], color="grey").object
                 self.shape.addChild(Line([[0, i[1]], i, [i[0], 0]], color="grey").object)
 
