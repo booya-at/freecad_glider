@@ -98,7 +98,7 @@ class airfoil_tool(base_tool):
 
     def create_airfoil(self):
         j = 0
-        for index in xrange(self.QList_View.count()):
+        for index in range(self.QList_View.count()):
             name = self.QList_View.item(index).text()
             if "airfoil" in name:
                 j += 1
@@ -267,13 +267,17 @@ class airfoil_tool(base_tool):
     def accept(self):
         self.unset_edit_mode()
         profiles = []
-        for index in xrange(self.QList_View.count()):
+        for index in range(self.QList_View.count()):
             airfoil = self.QList_View.item(index).airfoil
             airfoil.apply_splines()
             profiles.append(airfoil)
         super(airfoil_tool, self).accept()
         self.glider_2d.profiles = profiles
         self.update_view_glider()
+
+    def reject(self):
+        self.unset_edit_mode()
+        super(airfoil_tool, self).reject()
 
 
 class QAirfoil_item(QtGui.QListWidgetItem):

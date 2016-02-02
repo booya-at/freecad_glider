@@ -87,7 +87,7 @@ class ballooning_tool(base_tool):
 
     def create_ballooning(self):
         j = 0
-        for index in xrange(self.QList_View.count()):
+        for index in range(self.QList_View.count()):
             name = self.QList_View.item(index).text()
             if "ballooning" in name:
                 j += 1
@@ -206,7 +206,7 @@ class ballooning_tool(base_tool):
     def accept(self):
         self.unset_edit_mode()
         balloonings = []
-        for index in xrange(self.QList_View.count()):
+        for index in range(self.QList_View.count()):
             ballooning = self.QList_View.item(index)
             ballooning.apply_splines()
             balloonings.append(ballooning.ballooning)

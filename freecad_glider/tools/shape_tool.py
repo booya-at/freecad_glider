@@ -1,5 +1,7 @@
 from __future__ import division
 
+import time
+
 from pivy import coin
 from PySide import QtGui, QtCore
 
@@ -19,9 +21,7 @@ class shape_tool(base_tool):
 
         # scene components
         self.shape = coin.SoSeparator()
-        print(self.glider_2d.shape.front_curve.controlpoints)
         points = list(map(vector3D, self.glider_2d.shape.front_curve.controlpoints))
-        print(points)
         self.front_cpc = ControlPointContainer(points, self.view)
         points = list(map(vector3D, self.glider_2d.shape.back_curve.controlpoints))
         self.back_cpc = ControlPointContainer(points, self.view)
@@ -246,7 +246,7 @@ class shape_tool(base_tool):
             self.back_cpc.control_points[-1].set_x(new_value)
             self.glider_2d.shape.rib_distribution._data[:, 0] *= (new_value / old_value)
             self.cell_dist_cpc.control_pos = self.glider_2d.shape.rib_dist_controlpoints
-        self.update_shape(preview=True)
+        self.update_shape(preview=False)
 
     def update_data_front(self):
         if self.back_cpc.current_point == self.back_cpc.control_points[-1]:
@@ -255,7 +255,7 @@ class shape_tool(base_tool):
             self.front_cpc.control_points[-1].set_x(new_value)
             self.glider_2d.shape.rib_distribution._data[:, 0] *= (new_value / old_value)
             self.cell_dist_cpc.control_pos = self.glider_2d.shape.rib_dist_controlpoints
-        self.update_shape(preview=True)
+        self.update_shape(preview=False)
 
     def update_num_cells(self, val):
         self.glider_2d.shape.cell_num = val
@@ -296,5 +296,6 @@ class shape_tool(base_tool):
                 self.shape.addChild(Line(rib, color=col, width=width).object)
             self.shape.addChild(Line(dist_line, color="red", width=2).object)
             for i in dist_line:
+                a = Line([[0, i[1]], i, [i[0], 0]], color="grey").object
                 self.shape.addChild(Line([[0, i[1]], i, [i[0], 0]], color="grey").object)
 
