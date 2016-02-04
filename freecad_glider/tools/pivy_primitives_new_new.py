@@ -1,9 +1,24 @@
 from pivy import coin
 import FreeCAD as App
-
+import numpy
 
 def depth(l):
     return isinstance(l, list) and max(map(depth, l))+1
+
+
+def vector3D(vec):
+    if len(vec) == 0:
+        return(vec)
+    elif not isinstance(vec[0], (list, tuple, numpy.ndarray, App.Vector)):
+        if len(vec) == 3:
+            return vec
+        elif len(vec) == 2:
+            return numpy.array(vec).tolist() + [0.]
+        else:
+            print("something wrong with this list: ", vec)
+    else:
+        return [vector3D(i) for i in vec]
+
 
 COLORS = {
     "black": (0, 0, 0),
@@ -141,8 +156,9 @@ class Container(coin.SoSeparator):
 
     def addChild(self, child):
         super(Container, self).addChild(child)
-        if child.dynamic:
-            self.objects.append(child)
+        if hasattr(child, "dynamic"):
+            if child.dynamic:
+                self.objects.append(child)
 
     def addChildren(self, children):
         for i in children:
@@ -255,7 +271,6 @@ class Container(coin.SoSeparator):
 
     def grab_cb(self, event_callback):
         # press g to move an entity
-        # later let the user select more entities...
         event = event_callback.getEvent()
         # get all drag objects, every selected object can add some drag objects
         # but the eventhandler is not allowed to call the drag twice on an object
@@ -291,7 +306,7 @@ class Container(coin.SoSeparator):
             coin.SoKeyboardEvent.getClassTypeId(), self.grab_cb)
         self.delete = self.view.addEventCallbackPivy(
             coin.SoKeyboardEvent.getClassTypeId(), self.delete_cb)
-        self.delete = self.view.addEventCallbackPivy(
+        self.select_all = self.view.addEventCallbackPivy(
             coin.SoKeyboardEvent.getClassTypeId(), self.select_all_cb)
 
     def unregister(self):
@@ -303,6 +318,8 @@ class Container(coin.SoSeparator):
             coin.SoKeyboardEvent.getClassTypeId(), self.grab)
         self.view.removeEventCallbackPivy(
             coin.SoKeyboardEvent.getClassTypeId(), self.delete)
+        self.view.removeEventCallbackPivy(
+            coin.SoKeyboardEvent.getClassTypeId(), self.select_all)
 
     def removeSelected(self):
         temp = []
@@ -325,79 +342,3 @@ class Container(coin.SoSeparator):
             i.delete()
         self.objects = []
         super(Container, self).removeAllChildren()
-
-
-
-from openglider.vector.spline import Bezier, SymmetricBezier
-from openglider.vector import mirror_x
-import numpy
-
-
-class Spline(Container):
-    def __init__(self, points, dynamic=False):
-        super(Spline, self).__init__()
-        self.bez = Bezier(points)
-        for i in points:
-            self.addChild(Marker([i], dynamic=dynamic))
-        self.line = Line(self.bez.get_sequence(50), dynamic=False)
-        super(Spline, self).addChild(self.line)
-
-    def addChild(self, child):
-        if isinstance(child, Marker):
-            child.on_drag.append(self.update_spline)
-            super(Spline, self).addChild(child)
-        else:
-            print("Spline Children have to be maekrers")
-
-    @property
-    def marker_points(self):
-        return [obj.points[0] for obj in self.objects]
-
-    def update_spline(self):
-        self.bez.controlpoints = self.marker_points
-        self.line.points = self.bez.get_sequence(50)
-
-
-class SymmetricSpline(Container):
-    def __init__(self, points, dynamic=False):
-        super(SymmetricSpline, self).__init__()
-        self.bez = SymmetricBezier(points, mirror_x)
-        for i in points:
-            self.addChild(Marker([i], dynamic=dynamic))
-        self.line = Line(self.bez.get_sequence(50), dynamic=False)
-        super(SymmetricSpline, self).addChild(self.line)
-
-    def addChild(self, child):
-        if isinstance(child, Marker):
-            child.on_drag.append(self.update_spline)
-            super(SymmetricSpline, self).addChild(child)
-        else:
-            print("Spline Children have to be maekrers")
-
-    @property
-    def marker_points(self):
-        return [obj.points[0] for obj in self.objects]
-
-    def update_spline(self):
-        self.bez.controlpoints = self.marker_points
-        self.line.points = self.bez.get_sequence(50)
-
-
-def vector3D(vec):
-    if len(vec) == 0:
-        return(vec)
-    elif not isinstance(vec[0], (list, tuple, numpy.ndarray, App.Vector)):
-        if len(vec) == 3:
-            return vec
-        elif len(vec) == 2:
-            return numpy.array(vec).tolist() + [0.]
-        else:
-            print("something wrong with this list: ", vec)
-    else:
-        return [vector3D(i) for i in vec]
-
-# if __name__ == "__main__":
-#     import FreeCADGui as Gui
-#     s1 = Spline([[0,0,0],[1,1,1],[3,3,3]], dynamic=True)
-#     Gui.ActiveDocument.ActiveView.getSceneGraph().addChild(s1)
-#     s1.register(Gui.ActiveDocument.ActiveView)

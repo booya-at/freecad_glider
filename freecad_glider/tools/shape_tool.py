@@ -153,7 +153,9 @@ class shape_tool(base_tool):
         # setting on drag behavior
         self.front_cpc.on_drag.append(self.update_data_back)
         self.back_cpc.on_drag.append(self.update_data_front)
-        self.cell_dist_cpc.on_drag.append(self.update_shape)
+        def update_shape_preview(*arg):
+            self.update_shape(True)
+        self.cell_dist_cpc.on_drag.append(update_shape_preview)
 
         # adding graphics to the main separator
         self.task_separator.addChild(self.shape)
@@ -170,6 +172,7 @@ class shape_tool(base_tool):
         self.cell_dist_cpc.drag_release.append(self.update_properties)
         self.front_cpc.drag_release.append(self.auto_update_const_dist)
         self.back_cpc.drag_release.append(self.auto_update_const_dist)
+        self.cell_dist_cpc.drag_release.append(self.update_shape)
 
     def line_edit(self):
         self.front_cpc.set_edit_mode(self.view)
@@ -284,10 +287,13 @@ class shape_tool(base_tool):
         dist_line = self.glider_2d.shape.rib_dist_interpolation
         self.shape.addChild(Line(front, width=2).object)
         self.shape.addChild(Line(back, width=2).object)
+        self.shape.addChild(Line([back.data[0], front.data[0]], width=2).object)
+        self.shape.addChild(Line([back.data[-1], front.data[-1]], width=2).object)
         points = list(map(vector3D, self.glider_2d.shape.front_curve.data))
         self.shape.addChild(Line(points, color="grey").object)
         points = list(map(vector3D, self.glider_2d.shape.back_curve.data))
         self.shape.addChild(Line(points, color="grey").object)
+        self.shape.addChild(Line(dist_line, color="red", width=2).object)
         if not preview:
             for rib in ribs:
                 width = 1
@@ -296,7 +302,6 @@ class shape_tool(base_tool):
                     width = 2
                     col = "black"
                 self.shape.addChild(Line(rib, color=col, width=width).object)
-            self.shape.addChild(Line(dist_line, color="red", width=2).object)
             for i in dist_line:
                 self.shape.addChild(Line([[0, i[1]], i, [i[0], 0]], color="grey").object)
 
