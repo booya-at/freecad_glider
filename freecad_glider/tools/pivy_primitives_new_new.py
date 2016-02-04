@@ -264,7 +264,8 @@ class Container(coin.SoSeparator):
     def drag_cb(self, event_callback):
         event = event_callback.getEvent()
         if (type(event) == coin.SoMouseButtonEvent and
-                event.getState() == coin.SoMouseButtonEvent.DOWN):
+                event.getState() == coin.SoMouseButtonEvent.DOWN
+                and event.getButton() == coin.SoMouseButtonEvent.BUTTON1):
             self.register(self.view)
             if self.drag:
                 self.view.removeEventCallbackPivy(
@@ -282,7 +283,7 @@ class Container(coin.SoSeparator):
                 key = chr(event.getKey())
             except ValueError:
                 # there is no character for this value
-                key = None
+                key = "_"
             if key in "xyz" and key != self._direction:
                 self._direction = key
             else:
