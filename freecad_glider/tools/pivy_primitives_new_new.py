@@ -109,6 +109,11 @@ class Object3D(coin.SoSeparator):
             for i in self.on_drag_release:
                 i()
 
+    def drag_start(self):
+        if self.enabled:
+            for i in self.on_drag_start:
+                i()
+
     @property
     def drag_objects(self):
         if self.enabled:
@@ -153,6 +158,9 @@ class Container(coin.SoSeparator):
         self.over_object = None
         self.start_pos = None
         self.view = None
+        self.on_drag = []
+        self.on_drag_release = []
+        self.on_drag_start = []
 
     def addChild(self, child):
         super(Container, self).addChild(child)
@@ -254,20 +262,23 @@ class Container(coin.SoSeparator):
         if (type(event) == coin.SoMouseButtonEvent and
                 event.getState() == coin.SoMouseButtonEvent.DOWN):
             self.register(self.view)
-            self.view.removeEventCallbackPivy(
-                coin.SoEvent.getClassTypeId(), self.drag)
+            if self.drag:
+                self.view.removeEventCallbackPivy(
+                    coin.SoEvent.getClassTypeId(), self.drag)
+            self.drag = None
             self.start_pos = None
             for obj in self.drag_objects:
                 obj.drag_release()
+            for foo in self.on_drag_release:
+                foo()
         elif type(event) == coin.SoLocation2Event:
             fact = 0.3 if event.wasShiftDown() else 1.
             diff = self.cursor_pos(event) - self.start_pos
             self.start_pos = self.cursor_pos(event)
             for obj in self.drag_objects:
                 obj.drag(diff, fact)
-        # get the mouse position
-        # call the drag function of the selected entities
-        pass
+            for foo in self.on_drag:
+                foo()
 
     def grab_cb(self, event_callback):
         # press g to move an entity
@@ -287,7 +298,10 @@ class Container(coin.SoSeparator):
                 self.start_pos = self.cursor_pos(event)
                 self.drag = self.view.addEventCallbackPivy(
                     coin.SoEvent.getClassTypeId(), self.drag_cb)
-                print("drag started")
+                for obj in self.drag_objects:
+                    obj.drag_start()
+                for foo in self.on_drag_start:
+                    foo()
 
     def delete_cb(self, event_callback):
         event = event_callback.getEvent()
