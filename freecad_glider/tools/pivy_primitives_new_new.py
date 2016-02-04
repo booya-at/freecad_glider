@@ -53,6 +53,7 @@ class Object3D(coin.SoSeparator):
         self.on_drag_release = []
         self.on_drag_start = []
         self._delete = False
+        self._tmp_points = None
         self.enabled = True
 
     def set_disabled(self):
@@ -96,10 +97,10 @@ class Object3D(coin.SoSeparator):
     def drag(self, mouse_coords, fact=1.):
         if self.enabled:
             pts = self.points
-            for i in pts:
-                i[0] += mouse_coords[0] * fact
-                i[1] += mouse_coords[1] * fact
-                i[2] += mouse_coords[2] * fact
+            for i, pt in enumerate(pts):
+                pt[0] = mouse_coords[0] * fact + self._tmp_points[i][0]
+                pt[1] = mouse_coords[1] * fact + self._tmp_points[i][1]
+                pt[2] = mouse_coords[2] * fact + self._tmp_points[i][2]
             self.points = pts
             for i in self.on_drag:
                 i()
@@ -110,6 +111,8 @@ class Object3D(coin.SoSeparator):
                 i()
 
     def drag_start(self):
+        self._tmp_points = self.points
+        print(self._tmp_points)
         if self.enabled:
             for i in self.on_drag_start:
                 i()
@@ -161,6 +164,7 @@ class Container(coin.SoSeparator):
         self.on_drag = []
         self.on_drag_release = []
         self.on_drag_start = []
+        self._direction = None
 
     def addChild(self, child):
         super(Container, self).addChild(child)
@@ -265,16 +269,37 @@ class Container(coin.SoSeparator):
             if self.drag:
                 self.view.removeEventCallbackPivy(
                     coin.SoEvent.getClassTypeId(), self.drag)
+                self._direction = None
             self.drag = None
             self.start_pos = None
             for obj in self.drag_objects:
                 obj.drag_release()
             for foo in self.on_drag_release:
                 foo()
+        if (type(event) == coin.SoKeyboardEvent and
+                event.getState() == coin.SoMouseButtonEvent.DOWN):
+            try:
+                key = chr(event.getKey())
+            except ValueError:
+                # there is no character for this value
+                key = None
+            if key in "xyz" and key != self._direction:
+                self._direction = key
+            else:
+                self._direction = None
+            diff = self.cursor_pos(event) - self.start_pos
+            diff = self.constrained_vector(diff)
+            # self.start_pos = self.cursor_pos(event)
+            for obj in self.drag_objects:
+                obj.drag(diff, 1)
+            for foo in self.on_drag:
+                foo()
+
         elif type(event) == coin.SoLocation2Event:
             fact = 0.3 if event.wasShiftDown() else 1.
             diff = self.cursor_pos(event) - self.start_pos
-            self.start_pos = self.cursor_pos(event)
+            diff = self.constrained_vector(diff)
+            # self.start_pos = self.cursor_pos(event)
             for obj in self.drag_objects:
                 obj.drag(diff, fact)
             for foo in self.on_drag:
@@ -356,3 +381,13 @@ class Container(coin.SoSeparator):
             i.delete()
         self.objects = []
         super(Container, self).removeAllChildren()
+
+    def constrained_vector(self, vector):
+        if self._direction is None:
+            return vector
+        if self._direction == "x":
+            return [vector[0], 0, 0]
+        elif self._direction == "y":
+            return [0, vector[1], 0]
+        elif self._direction == "z":
+            return [0, 0, vector[2]]
