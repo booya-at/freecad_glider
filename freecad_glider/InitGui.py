@@ -12,7 +12,7 @@ Dir = os.path.dirname(glider_metadata.__file__)
 Gui.addIconPath(Dir + "/icons")
 
 
-class gliderWorkbench(Gui.Workbench):
+class gliderWorkbench(Workbench):
     """probe workbench object"""
     MenuText = "glider"
     ToolTip = "glider workbench"
