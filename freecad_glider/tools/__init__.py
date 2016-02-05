@@ -10,7 +10,7 @@ from .aoa_tool import aoa_tool, zrot_tool
 from .ballooning_tool import ballooning_tool
 from .line_tool import line_tool
 from .merge_tool import airfoil_merge_tool, ballooning_merge_tool
-from .panel_methode import panel_tool, polars
+#from .panel_methode import panel_tool, polars
 from .cell_tool import cell_tool
 import openglider
 from openglider.plots import flatten_glider
