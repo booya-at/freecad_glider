@@ -189,7 +189,7 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
             for cell in glider.cells:
                 count += 1
                 for panel in cell.panels:
-                    m = panel.get_mesh(cell, midribs + 1)
+                    m = panel.get_mesh(cell, midribs)
                     verts = m.vertices.tolist()
                     tris = m.polygons
                     tris_coin = []

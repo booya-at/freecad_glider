@@ -340,7 +340,7 @@ class Container(coin.SoSeparator):
         event = event_callback.getEvent()
         # get all drag objects, every selected object can add some drag objects
         # but the eventhandler is not allowed to call the drag twice on an object
-        if event.getKey() == ord("x"):
+        if event.getKey() == ord(u"\uffff"):
             self.removeSelected()
 
     def register(self, view):
