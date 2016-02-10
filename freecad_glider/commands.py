@@ -4,15 +4,15 @@ import FreeCAD
 
 def getActiveGlider():
     obj = FreeCAD.ActiveDocument.ActiveObject
-    if hasattr(obj, "glider_instance"):
+    if hasattr(obj, "GliderInstance"):
         return obj
 
 
 def getParametricGlider():
-    return getActiveGlider().glider_2d
+    return getActiveGlider().ParametricGlider
 
 
 def getGlider():
-    return getActiveGlider().glider_instance
+    return getActiveGlider().GliderInstance
 
 createGlider = tools.CreateGlider.create_glider

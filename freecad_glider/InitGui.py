@@ -5,7 +5,6 @@ try:
 except ImportError:
     print("module not loaded with freecad")
 
-import tools
 import glider_metadata
 Dir = os.path.dirname(glider_metadata.__file__)
 
@@ -19,23 +18,23 @@ class gliderWorkbench(Gui.Workbench):
     Icon = "glider_workbench.svg"
     toolbox = [
         "CreateGlider",
-        "Gl2d_Import",
-        "Shape_Tool",
-        "Arc_Tool",
-        "Aoa_Tool",
-        "Zrot_Tool",
-        "Airfoil_Tool",
-        "AirfoilMergeTool",
-        "Ballooning_Tool",
-        "BallooningMergeTool",
-        "Cell_Tool",
-        "Line_Tool",
-        "Gl2d_Export"]
+        "Gl2dImport",
+        "ShapeCommand",
+        "ArcCommand",
+        "AoaCommand",
+        "ZrotCommand",
+        "AirfoilCommand",
+        "AirfoilMergeCommand",
+        "BallooningCommand",
+        "BallooningMergeCommand",
+        "CellCommand",
+        "LineCommand",
+        "Gl2dExport"]
 
     productionbox = [
-        "Pattern_Tool",
-        "Panel_Tool",
-        "Polars_Tool"
+        "PatternCommand",
+        "PanelCommand",
+        "PolarsCommand"
         ]
 
 
@@ -46,22 +45,22 @@ class gliderWorkbench(Gui.Workbench):
         import tools
 
         Gui.addCommand('CreateGlider', tools.CreateGlider())
-        Gui.addCommand('Shape_Tool', tools.Shape_Tool())
-        Gui.addCommand('Airfoil_Tool', tools.Airfoil_Tool())
-        Gui.addCommand('Arc_Tool', tools.Arc_Tool())
-        Gui.addCommand("Aoa_Tool", tools.Aoa_Tool())
-        Gui.addCommand("Ballooning_Tool", tools.Ballooning_Tool())
-        Gui.addCommand("Line_Tool", tools.Line_Tool())
-        Gui.addCommand("Gl2d_Import", tools.Gl2d_Import())
-        Gui.addCommand("Gl2d_Export", tools.Gl2d_Export())
-        Gui.addCommand("AirfoilMergeTool", tools.AirfoilMergeTool())
-        Gui.addCommand("BallooningMergeTool", tools.BallooningMergeTool())
-        Gui.addCommand("Cell_Tool", tools.Cell_Tool())
-        Gui.addCommand("Zrot_Tool", tools.Zrot_Tool())
+        Gui.addCommand('ShapeCommand', tools.ShapeCommand())
+        Gui.addCommand('AirfoilCommand', tools.AirfoilCommand())
+        Gui.addCommand('ArcCommand', tools.ArcCommand())
+        Gui.addCommand("AoaCommand", tools.AoaCommand())
+        Gui.addCommand("BallooningCommand", tools.BallooningCommand())
+        Gui.addCommand("LineCommand", tools.LineCommand())
+        Gui.addCommand("Gl2dImport", tools.Gl2dImport())
+        Gui.addCommand("Gl2dExport", tools.Gl2dExport())
+        Gui.addCommand("AirfoilMergeCommand", tools.AirfoilMergeCommand())
+        Gui.addCommand("BallooningMergeCommand", tools.BallooningMergCommand())
+        Gui.addCommand("CellCommand", tools.CellCommand())
+        Gui.addCommand("ZrotCommand", tools.ZrotCommand())
 
-        Gui.addCommand("Pattern_Tool", tools.Pattern_Tool())
-        Gui.addCommand("Panel_Tool", tools.Panel_Tool())
-        Gui.addCommand("Polars_Tool", tools.Polars_Tool())
+        Gui.addCommand("PatternCommand", tools.PatternCommand())
+        Gui.addCommand("PanelCommand", tools.PanelCommand())
+        Gui.addCommand("PolarsCommand", tools.PolarsCommand())
 
         self.appendToolbar("Tools", self.toolbox)
         self.appendMenu("Tools", self.toolbox)

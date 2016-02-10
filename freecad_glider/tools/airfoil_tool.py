@@ -6,14 +6,14 @@ import FreeCADGui as Gui
 
 from openglider.airfoil import BezierProfile2D
 from openglider.vector import normalize, norm
-from ._tools import base_tool
+from ._tools import BaseTool
 from .pivy_primitives import Line, vector3D, ControlPointContainer
 
 
-class airfoil_tool(base_tool):
+class AirfoilTool(BaseTool):
 
     def __init__(self, obj):
-        super(airfoil_tool, self).__init__(obj, widget_name="selection")
+        super(AirfoilTool, self).__init__(obj, widget_name="selection")
         # base_widget
         self.QList_View = QtGui.QListWidget(self.base_widget)
         self.Qdelete_button = QtGui.QPushButton("delete", self.base_widget)
@@ -63,7 +63,7 @@ class airfoil_tool(base_tool):
 
         # selection widget
         self.layout.addWidget(self.QList_View)
-        for profile in self.glider_2d.profiles:
+        for profile in self.ParametricGlider.profiles:
             self.QList_View.addItem(QAirfoil_item(profile))
         self.QList_View.setMaximumHeight(100)
         self.QList_View.setCurrentRow(0)
@@ -271,13 +271,13 @@ class airfoil_tool(base_tool):
             airfoil = self.QList_View.item(index).airfoil
             airfoil.apply_splines()
             profiles.append(airfoil)
-        super(airfoil_tool, self).accept()
-        self.glider_2d.profiles = profiles
+        super(AirfoilTool, self).accept()
+        self.ParametricGlider.profiles = profiles
         self.update_view_glider()
 
     def reject(self):
         self.unset_edit_mode()
-        super(airfoil_tool, self).reject()
+        super(AirfoilTool, self).reject()
 
 
 class QAirfoil_item(QtGui.QListWidgetItem):

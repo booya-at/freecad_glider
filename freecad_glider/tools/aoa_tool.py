@@ -4,27 +4,27 @@ import numpy
 from pivy import coin
 from PySide import QtGui
 
-from ._tools import base_tool, text_field, input_field, spline_select
+from ._tools import BaseTool, text_field, input_field, spline_select
 from .pivy_primitives import Line, ControlPointContainer, vector3D
 
 
-class zrot_tool(base_tool):
+class ZrotTool(BaseTool):
     num_on_drag = 80
     num_release = 200
 
     def __init__(self, obj):
-        super(zrot_tool, self).__init__(obj)
-        pts = vector3D(
-            numpy.array(self.spline.controlpoints) * self.scale)
+        super(ZrotTool, self).__init__(obj)
+        pts = numpy.array(self.spline.controlpoints) * self.scale
+        pts = list(map(vector3D, pts))
         self.aoa_cpc = ControlPointContainer(pts, self.view)
         self.shape = coin.SoSeparator()
         self.coords = coin.SoSeparator()
         self.grid = coin.SoSeparator()
         self.aoa_spline = Line([], color="red", width=2)
-        self.ribs = self.glider_2d.shape.ribs
+        self.ribs = self.ParametricGlider.shape.ribs
         self.front = [rib[0] for rib in self.ribs]
         self.back = [rib[1] for rib in self.ribs]
-        self.text_scale = self.glider_2d.shape.span / len(self.front) / 15
+        self.text_scale = self.ParametricGlider.shape.span / len(self.front) / 15
         self.x_grid = [i[0] for i in self.front]
 
         self.Qnum_aoa = QtGui.QSpinBox(self.base_widget)
@@ -36,7 +36,7 @@ class zrot_tool(base_tool):
 
     @property
     def spline(self):
-        return self.glider_2d.zrot
+        return self.ParametricGlider.zrot
 
     @property
     def scale(self):
@@ -45,7 +45,7 @@ class zrot_tool(base_tool):
 
     def setup_pivy(self):
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
-            self.glider_2d.shape.span, pos[1], pos[2]]
+            self.ParametricGlider.shape.span, pos[1], pos[2]]
         childs = (self.aoa_cpc, self.shape, self.aoa_spline.object, 
                   self.coords, self.grid)
         self.task_separator += childs
@@ -84,7 +84,7 @@ class zrot_tool(base_tool):
         self.aoa_cpc.control_pos = vector3D(
             numpy.array(self.spline.controlpoints) * self.scale)
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
-            self.glider_2d.shape.span, pos[1], pos[2]]
+            self.ParametricGlider.shape.span, pos[1], pos[2]]
         self.update_aoa()
 
     def update_grid(self):
@@ -113,14 +113,14 @@ class zrot_tool(base_tool):
 
     def accept(self):
         self.aoa_cpc.remove_callbacks()
-        self.obj.glider_2d = self.glider_2d
-        self.glider_2d.get_glider_3d(self.obj.glider_instance)
-        super(zrot_tool, self).accept()
+        self.obj.ParametricGlider = self.ParametricGlider
+        self.ParametricGlider.get_glider_3d(self.obj.GliderInstance)
+        super(ZrotTool, self).accept()
         self.update_view_glider()
 
     def reject(self):
         self.aoa_cpc.remove_callbacks()
-        super(zrot_tool, self).reject()
+        super(ZrotTool, self).reject()
 
     def grid_points(self, grid_x, grid_y):
         return [[x, y] for y in grid_y for x in grid_x]
@@ -163,26 +163,26 @@ class zrot_tool(base_tool):
         self.aoa_cpc.control_pos = vector3D(
             numpy.array(self.spline.controlpoints) * self.scale)
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
-            self.glider_2d.shape.span, pos[1], pos[2]]
+            self.ParametricGlider.shape.span, pos[1], pos[2]]
         self.update_aoa()
 
 
-class aoa_tool(zrot_tool):
+class AoaTool(ZrotTool):
     @property
     def spline(self):
-        return self.glider_2d.aoa
+        return self.ParametricGlider.aoa
 
     @property
     def scale(self):
         return numpy.array([1., 8.])
 
     def setup_widget(self):
-        super(aoa_tool, self).setup_widget()
+        super(AoaTool, self).setup_widget()
         self.QGlide = QtGui.QDoubleSpinBox(self.base_widget)
-        self.QGlide.setValue(self.glider_2d.glide)
+        self.QGlide.setValue(self.ParametricGlider.glide)
         self.layout.setWidget(3, text_field, QtGui.QLabel("glidenumber"))
         self.layout.setWidget(3, input_field, self.QGlide)
 
     def accept(self):
-        self.glider_2d.glide = self.QGlide.value()
-        super(aoa_tool, self).accept()
+        self.ParametricGlider.glide = self.QGlide.value()
+        super(AoaTool, self).accept()

@@ -1,19 +1,19 @@
 import FreeCAD
+import FreeCAD as App
 import FreeCADGui as Gui
 
 from ._glider import OGGlider, OGGliderVP
-from ._tools import base_tool, export_2d, import_2d
-from .airfoil_tool import airfoil_tool
-from .shape_tool import shape_tool
-from .arc_tool import arc_tool
-from .aoa_tool import aoa_tool, zrot_tool
-from .ballooning_tool import ballooning_tool
-from .line_tool import line_tool
-from .merge_tool import airfoil_merge_tool, ballooning_merge_tool
-from .panel_methode import panel_tool, polars
-from .cell_tool import cell_tool
+from ._tools import BaseTool, export_2d, import_2d
+from .airfoil_tool import AirfoilTool
+from .shape_tool import ShapeTool
+from .arc_tool import ArcTool
+from .aoa_tool import AoaTool, ZrotTool
+from .ballooning_tool import BallooningTool
+from .line_tool import LineTool
+from .merge_tool import AirfoilMergeTool, BallooningMergeTool
+from .panel_methode import PanelTool, polars
+from .cell_tool import CellTool
 import openglider
-from openglider.plots import flatten_glider
 
 
 #   -import export                                          -?
@@ -50,21 +50,21 @@ class BaseCommand(object):
         return None
 
     def tool(self, obj):
-        return base_tool(obj)
+        return BaseTool(obj)
 
 
-class Cell_Tool(BaseCommand):
+class CellCommand(BaseCommand):
     def tool(self, obj):
-        return cell_tool(obj)
+        return CellTool(obj)
 
     def GetResources(self):
-        return {'Pixmap': 'cell_tool.svg',
+        return {'Pixmap': 'cell_command.svg',
                 'MenuText': 'edit cells',
                 'ToolTip': 'edit cells'}
 
 
 
-class Gl2d_Export(BaseCommand):
+class Gl2dExport(BaseCommand):
     def GetResources(self):
         return {'Pixmap': 'gl2d_export.svg',
                 'MenuText': 'export 2D',
@@ -76,7 +76,7 @@ class Gl2d_Export(BaseCommand):
             export_2d(obj)
 
 
-class Gl2d_Import(BaseCommand):
+class Gl2dImport(BaseCommand):
     def GetResources(self):
         return {'Pixmap': 'gl2d_import.svg',
                 'MenuText': 'import 2D',
@@ -88,9 +88,9 @@ class Gl2d_Import(BaseCommand):
             import_2d(obj)
 
 
-class Pattern_Tool(BaseCommand):
+class PatternCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'pattern_tool.svg',
+        return {'Pixmap': 'pattern_command.svg',
                 'MenuText': 'unwrap glider',
                 'ToolTip': 'unwrap glider'}
 
@@ -104,7 +104,7 @@ class Pattern_Tool(BaseCommand):
         if proceed:
             import openglider.plots
             import Part
-            unwrapper = openglider.plots.PlotMaker(obj.glider_instance)
+            unwrapper = openglider.plots.PlotMaker(obj.GliderInstance)
             unwrapper.unwrap()
 
             areas = unwrapper.get_all_parts().group_materials()
@@ -119,7 +119,7 @@ class Pattern_Tool(BaseCommand):
                     for layer in layer_dict:
                         for j, line in enumerate(layer_dict[layer]):
                             obj = FreeCAD.ActiveDocument.addObject("Part::Feature", layer + str(j))
-                            obj.Shape = Part.makePolygon(map(Pattern_Tool.fcvec, line))
+                            obj.Shape = Part.makePolygon(map(App.Vector, line))
                             grp.addObject(obj)
 
                     pattern_doc.recompute()
@@ -152,112 +152,114 @@ class CreateGlider(BaseCommand):
         self.create_glider()
 
 
-class Shape_Tool(BaseCommand):
+class ShapeCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'shape_tool.svg',
+        return {'Pixmap': 'shape_command.svg',
                 'MenuText': 'shape',
                 'ToolTip': 'shape'}
 
     def tool(self, obj):
-        return shape_tool(obj)
+        return ShapeTool(obj)
 
 
-class Arc_Tool(BaseCommand):
+class ArcCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'arc_tool.svg',
+        return {'Pixmap': 'arc_command.svg',
                 'MenuText': 'arc',
                 'ToolTip': 'arc'}
 
     def tool(self, obj):
-        return arc_tool(obj)
+        return ArcTool(obj)
 
 
-class Aoa_Tool(BaseCommand):
+class AoaCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'aoa_tool.svg',
+        return {'Pixmap': 'aoa_command.svg',
                 'MenuText': 'aoa',
                 'ToolTip': 'aoa'}
 
     def tool(self, obj):
-        return aoa_tool(obj)
+        return AoaTool(obj)
 
 
-class Zrot_Tool(BaseCommand):
+class ZrotCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'z_rot.svg',
+        return {'Pixmap': 'z_rot_command.svg',
                 'MenuText': 'zrot',
                 'ToolTip': 'zrot'}
 
     def tool(self, obj):
-        return zrot_tool(obj)
+        return ZrotTool(obj)
 
 
-class Airfoil_Tool(BaseCommand):
+class AirfoilCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'airfoil_tool.svg',
+        return {'Pixmap': 'airfoil_command.svg',
                 'MenuText': 'airfoil',
                 'ToolTip': 'airfoil'}
 
     def tool(self, obj):
-        return airfoil_tool(obj)
+        return AirfoilTool(obj)
 
 
-class AirfoilMergeTool(BaseCommand):
+class AirfoilMergeCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'airfoil_merge_tool.svg',
+        return {'Pixmap': 'airfoil_merge_command.svg',
                 'MenuText': 'airfoil merge',
                 'ToolTip': 'airfoil merge'}
 
     def tool(self, obj):
-        return airfoil_merge_tool(obj)
+        return AirfoilMergeTool(obj)
 
 
-class Ballooning_Tool(BaseCommand):
+class BallooningCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'ballooning_tool.svg',
+        return {'Pixmap': 'ballooning_command.svg',
                 'MenuText': 'ballooning',
                 'ToolTip': 'ballooning'}
 
     def tool(self, obj):
-        return ballooning_tool(obj)
+        return BallooningTool(obj)
 
 
-class BallooningMergeTool(BaseCommand):
+class BallooningMergCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'ballooning_merge_tool.svg',
+        return {'Pixmap': 'ballooning_merge_command.svg',
                 'MenuText': 'ballooning merge',
                 'ToolTip': 'ballooning merge'}
 
     def tool(self, obj):
-        return ballooning_merge_tool(obj)
+        return BallooningMergeTool(obj)
 
 
-class Line_Tool(BaseCommand):
+class LineCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'line_tool.svg',
+        return {'Pixmap': 'line_command.svg',
                 'MenuText': 'lines',
                 'ToolTip': 'lines'}
 
     def tool(self, obj):
-        return line_tool(obj)
+        return LineTool(obj)
 
 
 def check_glider(obj):
-    if ("glider_instance" in obj.PropertiesList and
-            "glider_2d" in obj.PropertiesList):
+    if ("GliderInstance" in obj.PropertiesList and
+            "ParametricGlider" in obj.PropertiesList):
         return True
     else:
         return False
 
 
-class Panel_Tool(BaseCommand):
+class PanelCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'panel_methode.svg', 'MenuText': 'panelmethode', 'ToolTip': 'panelmethode'}
+        return {'Pixmap': 'panel_methode.svg',
+                'MenuText': 'panelmethode', 
+                'ToolTip': 'panelmethode'}
 
     def tool(self, obj):
-        return panel_tool(obj)
+        return PanelTool(obj)
 
-class Polars_Tool(BaseCommand):
+class PolarsCommand(BaseCommand):
     def GetResources(self):
         return {'Pixmap': 'polar.svg', 'MenuText': 'polars', 'ToolTip': 'polars'}
 

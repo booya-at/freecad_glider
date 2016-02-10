@@ -45,33 +45,33 @@ class OGGlider(OGBaseObject):
     def __init__(self, obj):
         self.obj = obj
         obj.addProperty("App::PropertyPythonObject",
-                        "glider_instance", "object",
-                        "glider_instance", 2)
+                        "GliderInstance", "object",
+                        "GliderInstance", 2)
         obj.addProperty("App::PropertyPythonObject",
-                        "glider_2d", "object",
-                        "parametric glider", 2)
+                        "ParametricGlider", "object",
+                        "ParametricGlider", 2)
         with open(os.path.dirname(__file__) + "/../glider2d.json", "r") as importfile:
-            obj.glider_2d = load(importfile)["data"]
-        obj.glider_instance = obj.glider_2d.get_glider_3d()
+            obj.ParametricGlider = load(importfile)["data"]
+        obj.GliderInstance = obj.ParametricGlider.get_glider_3d()
         obj.Proxy = self
         super(OGGlider, self).__init__(obj)
 
     def __getstate__(self):
         out = {
-            "glider_2d": dumps(self.obj.glider_2d),
+            "ParametricGlider": dumps(self.obj.ParametricGlider),
             "name": self.obj.Name}
         return out
 
     def __setstate__(self, state):
         self.obj = App.ActiveDocument.getObject(state["name"])
         self.obj.addProperty("App::PropertyPythonObject",
-                        "glider_instance", "object",
-                        "glider_instance", 2)
+                        "GliderInstance", "object",
+                        "GliderInstance", 2)
         self.obj.addProperty("App::PropertyPythonObject",
-                        "glider_2d", "object",
+                        "ParametricGlider", "object",
                         "parametric glider", 2)
-        self.obj.glider_2d = loads(state["glider_2d"])["data"]
-        self.obj.glider_instance = self.obj.glider_2d.get_glider_3d()
+        self.obj.ParametricGlider = loads(state["ParametricGlider"])["data"]
+        self.obj.GliderInstance = self.obj.ParametricGlider.get_glider_3d()
         return None
 
 class OGGliderVP(OGBaseVP):
@@ -112,7 +112,7 @@ class OGGliderVP(OGBaseVP):
         self.material = coin.SoMaterial()
         self.seperator = coin.SoSeparator()
         self.view_obj = view_obj
-        self.glider_instance = view_obj.Object.glider_instance
+        self.GliderInstance = view_obj.Object.GliderInstance
         self.material.diffuseColor = (.7, .7, .7)
         self.seperator += (self.vis_glider, self.vis_glider, self.vis_lines)
         view_obj.addDisplayMode(self.seperator, 'out')
@@ -141,15 +141,15 @@ class OGGliderVP(OGBaseVP):
                       hull=True, panels=False, half=False, ribs=False):
         self.vis_glider.removeAllChildren()
         if not half:
-            glider = self.glider_instance.copy_complete()
+            glider = self.GliderInstance.copy_complete()
         else:
-            glider = self.glider_instance.copy()
+            glider = self.GliderInstance.copy()
         draw_glider(glider, self.vis_glider, midribs, profile_numpoints, hull, panels, half, ribs)
 
 
     def update_lines(self, num=3, half=False):
         self.vis_lines.removeAllChildren()
-        for line in self.glider_instance.lineset.lines:
+        for line in self.GliderInstance.lineset.lines:
             points = line.get_line_points(numpoints=num)
             if not half:
                 self.vis_lines += (Line([[i[0], -i[1], i[2]] for i in points], dynamic=False))

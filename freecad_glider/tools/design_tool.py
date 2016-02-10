@@ -4,7 +4,7 @@ from PySide import QtGui, QtCore
 import numpy as np
 import FreeCAD as App
 
-from ._tools import base_tool, input_field, text_field
+from ._tools import BaseTool, input_field, text_field
 from .pivy_primitives_new_new import coin, Line, Marker, Container, vector3D
 
 
@@ -18,3 +18,4 @@ from .pivy_primitives_new_new import coin, Line, Marker, Container, vector3D
 # 5: delete ?
 # 6: editing ?
 
+class DesignTool(BaseTool)

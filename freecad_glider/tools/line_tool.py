@@ -5,7 +5,7 @@ import traceback
 import numpy as np
 import FreeCAD as App
 
-from ._tools import base_tool, input_field, text_field
+from ._tools import BaseTool, input_field, text_field
 from .pivy_primitives_new_new import coin, Line, Marker, Container, vector3D
 from openglider.glider.parametric.lines import UpperNode2D, LowerNode2D, \
     BatchNode2D, Line2D, LineSet2D
@@ -20,16 +20,16 @@ from openglider.lines.line_types import LineType
 # 2: create lines from existing lineset
 # 3: eventhandler for adding and connecting lines
 
-class line_tool(base_tool):
+class LineTool(BaseTool):
     def __init__(self, obj):
-        super(line_tool, self).__init__(obj, widget_name="line_tool")
+        super(LineTool, self).__init__(obj, widget_name="LineTool")
 
         # get the parametric shape
-        _shape = self.glider_2d.shape.get_half_shape()
+        _shape = self.ParametricGlider.shape.get_half_shape()
         self.ribs = _shape.ribs
         self.front = _shape.front
         self.back = _shape.back
-        self.xpos = self.glider_2d.shape.rib_x_values
+        self.xpos = self.ParametricGlider.shape.rib_x_values
 
         # qt helper line
         self.Qhl_pos = QtGui.QDoubleSpinBox()
@@ -304,7 +304,7 @@ class line_tool(base_tool):
         rib_nr = self.xpos.index(x)
         pos = float(self.Qhl_pos.value())
         node = UpperNode2D(rib_nr, pos / 100)
-        node_pos = node.get_2d(self.glider_2d.shape)
+        node_pos = node.get_2d(self.ParametricGlider.shape)
         ap = Upper_Att_Marker(node, node_pos)
         ap.layer = self.layer_combobox.currentText()
         self.shape += ap
@@ -391,13 +391,13 @@ class line_tool(base_tool):
         self.shape += (Line(vector3D(self.front)),
                         Line(vector3D(self.back)),
                         list(map(Line, vector3D(self.ribs))))
-        shape = self.glider_2d.shape
+        shape = self.ParametricGlider.shape
         # make own seperator for shape
         nodes = {}
-        for node in self.glider_2d.lineset.nodes:
+        for node in self.ParametricGlider.lineset.nodes:
             if isinstance(node, UpperNode2D):
-                # coord = self.glider_2d.shape_point(node.rib_no, node.position/100)
-                pos = node.get_2d(self.glider_2d.shape)
+                # coord = self.ParametricGlider.shape_point(node.rib_no, node.position/100)
+                pos = node.get_2d(self.ParametricGlider.shape)
                 obj = Upper_Att_Marker(node, pos)
                 obj.force = node.force
                 self.shape += obj
@@ -412,7 +412,7 @@ class line_tool(base_tool):
             nodes[node] = obj
             self.layer_combobox.addItem(node.layer)
 
-        for line in self.glider_2d.lineset.lines:
+        for line in self.ParametricGlider.lineset.lines:
             m1 = nodes[line.lower_node]
             m2 = nodes[line.upper_node]
             target_length = line.target_length
@@ -440,31 +440,31 @@ class line_tool(base_tool):
                 l.layer = obj.layer
                 lines.append(l)
 
-        lineset = self.glider_2d.lineset
+        lineset = self.ParametricGlider.lineset
         try:
             new_lines = LineSet2D(lines)
-            self.glider_2d.lineset = new_lines
-            self.glider_2d.get_glider_3d(self.obj.glider_instance)
+            self.ParametricGlider.lineset = new_lines
+            self.ParametricGlider.get_glider_3d(self.obj.GliderInstance)
         except Exception as e:
             App.Console.PrintError(traceback.format_exc())
-            self.glider_2d.lineset = lineset
-            self.glider_2d.get_glider_3d(self.obj.glider_instance)
+            self.ParametricGlider.lineset = lineset
+            self.ParametricGlider.get_glider_3d(self.obj.GliderInstance)
             return
 
-        for node in self.glider_2d.lineset.nodes:
+        for node in self.ParametricGlider.lineset.nodes:
             if isinstance(node, UpperNode2D):
                 node.name = node.layer + str(node.rib_no)
 
         self.shape.unregister()
         self.remove_all_callbacks()
-        self.obj.glider_2d = self.glider_2d
-        super(line_tool, self).accept()
+        self.obj.ParametricGlider = self.ParametricGlider
+        super(LineTool, self).accept()
         self.obj.ViewObject.Proxy.updateData()
         
     def reject(self):
         self.shape.unregister()
         self.remove_all_callbacks()
-        super(line_tool, self).reject()
+        super(LineTool, self).reject()
 
 
 class NodeMarker(Marker):

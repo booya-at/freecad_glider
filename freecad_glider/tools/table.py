@@ -1,9 +1,9 @@
 from __future__ import division
 from PySide import QtCore, QtGui
-from ._tools import base_tool, text_field, input_field
+from ._tools import BaseTool, text_field, input_field
 
 
-class table_tool(base_tool):
+class table_tool(BaseTool):
     def __init__(self, obj):
         super(table_tool, self).__init__(obj, hide=False)
 

@@ -1,22 +1,22 @@
 from __future__ import division
 from PySide import QtGui
 
-from ._tools import base_tool, input_field
+from ._tools import BaseTool, input_field
 from ._glider import draw_glider
 from .table import base_table_widget
 
 
-class cell_tool(base_tool):
+class CellTool(BaseTool):
     def __init__(self, obj):
-        super(cell_tool, self).__init__(obj, hide=True, turn=False)
+        super(CellTool, self).__init__(obj, hide=True, turn=False)
         self.diagonals_table = diagonals_table()
-        self.diagonals_table.get_from_glider_2d(self.glider_2d)
+        self.diagonals_table.get_from_ParametricGlider(self.ParametricGlider)
         self.diagonals_button = QtGui.QPushButton("diagonals")
         self.diagonals_button.clicked.connect(self.diagonals_table.show)
         self.layout.setWidget(0, input_field, self.diagonals_button)
 
         self.vector_table = vector_table()
-        self.vector_table.get_from_glider_2d(self.glider_2d)
+        self.vector_table.get_from_ParametricGlider(self.ParametricGlider)
         self.vector_button = QtGui.QPushButton("vector strap")
         self.vector_button.clicked.connect(self.vector_table.show)
         self.layout.setWidget(1, input_field, self.vector_button)
@@ -24,19 +24,19 @@ class cell_tool(base_tool):
         self.update_button = QtGui.QPushButton("update glider")
         self.update_button.clicked.connect(self.update_glider)
         self.layout.setWidget(2, input_field, self.update_button)
-        draw_glider(self.glider_2d.get_glider_3d(), self.task_separator, hull=False, ribs=True)
+        draw_glider(self.ParametricGlider.get_glider_3d(), self.task_separator, hull=False, ribs=True)
 
     def update_glider(self):
         self.task_separator.removeAllChildren()
         self.apply_elements()
-        draw_glider(self.glider_2d.get_glider_3d(), self.task_separator, hull=False, ribs=True)
+        draw_glider(self.ParametricGlider.get_glider_3d(), self.task_separator, hull=False, ribs=True)
 
     def apply_elements(self):
-        self.diagonals_table.apply_to_glider(self.glider_2d)
-        self.vector_table.apply_to_glider(self.glider_2d)
+        self.diagonals_table.apply_to_glider(self.ParametricGlider)
+        self.vector_table.apply_to_glider(self.ParametricGlider)
 
     def accept(self):
-        super(cell_tool, self).accept()
+        super(CellTool, self).accept()
         self.diagonals_table.hide()
         self.vector_table.hide()
         del self.diagonals_table
@@ -44,7 +44,7 @@ class cell_tool(base_tool):
         self.update_view_glider()
 
     def reject(self):
-        super(cell_tool, self).reject()
+        super(CellTool, self).reject()
         self.diagonals_table.hide()
         self.vector_table.hide()
         del self.diagonals_table
@@ -71,9 +71,9 @@ class diagonals_table(base_table_widget):
             "lf\nheight",
             "ribs"])
 
-    def get_from_glider_2d(self, glider_2d):
-        if "diagonals" in glider_2d.elements:
-            diags = glider_2d.elements["diagonals"]
+    def get_from_ParametricGlider(self, ParametricGlider):
+        if "diagonals" in ParametricGlider.elements:
+            diags = ParametricGlider.elements["diagonals"]
             for row, element in enumerate(diags):
                 entries = list(
                     element["right_front"] +
@@ -83,10 +83,10 @@ class diagonals_table(base_table_widget):
                 entries.append(element["cells"])
                 self.table.setRow(row, entries)
 
-    def apply_to_glider(self, glider_2d):
+    def apply_to_glider(self, ParametricGlider):
         num_rows = self.table.rowCount()
         # remove all diagonals from the glide_2d
-        glider_2d.elements["diagonals"] = []
+        ParametricGlider.elements["diagonals"] = []
         for n_row in range(num_rows):
             row = self.get_row(n_row)
             if row:
@@ -96,7 +96,7 @@ class diagonals_table(base_table_widget):
                 diagonal["left_back"] = (row[4], row[5])
                 diagonal["left_front"] = (row[6], row[7])
                 diagonal["cells"] = row[-1]
-                glider_2d.elements["diagonals"].append(diagonal)
+                ParametricGlider.elements["diagonals"].append(diagonal)
 
     def get_row(self, n_row):
         str_row = [self.table.item(n_row, i).text() for i in range(9) if self.table.item(n_row, i)]
@@ -118,18 +118,18 @@ class vector_table(base_table_widget):
         self.table.setColumnCount(3)
         self.table.setHorizontalHeaderLabels(["left", "right", "ribs"])
 
-    def get_from_glider_2d(self, glider_2d):
-        if "straps" in glider_2d.elements:
-            straps = glider_2d.elements["straps"]
+    def get_from_ParametricGlider(self, ParametricGlider):
+        if "straps" in ParametricGlider.elements:
+            straps = ParametricGlider.elements["straps"]
             for row, element in enumerate(straps):
                 entries = [element["right"], element["left"]]
                 entries.append(element["cells"])
                 self.table.setRow(row, entries)
 
-    def apply_to_glider(self, glider_2d):
+    def apply_to_glider(self, ParametricGlider):
         num_rows = self.table.rowCount()
         # remove all diagonals from the glide_2d
-        glider_2d.elements["straps"] = []
+        ParametricGlider.elements["straps"] = []
         for n_row in range(num_rows):
             row = self.get_row(n_row)
             if row:
@@ -137,7 +137,7 @@ class vector_table(base_table_widget):
                 strap["right"] = row[0]
                 strap["left"] = row[1]
                 strap["cells"] = row[2]
-                glider_2d.elements["straps"].append(strap)
+                ParametricGlider.elements["straps"].append(strap)
 
     def get_row(self, n_row):
         str_row = [self.table.item(n_row, i).text() for i in range(3) if self.table.item(n_row, i)]

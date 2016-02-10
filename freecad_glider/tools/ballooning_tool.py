@@ -2,14 +2,14 @@ from __future__ import division
 
 import numpy
 import FreeCADGui as Gui
-from ._tools import base_tool, QtGui
+from ._tools import BaseTool, QtGui
 from .pivy_primitives import Line, vector3D, ControlPointContainer, coin
 from openglider.glider.ballooning import BallooningBezier
 
 
-class ballooning_tool(base_tool):
+class BallooningTool(BaseTool):
     def __init__(self, obj):
-        super(ballooning_tool, self).__init__(obj, widget_name="selection")
+        super(BallooningTool, self).__init__(obj, widget_name="selection")
         # base_widget
         self.QList_View = QtGui.QListWidget(self.base_widget)
         self.Qdelete_button = QtGui.QPushButton("delete", self.base_widget)
@@ -42,7 +42,7 @@ class ballooning_tool(base_tool):
 
         # selection widget
         self.layout.addWidget(self.QList_View)
-        for ballooning in self.glider_2d.balloonings:
+        for ballooning in self.ParametricGlider.balloonings:
             self.QList_View.addItem(QBalooning(ballooning))
         self.QList_View.setMaximumHeight(100)
         self.QList_View.setCurrentRow(0)
@@ -210,9 +210,9 @@ class ballooning_tool(base_tool):
             ballooning = self.QList_View.item(index)
             ballooning.apply_splines()
             balloonings.append(ballooning.ballooning)
-        self.glider_2d.balloonings = balloonings
+        self.ParametricGlider.balloonings = balloonings
         self.update_view_glider()
-        super(ballooning_tool, self).accept()
+        super(BallooningTool, self).accept()
 
 
 class QBalooning(QtGui.QListWidgetItem):

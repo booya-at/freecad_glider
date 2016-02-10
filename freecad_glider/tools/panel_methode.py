@@ -6,11 +6,11 @@ import numpy
 
 from openglider.glider.in_out.export_3d import ppm_Panels
 from openglider.airfoil import Profile2D
-from ._tools import base_tool, input_field, text_field
+from ._tools import BaseTool, input_field, text_field
 from .pivy_primitives_new_new import Container, Marker, coin, Line, COLORS
 
 
-class polars(base_tool):
+class polars(BaseTool):
     try:
         ppm = __import__("ppm")
         pan3d = __import__("ppm.pan3d", globals(), locals(), ["abc"])
@@ -25,7 +25,7 @@ class polars(base_tool):
             self.layout.addWidget(self.QWarning)
         else:
             self._vertices, self._panels, self._trailing_edges = ppm_Panels(
-                self.glider_2d.get_glider_3d(),
+                self.ParametricGlider.get_glider_3d(),
                 midribs=0,
                 profile_numpoints=50,
                 num_average=4,
@@ -33,9 +33,9 @@ class polars(base_tool):
                 symmetric=True
                 )
             case = self.pan3d.DirichletDoublet0Source0Case3(self._panels, self._trailing_edges)
-            case.A_ref = self.glider_2d.flat_area
+            case.A_ref = self.ParametricGlider.flat_area
             case.mom_ref_point = self.ppm.Vector3(1.25, 0, -6)
-            case.v_inf = self.ppm.Vector(self.glider_2d.v_inf)
+            case.v_inf = self.ppm.Vector(self.ParametricGlider.v_inf)
             case.drag_calc = "trefftz"
             case.farfield = 5
             case.create_wake(10000000, 20)
@@ -57,7 +57,8 @@ class polars(base_tool):
             plt.grid()
             plt.show()
 
-class panel_tool(base_tool):
+
+class PanelTool(BaseTool):
     try:
         ppm = __import__("ppm")
         pan3d = __import__("ppm.pan3d", globals(), locals(), ["abc"])
@@ -65,7 +66,7 @@ class panel_tool(base_tool):
         ppm = None
 
     def __init__(self, obj):
-        super(panel_tool, self).__init__(obj, widget_name="Properties", hide=True)
+        super(PanelTool, self).__init__(obj, widget_name="Properties", hide=True)
         if not self.ppm:
             self.QWarning = QtGui.QLabel("no panel_methode installed")
             self.layout.addWidget(self.QWarning)
@@ -195,7 +196,7 @@ class panel_tool(base_tool):
 
     def create_panels(self, midribs=0, profile_numpoints=10, mean=False, symmetric=True):
         self._vertices, self._panels, self._trailing_edges = ppm_Panels(
-            self.glider_2d.get_glider_3d(),
+            self.ParametricGlider.get_glider_3d(),
             midribs=midribs,
             profile_numpoints=profile_numpoints,
             num_average=mean*5,
@@ -207,7 +208,7 @@ class panel_tool(base_tool):
         self.create_panels(self.Qmidribs.value(), self.Qprofile_points.value(),
                            self.Qmean_profile.isChecked(), self.Qsymmetric.isChecked())
         self.case = self.pan3d.DirichletDoublet0Source0Case3(self._panels, self._trailing_edges)
-        self.case.v_inf = self.ppm.Vector(self.glider_2d.v_inf)
+        self.case.v_inf = self.ppm.Vector(self.ParametricGlider.v_inf)
         self.case.farfield = 5
         self.case.create_wake(9999, 10)
         self.case.run()

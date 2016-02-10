@@ -38,7 +38,7 @@ def export_2d(glider):
         directory='~')
     if filename[0] != "":
         with open(filename[0], 'w') as exportfile:
-            dump(glider.glider_2d, exportfile)
+            dump(glider.ParametricGlider, exportfile)
 
 
 def import_2d(glider):
@@ -51,12 +51,12 @@ def import_2d(glider):
         file_type = file_name.split(".")[1]
         if file_type == "json":
             with open(file_name, 'r') as importfile:
-                glider.glider_2d = load(importfile)["data"]
-                glider.glider_2d.get_glider_3d(glider.glider_instance)
+                glider.ParametricGlider = load(importfile)["data"]
+                glider.ParametricGlider.get_glider_3d(glider.GliderInstance)
                 glider.ViewObject.Proxy.updateData()
         elif file_type == "ods":
-            glider.glider_2d = ParametricGlider.import_ods(file_name)
-            glider.glider_2d.get_glider_3d(glider.glider_instance)
+            glider.ParametricGlider = ParametricGlider.import_ods(file_name)
+            glider.ParametricGlider.get_glider_3d(glider.GliderInstance)
             glider.ViewObject.Proxy.updateData()
 
 
@@ -90,10 +90,10 @@ class spline_select(QtGui.QComboBox):
         self.update_function()
 
 
-class base_tool(object):
+class BaseTool(object):
     def __init__(self, obj, widget_name="base_widget", hide=True, turn=True):
         self.obj = obj
-        self.glider_2d = deepcopy(self.obj.glider_2d)
+        self.ParametricGlider = deepcopy(self.obj.ParametricGlider)
         self.obj.ViewObject.Visibility = not hide
         self.view = Gui.ActiveDocument.ActiveView
         if turn:
@@ -117,8 +117,8 @@ class base_tool(object):
         self.scene.addChild(self.task_separator)
 
     def update_view_glider(self):  # rename
-        self.obj.glider_2d = self.glider_2d
-        self.glider_2d.get_glider_3d(self.obj.glider_instance)
+        self.obj.ParametricGlider = self.ParametricGlider
+        self.ParametricGlider.get_glider_3d(self.obj.GliderInstance)
         self.obj.ViewObject.Proxy.updateData()
 
     def accept(self):
