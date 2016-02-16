@@ -91,7 +91,7 @@ class spline_select(QtGui.QComboBox):
 
 
 class BaseTool(object):
-    def __init__(self, obj, widget_name="base_widget", hide=True, turn=True):
+    def __init__(self, obj, widget_name="BaseWidget", hide=True, turn=True):
         self.obj = obj
         self.ParametricGlider = deepcopy(self.obj.ParametricGlider)
         self.obj.ViewObject.Visibility = not hide

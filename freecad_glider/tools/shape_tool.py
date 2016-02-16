@@ -35,7 +35,7 @@ class ShapeTool(BaseTool):
         self.Qnum_cells = QtGui.QSpinBox(self.base_widget)
         self.Qset_const_fixed = QtGui.QCheckBox(self.base_widget)
         self.Qset_const = QtGui.QPushButton(self.base_widget)
-        self.Qset_zero = QtGui.QPushButton("set zero", self.base_widget)
+        # self.Qset_zero = QtGui.QPushButton("set zero", self.base_widget)
 
         # add another form widget displaying data
         self.Qarea = QtGui.QDoubleSpinBox(self.base_widget)
@@ -128,7 +128,7 @@ class ShapeTool(BaseTool):
         self.layout.setWidget(5, input_field, self.Qnum_dist)
         self.layout.setWidget(6, text_field, QtGui.QLabel("constant AR"))
         self.layout.setLayout(6, input_field, Qset_const_layout)
-        self.layout.setWidget(7, input_field, self.Qset_zero)
+        # self.layout.setWidget(7, input_field, self.Qset_zero)
         self.layout.setWidget(8, text_field, QtGui.QLabel("span:"))
         self.layout.setLayout(8, input_field, Qspan_layout)
 

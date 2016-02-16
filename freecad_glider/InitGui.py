@@ -16,7 +16,7 @@ class gliderWorkbench(Gui.Workbench):
     MenuText = "glider"
     ToolTip = "glider workbench"
     Icon = "glider_workbench.svg"
-    toolbox = [
+    toolBox = [
         "CreateGlider",
         "Gl2dImport",
         "ShapeCommand",
@@ -29,12 +29,17 @@ class gliderWorkbench(Gui.Workbench):
         "BallooningMergeCommand",
         "CellCommand",
         "LineCommand",
+        "DesignCommand",
         "Gl2dExport"]
 
-    productionbox = [
+    productionBox = [
         "PatternCommand",
         "PanelCommand",
         "PolarsCommand"
+        ]
+
+    devBox = [
+        "RefreshCommand"
         ]
 
 
@@ -57,27 +62,24 @@ class gliderWorkbench(Gui.Workbench):
         Gui.addCommand("BallooningMergeCommand", tools.BallooningMergCommand())
         Gui.addCommand("CellCommand", tools.CellCommand())
         Gui.addCommand("ZrotCommand", tools.ZrotCommand())
+        Gui.addCommand("DesignCommand", tools.DesignCommand())
 
         Gui.addCommand("PatternCommand", tools.PatternCommand())
         Gui.addCommand("PanelCommand", tools.PanelCommand())
         Gui.addCommand("PolarsCommand", tools.PolarsCommand())
 
-        self.appendToolbar("Tools", self.toolbox)
-        self.appendMenu("Tools", self.toolbox)
-        self.appendToolbar("Production", self.productionbox)
-        self.appendMenu("Production", self.productionbox)
+        Gui.addCommand("RefreshCommand", tools.RefreshCommand())
+
+        self.appendToolbar("Tools", self.toolBox)
+        self.appendToolbar("Production", self.productionBox)
+        self.appendToolbar("Develop", self.devBox)
+        self.appendMenu("Tools", self.toolBox)
+        self.appendMenu("Production", self.productionBox)
 
     def Activated(self):
         pass
 
     def Deactivated(self):
         pass
-
-
-try:
-    from tools import Panel_Tool
-
-except ImportError:
-    pass
 
 Gui.addWorkbench(gliderWorkbench())

@@ -2,17 +2,25 @@ import FreeCAD
 import FreeCAD as App
 import FreeCADGui as Gui
 
-from ._glider import OGGlider, OGGliderVP
-from ._tools import BaseTool, export_2d, import_2d
-from .airfoil_tool import AirfoilTool
-from .shape_tool import ShapeTool
-from .arc_tool import ArcTool
-from .aoa_tool import AoaTool, ZrotTool
-from .ballooning_tool import BallooningTool
-from .line_tool import LineTool
-from .merge_tool import AirfoilMergeTool, BallooningMergeTool
-from .panel_methode import PanelTool, polars
-from .cell_tool import CellTool
+try:
+    from importlib import reload
+except ImportError:
+    App.Console.PrintError("this is python2\n")
+    App.Console.PrintWarning("there is a newer version (python3)\n")
+    App.Console.PrintMessage("try to motivate dev to port to python3\n")
+
+import tools._glider as glider
+import tools._tools as tools
+import tools.airfoil_tool as airfoil_tool
+import tools.shape_tool as shape_tool
+import tools.arc_tool as arc_tool
+import tools.aoa_tool as aoa_tool
+import tools.ballooning_tool as ballooning_tool
+import tools.line_tool as line_tool
+import tools.merge_tool as merge_tool
+import tools.panel_methode as pm
+import tools.cell_tool as cell_tool
+import tools.design_tool as design_tool
 import openglider
 
 
@@ -50,18 +58,17 @@ class BaseCommand(object):
         return None
 
     def tool(self, obj):
-        return BaseTool(obj)
+        return tools.BaseTool(obj)
 
 
 class CellCommand(BaseCommand):
     def tool(self, obj):
-        return CellTool(obj)
+        return cell_tool.CellTool(obj)
 
     def GetResources(self):
         return {'Pixmap': 'cell_command.svg',
                 'MenuText': 'edit cells',
                 'ToolTip': 'edit cells'}
-
 
 
 class Gl2dExport(BaseCommand):
@@ -73,7 +80,7 @@ class Gl2dExport(BaseCommand):
     def Activated(self):
         obj = self.glider_obj
         if obj:
-            export_2d(obj)
+            tools.export_2d(obj)
 
 
 class Gl2dImport(BaseCommand):
@@ -85,7 +92,7 @@ class Gl2dImport(BaseCommand):
     def Activated(self):
         obj = self.glider_obj
         if obj:
-            import_2d(obj)
+            tools.import_2d(obj)
 
 
 class PatternCommand(BaseCommand):
@@ -133,8 +140,8 @@ class CreateGlider(BaseCommand):
     @staticmethod
     def create_glider():
         a = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "Glider")
-        OGGlider(a)
-        vp = OGGliderVP(a.ViewObject)
+        glider.OGGlider(a)
+        vp = glider.OGGliderVP(a.ViewObject)
         vp.updateData()
         FreeCAD.ActiveDocument.recompute()
         Gui.SendMsgToActiveView("ViewFit")
@@ -159,7 +166,7 @@ class ShapeCommand(BaseCommand):
                 'ToolTip': 'shape'}
 
     def tool(self, obj):
-        return ShapeTool(obj)
+        return shape_tool.ShapeTool(obj)
 
 
 class ArcCommand(BaseCommand):
@@ -169,7 +176,7 @@ class ArcCommand(BaseCommand):
                 'ToolTip': 'arc'}
 
     def tool(self, obj):
-        return ArcTool(obj)
+        return arc_tool.ArcTool(obj)
 
 
 class AoaCommand(BaseCommand):
@@ -179,7 +186,7 @@ class AoaCommand(BaseCommand):
                 'ToolTip': 'aoa'}
 
     def tool(self, obj):
-        return AoaTool(obj)
+        return aoa_tool.AoaTool(obj)
 
 
 class ZrotCommand(BaseCommand):
@@ -189,7 +196,7 @@ class ZrotCommand(BaseCommand):
                 'ToolTip': 'zrot'}
 
     def tool(self, obj):
-        return ZrotTool(obj)
+        return aoa_tool.ZrotTool(obj)
 
 
 class AirfoilCommand(BaseCommand):
@@ -199,7 +206,7 @@ class AirfoilCommand(BaseCommand):
                 'ToolTip': 'airfoil'}
 
     def tool(self, obj):
-        return AirfoilTool(obj)
+        return airfoil_tool.AirfoilTool(obj)
 
 
 class AirfoilMergeCommand(BaseCommand):
@@ -209,7 +216,7 @@ class AirfoilMergeCommand(BaseCommand):
                 'ToolTip': 'airfoil merge'}
 
     def tool(self, obj):
-        return AirfoilMergeTool(obj)
+        return merge_tool.AirfoilMergeTool(obj)
 
 
 class BallooningCommand(BaseCommand):
@@ -219,7 +226,7 @@ class BallooningCommand(BaseCommand):
                 'ToolTip': 'ballooning'}
 
     def tool(self, obj):
-        return BallooningTool(obj)
+        return ballooning_tool.BallooningTool(obj)
 
 
 class BallooningMergCommand(BaseCommand):
@@ -229,7 +236,7 @@ class BallooningMergCommand(BaseCommand):
                 'ToolTip': 'ballooning merge'}
 
     def tool(self, obj):
-        return BallooningMergeTool(obj)
+        return merge_tool.BallooningMergeTool(obj)
 
 
 class LineCommand(BaseCommand):
@@ -239,7 +246,7 @@ class LineCommand(BaseCommand):
                 'ToolTip': 'lines'}
 
     def tool(self, obj):
-        return LineTool(obj)
+        return line_tool.LineTool(obj)
 
 
 def check_glider(obj):
@@ -257,11 +264,34 @@ class PanelCommand(BaseCommand):
                 'ToolTip': 'panelmethode'}
 
     def tool(self, obj):
-        return PanelTool(obj)
+        return pm.PanelTool(obj)
 
 class PolarsCommand(BaseCommand):
     def GetResources(self):
         return {'Pixmap': 'polar.svg', 'MenuText': 'polars', 'ToolTip': 'polars'}
 
     def tool(self, obj):
-        return polars(obj)
+        return pm.polars(obj)
+
+
+class DesignCommand(BaseCommand):
+    def GetResources(self):
+        return {'Pixmap': 'colors.svg', 'MenuText': 'polars', 'ToolTip': 'polars'}
+
+    def tool(self, obj):
+        return design_tool.DesignTool(obj)
+
+
+class RefreshCommand():
+    def GetResources(self):
+        return {'Pixmap': 'refresh_command.svg', 'MenuText': 'polars', 'ToolTip': 'polars'}
+
+    def IsActive(self):
+        return True
+
+    def Activated(self):
+        mods = [glider, tools, airfoil_tool, shape_tool, arc_tool, aoa_tool]
+        mods += [ballooning_tool, line_tool, merge_tool, pm, cell_tool, design_tool]
+        mods += [openglider]
+        for mod in mods:
+            reload(mod)
