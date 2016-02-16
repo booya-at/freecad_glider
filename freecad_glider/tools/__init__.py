@@ -276,7 +276,7 @@ class PolarsCommand(BaseCommand):
 
 class DesignCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'colors.svg', 'MenuText': 'polars', 'ToolTip': 'polars'}
+        return {'Pixmap': 'design_command.svg', 'MenuText': 'Design', 'ToolTip': 'Design'}
 
     def tool(self, obj):
         return design_tool.DesignTool(obj)
@@ -284,7 +284,7 @@ class DesignCommand(BaseCommand):
 
 class RefreshCommand():
     def GetResources(self):
-        return {'Pixmap': 'refresh_command.svg', 'MenuText': 'polars', 'ToolTip': 'polars'}
+        return {'Pixmap': 'refresh_command.svg', 'MenuText': 'Refresh', 'ToolTip': 'Refresh'}
 
     def IsActive(self):
         return True
@@ -295,3 +295,4 @@ class RefreshCommand():
         mods += [openglider]
         for mod in mods:
             reload(mod)
+        App.Console.PrintLog("RELOADED GLIDER WORKBENCH\n")

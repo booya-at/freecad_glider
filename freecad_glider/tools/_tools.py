@@ -96,6 +96,7 @@ class BaseTool(object):
         self.ParametricGlider = deepcopy(self.obj.ParametricGlider)
         self.obj.ViewObject.Visibility = not hide
         self.view = Gui.ActiveDocument.ActiveView
+        Gui.Selection.clearSelection()
         if turn:
             self.view.viewTop()
 

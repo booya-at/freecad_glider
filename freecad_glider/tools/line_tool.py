@@ -70,7 +70,6 @@ class LineTool(BaseTool):
         self.line_widget = QtGui.QWidget()
         self.lw_att_wid = QtGui.QWidget()
         self.up_att_wid = QtGui.QWidget()
-        self.multi_wid = QtGui.QWidget()
         self.Qline_list = QtGui.QListWidget()
         for _type in LineType.types.values():
             self.Qline_list.addItem(QLineType_item(_type))
@@ -78,7 +77,6 @@ class LineTool(BaseTool):
         self.up_att_lay = QtGui.QFormLayout(self.up_att_wid)
         self.lw_att_lay = QtGui.QFormLayout(self.lw_att_wid)
         self.line_layout = QtGui.QFormLayout(self.line_widget)
-        self.multi_layout = QtGui.QFormLayout(self.multi_wid)
         self.none_layout = QtGui.QFormLayout(self.none_widget)
 
         self.target_length = QtGui.QDoubleSpinBox()
@@ -109,6 +107,21 @@ class LineTool(BaseTool):
         self.up_att_lay.setWidget(0, text_field, QtGui.QLabel("force"))
         self.up_att_lay.setWidget(0, input_field, self.up_att_force)
         self.up_att_force.valueChanged.connect(self.update_up_att_force)
+
+        self.up_att_rib = QtGui.QSpinBox()
+        self.up_att_rib.setMinimum(0)
+        self.up_att_rib.setMaximum(self.ParametricGlider.shape.half_rib_num - 1)
+        self.up_att_lay.setWidget(1, text_field, QtGui.QLabel("rib nr"))
+        self.up_att_lay.setWidget(1, input_field, self.up_att_rib)
+        self.up_att_rib.valueChanged.connect(self.update_up_att_rib)
+
+        self.up_att_pos = QtGui.QDoubleSpinBox()
+        self.up_att_pos.setMinimum(0)
+        self.up_att_pos.setMaximum(1)
+        self.up_att_pos.setSingleStep(0.01)
+        self.up_att_lay.setWidget(2, text_field, QtGui.QLabel("position"))
+        self.up_att_lay.setWidget(2, input_field, self.up_att_pos)
+        self.up_att_pos.valueChanged.connect(self.update_up_att_pos)
 
         self.tool_widget.addWidget(self.none_widget)
         self.tool_widget.addWidget(self.line_widget)
@@ -281,7 +294,6 @@ class LineTool(BaseTool):
         event = event_callback.getEvent()
         if ((event.getKey() == ord("v") or force) and
             (event.getState() == 1)):
-            print("v pressed")
             if self.upper_preview_node:
                 self.add_attachment_point(self.upper_preview_node[0])
             else:
@@ -290,11 +302,11 @@ class LineTool(BaseTool):
                 pos_3D[-1] = 0.
                 if event.wasCtrlDown():
                     node = LowerNode2D(pos_3D[:-1], [0, 0, 0])
-                    point = Lower_Att_Marker(node)
+                    point = Lower_Att_Marker(node, self.ParametricGlider)
                     point.layer = self.layer_combobox.currentText()
                 else:
                     node = BatchNode2D(pos_3D[:-1])
-                    point = NodeMarker(node)
+                    point = NodeMarker(node, self.ParametricGlider)
                     point.layer = self.layer_combobox.currentText()
                 self.shape += point
                 return point
@@ -304,8 +316,8 @@ class LineTool(BaseTool):
         rib_nr = self.xpos.index(x)
         pos = float(self.Qhl_pos.value())
         node = UpperNode2D(rib_nr, pos / 100)
-        node_pos = node.get_2d(self.ParametricGlider.shape)
-        ap = Upper_Att_Marker(node, node_pos)
+        node_pos = node.get_2D(self.ParametricGlider.shape)
+        ap = Upper_Att_Marker(node, self.ParametricGlider)
         ap.layer = self.layer_combobox.currentText()
         self.shape += ap
 
@@ -360,8 +372,21 @@ class LineTool(BaseTool):
             elif show_upper_att_widget(selected_objs):
                 self.tool_widget.setCurrentWidget(self.up_att_wid)
                 self.up_att_force.setValue(selected_objs[0].force)
+                rib_nr = set([i.rib_nr for i in selected_objs])
+                if len(rib_nr) > 1:
+                    self.up_att_rib.setDisabled(True)
+                else:
+                    self.up_att_rib.setValue(list(rib_nr)[0])
+                    self.up_att_rib.setEnabled(True)
+                pos = set([i.rib_pos for i in selected_objs])
+                if len(pos) > 1:
+                    self.up_att_pos.setDisabled(True)
+                else:
+                    print(list(pos)[0])
+                    self.up_att_pos.setValue(list(pos)[0])
+                    self.up_att_pos.setEnabled(True)
             else:
-                self.tool_widget.setCurrentWidget(self.multi_wid)
+                self.tool_widget.setCurrentWidget(self.none_widget)
         else:
             self.tool_widget.setCurrentWidget(self.none_widget)
             self.layer_selection.setEnabled(False)
@@ -386,6 +411,15 @@ class LineTool(BaseTool):
         for obj in self.shape.select_object:
             obj.force = self.up_att_force.value()
 
+    def update_up_att_rib(self, *args):
+        for obj in self.shape.select_object:
+            obj.rib_nr = self.up_att_rib.value()
+
+    def update_up_att_pos(self, *args):
+        print("update pos")
+        for obj in self.shape.select_object:
+            obj.rib_pos = self.up_att_pos.value()
+
     def draw_shape(self):
         self.shape.removeAllChildren()
         self.shape += (Line(vector3D(self.front)),
@@ -397,15 +431,15 @@ class LineTool(BaseTool):
         for node in self.ParametricGlider.lineset.nodes:
             if isinstance(node, UpperNode2D):
                 # coord = self.ParametricGlider.shape_point(node.rib_no, node.position/100)
-                pos = node.get_2d(self.ParametricGlider.shape)
-                obj = Upper_Att_Marker(node, pos)
+                pos = node.get_2D(self.ParametricGlider.shape)
+                obj = Upper_Att_Marker(node, self.ParametricGlider)
                 obj.force = node.force
                 self.shape += obj
             elif isinstance(node, BatchNode2D):
-                obj = NodeMarker(node)
+                obj = NodeMarker(node, self.ParametricGlider)
                 self.shape += obj
             elif isinstance(node, LowerNode2D):
-                obj = Lower_Att_Marker(node)
+                obj = Lower_Att_Marker(node, self.ParametricGlider)
                 obj.pos_3D = node.pos_3D
                 obj._node = node
                 self.shape += obj
@@ -472,12 +506,13 @@ class NodeMarker(Marker):
     ovr_col = "red"
     sel_col = "yellow"
 
-    def __init__(self, node, pos=None):
+    def __init__(self, node, par_glider, pos=None):
         if pos is None:
-            pos = node.pos_2D
+            pos = node.get_2D(par_glider.shape)
         pos = vector3D(pos)
         super(NodeMarker, self).__init__([pos], dynamic=True)
         self._node = node
+        self.par_glider = par_glider
 
     @property
     def node(self):
@@ -503,9 +538,8 @@ class NodeMarker(Marker):
 
 class Upper_Att_Marker(NodeMarker):
     std_col = "blue"
-
-    def __init__(self, node, pos):
-        super(Upper_Att_Marker, self).__init__(node, pos)
+    def __init__(self, node, par_glider):
+        super(Upper_Att_Marker, self).__init__(node, par_glider)
 
     @property
     def force(self):
@@ -515,16 +549,39 @@ class Upper_Att_Marker(NodeMarker):
     def force(self, value):
         self._node.force = value
 
+    @property
+    def rib_nr(self):
+        return self._node.rib_no
+
+    @rib_nr.setter
+    def rib_nr(self, nr):
+        self._node.rib_no = nr
+        self.pos = vector3D(self._node.get_2D(self.par_glider.shape))
+        for foo in self.on_drag:
+            foo()
+
+    @property
+    def rib_pos(self):
+        return self._node.rib_pos
+
+    @rib_pos.setter
+    def rib_pos(self, pos):
+        self._node.rib_pos = pos
+        print("update pos")
+        self.pos = vector3D(self._node.get_2D(self.par_glider.shape))
+        for foo in self.on_drag:
+            foo()
+
     def drag(self, *arg):
-        pass
+        pass        
 
 
 class Lower_Att_Marker(NodeMarker):
     std_col = "green"
 
-    def __init__(self, node):
+    def __init__(self, node, par_glider):
         pos = node.pos_2D
-        super(Lower_Att_Marker, self).__init__(node, pos)
+        super(Lower_Att_Marker, self).__init__(node, par_glider)
 
     @property
     def pos_3D(self):
@@ -562,9 +619,9 @@ class ConnectionLine(Line):
     def update_Line(self):
         self.points = [self.marker1.pos, self.marker2.pos]
 
-    def drag(self, mouse_coords, fact=1.):
-        self.marker1.drag(mouse_coords, fact)
-        self.marker2.drag(mouse_coords, fact)
+    # def drag(self, mouse_coords, fact=1.):
+    #     self.marker1.drag(mouse_coords, fact)
+    #     self.marker2.drag(mouse_coords, fact)
 
     @property
     def drag_objects(self):
@@ -621,4 +678,3 @@ class LayerComboBox(QtGui.QComboBox):
         item = self.findText(text)
         if item != -1:
             self.setCurrentIndex(item)
-

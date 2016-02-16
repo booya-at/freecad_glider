@@ -9,11 +9,11 @@
                 "data": {
                     "controlpoints": [
                         [
-                            1.6115373373031616, 
+                            1.913599830978642, 
                             -0.19701771438121796
                         ], 
                         [
-                            2.79541277885437, 
+                            3.319377899169922, 
                             0.4725531339645386
                         ]
                     ]
@@ -65,41 +65,65 @@
                 "rigidfoils": [], 
                 "materials": [
                     [
-                        "red", 
-                        "white"
+                        "Nccv#F0FF00", 
+                        "Ncv#F0990F"
                     ], 
                     [
-                        "red", 
-                        "white"
+                        "Nccv#F0FF00", 
+                        "Ncv#F0990F"
                     ], 
                     [
-                        "red", 
-                        "white"
+                        "Nccv#F0FF00", 
+                        "Ncv#F0990F"
                     ], 
                     [
-                        "red", 
-                        "white"
+                        "Nccv#F0FF00", 
+                        "Ncv#F0990F"
                     ], 
                     [
-                        "red", 
-                        "white"
+                        "Nccv#F0FF00", 
+                        "Ncv#F0990F"
                     ], 
                     [
-                        "red", 
-                        "white"
+                        "Nccv#F0FF00", 
+                        "Ncv#F0990F"
                     ], 
                     [
-                        "red", 
-                        "white"
+                        "Nccv#F0FF00", 
+                        "Ncv#F0990F"
+                    ], 
+                    [
+                        "Nccv#F0FF00", 
+                        "Ncv#F0990F"
+                    ], 
+                    [
+                        "Nccv#F0FF00", 
+                        "Ncv#F0990F"
+                    ], 
+                    [
+                        "Nccv#F0FF00", 
+                        "Ncv#F0990F"
+                    ], 
+                    [
+                        "Nccv#F0FF00", 
+                        "Ncv#F0990F"
                     ]
                 ], 
                 "diagonals": [], 
                 "cuts": [
                     {
                         "cells": [
+                            0, 
                             1, 
                             2, 
-                            3
+                            3, 
+                            4, 
+                            5, 
+                            6, 
+                            7, 
+                            8, 
+                            9, 
+                            10
                         ], 
                         "right": 0.03, 
                         "type": "folded", 
@@ -107,39 +131,27 @@
                     }, 
                     {
                         "cells": [
-                            4, 
-                            1
-                        ], 
-                        "right": 0.06, 
-                        "type": "folded", 
-                        "left": 0.03
-                    }, 
-                    {
-                        "cells": [
+                            0, 
+                            1, 
                             2, 
                             3, 
-                            4
+                            4, 
+                            5, 
+                            6, 
+                            7, 
+                            8
                         ], 
-                        "right": 0.06, 
+                        "right": 0.1, 
                         "type": "folded", 
-                        "left": 0.06
+                        "left": 0.1
                     }, 
                     {
                         "cells": [
-                            0
+                            9
                         ], 
                         "right": 0.03, 
-                        "type": "orthogonal", 
-                        "left": 0.03
-                    }, 
-                    {
-                        "cells": [
-                            5, 
-                            6
-                        ], 
-                        "right": 0.06, 
-                        "type": "orthogonal", 
-                        "left": 0.06
+                        "type": "folded", 
+                        "left": 0.1
                     }
                 ]
             }, 
@@ -149,20 +161,20 @@
                 "data": {
                     "controlpoints": [
                         [
-                            0.5242343497114672, 
-                            0.20183012124272182
+                            0.6266913414001465, 
+                            0.1523313969373703
                         ], 
                         [
-                            1.470026539647262, 
-                            0.09758548025908453
+                            1.6810827255249023, 
+                            0.1401277780532837
                         ], 
                         [
-                            2.274270801827006, 
-                            0.19170069789360866
+                            2.6573710441589355, 
+                            0.1791793256998062
                         ], 
                         [
-                            2.79541277885437, 
-                            0.08726646259971647
+                            3.319377899169922, 
+                            0.059584055095911026
                         ]
                     ]
                 }
@@ -177,12 +189,12 @@
                         "data": {
                             "controlpoints": [
                                 [
-                                    2.2801365852355957, 
-                                    0.11394479125738144
+                                    1.9721012115478516, 
+                                    -0.3495365381240845
                                 ], 
                                 [
-                                    2.79541277885437, 
-                                    -0.5190264582633972
+                                    3.319377899169922, 
+                                    -1.521081805229187
                                 ]
                             ]
                         }
@@ -197,45 +209,37 @@
                                     0.0
                                 ], 
                                 [
-                                    0.4659020006656647, 
-                                    0.14337816834449768
+                                    0.7684488892555237, 
+                                    0.19076746702194214
                                 ], 
                                 [
-                                    0.9318040013313293, 
-                                    0.2803644835948944
+                                    1.6134673357009888, 
+                                    0.320362389087677
                                 ], 
                                 [
-                                    1.397706389427185, 
-                                    0.43718722462654114
+                                    2.728173017501831, 
+                                    0.7503944635391235
                                 ], 
                                 [
-                                    1.8636080026626587, 
-                                    0.5841207504272461
-                                ], 
-                                [
-                                    2.32951021194458, 
-                                    0.7579695582389832
-                                ], 
-                                [
-                                    2.79541277885437, 
+                                    3.319377899169922, 
                                     1.0
                                 ]
                             ]
                         }
                     }, 
-                    "cell_num": 13, 
+                    "cell_num": 21, 
                     "back_curve": {
                         "_module": "openglider.vector.spline.bezier", 
                         "_type": "SymmetricBezier", 
                         "data": {
                             "controlpoints": [
                                 [
-                                    1.3601843118667603, 
-                                    -1.5447624921798706
+                                    0.5467211604118347, 
+                                    -3.1026675701141357
                                 ], 
                                 [
-                                    2.79541277885437, 
-                                    -1.0382112264633179
+                                    3.319377899169922, 
+                                    -2.2630603313446045
                                 ]
                             ]
                         }
@@ -252,20 +256,16 @@
                         "data": {
                             "controlpoints": [
                                 [
-                                    0.6757639273865437, 
-                                    0.332722919930179
+                                    0.8382994944064258, 
+                                    0.3326022376896143
                                 ], 
                                 [
-                                    1.4184604977573296, 
-                                    -0.274063723044802
+                                    2.385670138542961, 
+                                    -0.2159827390736838
                                 ], 
                                 [
-                                    2.2084549433629785, 
-                                    -0.6357612852148325
-                                ], 
-                                [
-                                    2.3484450991479195, 
-                                    -1.1810890856108895
+                                    2.767400281512316, 
+                                    -1.3917916984748209
                                 ]
                             ]
                         }
@@ -278,19 +278,19 @@
                 "data": {
                     "controlpoints": [
                         [
-                            0.5242343497114672, 
+                            0.6224955139294703, 
                             0.0
                         ], 
                         [
-                            1.470026539647262, 
+                            1.7455646063470205, 
                             0.0
                         ], 
                         [
-                            2.274270801827006, 
+                            2.7005543844604794, 
                             0.0
                         ], 
                         [
-                            2.79541277885437, 
+                            3.319377899169922, 
                             0.0
                         ]
                     ]
@@ -389,7 +389,7 @@
                 }
             ], 
             "speed": 13.6, 
-            "glide": 6.5, 
+            "glide": 8.0, 
             "lineset": {
                 "_module": "openglider.glider.parametric.lines", 
                 "_type": "LineSet2D", 
@@ -399,32 +399,10 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 3, 
-                                "layer": "", 
-                                "rib_pos": 0.1, 
-                                "force": 27.2896718400827, 
-                                "name": "3"
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "UpperNode2D", 
-                            "data": {
-                                "rib_no": 2, 
-                                "layer": "", 
-                                "rib_pos": 0.1, 
-                                "force": 28.5112901151729, 
-                                "name": "2"
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "UpperNode2D", 
-                            "data": {
                                 "rib_no": 1, 
                                 "layer": "", 
-                                "rib_pos": 0.77, 
-                                "force": 5.66788405625294, 
+                                "rib_pos": 0.1, 
+                                "force": 28.98, 
                                 "name": "1"
                             }
                         }, 
@@ -432,23 +410,11 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 1, 
+                                "rib_no": 10, 
                                 "layer": "", 
-                                "rib_pos": 0.1, 
-                                "force": 28.9771521125026, 
-                                "name": "1"
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "BatchNode2D", 
-                            "data": {
-                                "layer": "", 
-                                "pos_2D": [
-                                    1.4797855615615845, 
-                                    -0.35687506198883057
-                                ], 
-                                "name": null
+                                "rib_pos": 0.85, 
+                                "force": 27.33, 
+                                "name": "10"
                             }
                         }, 
                         {
@@ -457,8 +423,8 @@
                             "data": {
                                 "rib_no": 6, 
                                 "layer": "", 
-                                "rib_pos": 0.85, 
-                                "force": 27.3297965848483, 
+                                "rib_pos": 0.77, 
+                                "force": 1.0, 
                                 "name": "6"
                             }
                         }, 
@@ -466,11 +432,11 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 2, 
+                                "rib_no": 9, 
                                 "layer": "", 
-                                "rib_pos": 0.55, 
-                                "force": 15.07313364543, 
-                                "name": "2"
+                                "rib_pos": 0.77, 
+                                "force": 5.15, 
+                                "name": "9"
                             }
                         }, 
                         {
@@ -488,22 +454,11 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 2, 
+                                "rib_no": 0, 
                                 "layer": "", 
                                 "rib_pos": 0.28, 
-                                "force": 27.8920735700704, 
-                                "name": "2"
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "UpperNode2D", 
-                            "data": {
-                                "rib_no": 6, 
-                                "layer": "", 
-                                "rib_pos": 0.02, 
-                                "force": 27.3297965848483, 
-                                "name": "6"
+                                "force": 27.8986229996426, 
+                                "name": "0"
                             }
                         }, 
                         {
@@ -512,8 +467,8 @@
                             "data": {
                                 "layer": "", 
                                 "pos_2D": [
-                                    1.5840579271316528, 
-                                    -0.915193498134613
+                                    4.158632278442383, 
+                                    -1.3514409065246582
                                 ], 
                                 "name": null
                             }
@@ -522,11 +477,104 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 1, 
+                                "rib_no": 7, 
                                 "layer": "", 
-                                "rib_pos": 0.55, 
-                                "force": 15.3319978861405, 
-                                "name": "1"
+                                "rib_pos": 0.11, 
+                                "force": 1.0, 
+                                "name": "7"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "BatchNode2D", 
+                            "data": {
+                                "layer": "", 
+                                "pos_2D": [
+                                    1.232237696647644, 
+                                    -1.7786462306976318
+                                ], 
+                                "name": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "BatchNode2D", 
+                            "data": {
+                                "layer": "", 
+                                "pos_2D": [
+                                    0.12056499719619751, 
+                                    -4.349465370178223
+                                ], 
+                                "name": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 7, 
+                                "layer": "", 
+                                "rib_pos": 0.28, 
+                                "force": 1.0, 
+                                "name": "7"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 4, 
+                                "layer": "", 
+                                "rib_pos": 0.11, 
+                                "force": 1.0, 
+                                "name": "4"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "BatchNode2D", 
+                            "data": {
+                                "layer": "", 
+                                "pos_2D": [
+                                    1.9758851528167725, 
+                                    -1.6876095533370972
+                                ], 
+                                "name": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "BatchNode2D", 
+                            "data": {
+                                "layer": "", 
+                                "pos_2D": [
+                                    2.537827730178833, 
+                                    -2.5900115966796875
+                                ], 
+                                "name": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "BatchNode2D", 
+                            "data": {
+                                "layer": "", 
+                                "pos_2D": [
+                                    0.5254936218261719, 
+                                    -3.281123399734497
+                                ], 
+                                "name": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 3, 
+                                "layer": "", 
+                                "rib_pos": 0.77, 
+                                "force": 5.30251257838343, 
+                                "name": "3"
                             }
                         }, 
                         {
@@ -535,9 +583,53 @@
                             "data": {
                                 "rib_no": 1, 
                                 "layer": "", 
-                                "rib_pos": 0.28, 
-                                "force": 28.3521571078094, 
+                                "rib_pos": 0.77, 
+                                "force": 5.66788405625294, 
                                 "name": "1"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 5, 
+                                "layer": "", 
+                                "rib_pos": 0.11, 
+                                "force": 1.0, 
+                                "name": "5"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 2, 
+                                "layer": "", 
+                                "rib_pos": 0.1, 
+                                "force": 28.5112901151729, 
+                                "name": "2"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 3, 
+                                "layer": "", 
+                                "rib_pos": 0.55, 
+                                "force": 14.4149186826384, 
+                                "name": "3"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 5, 
+                                "layer": "", 
+                                "rib_pos": 0.77, 
+                                "force": 1.0, 
+                                "name": "5"
                             }
                         }, 
                         {
@@ -553,30 +645,93 @@
                         }, 
                         {
                             "_module": "openglider.glider.parametric.lines", 
+                            "_type": "BatchNode2D", 
+                            "data": {
+                                "layer": "", 
+                                "pos_2D": [
+                                    0.706824779510498, 
+                                    0.02694292552769184
+                                ], 
+                                "name": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "BatchNode2D", 
+                            "data": {
+                                "layer": "", 
+                                "pos_2D": [
+                                    2.7363080978393555, 
+                                    -0.8181424736976624
+                                ], 
+                                "name": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
                                 "rib_no": 0, 
                                 "layer": "", 
-                                "rib_pos": 0.28, 
-                                "force": 27.8986229996426, 
+                                "rib_pos": 0.55, 
+                                "force": 15.0963439090568, 
                                 "name": "0"
                             }
                         }, 
                         {
                             "_module": "openglider.glider.parametric.lines", 
-                            "_type": "LowerNode2D", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 10, 
+                                "layer": "", 
+                                "rib_pos": 0.02, 
+                                "force": 27.3297965848483, 
+                                "name": "10"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 9, 
+                                "layer": "", 
+                                "rib_pos": 0.55, 
+                                "force": 14.0322320013242, 
+                                "name": "9"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 3, 
+                                "layer": "", 
+                                "rib_pos": 0.1, 
+                                "force": 27.2896718400827, 
+                                "name": "3"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "BatchNode2D", 
                             "data": {
                                 "layer": "", 
                                 "pos_2D": [
-                                    -0.7851802706718445, 
-                                    -1.8514740467071533
+                                    1.2674994468688965, 
+                                    -0.6690988540649414
                                 ], 
-                                "pos_3D": [
-                                    0.25, 
-                                    0.3, 
-                                    -2.0
-                                ], 
-                                "name": 1
+                                "name": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 7, 
+                                "layer": "", 
+                                "rib_pos": 0.77, 
+                                "force": 1.0, 
+                                "name": "7"
                             }
                         }, 
                         {
@@ -596,8 +751,8 @@
                             "data": {
                                 "rib_no": 4, 
                                 "layer": "", 
-                                "rib_pos": 0.1, 
-                                "force": 26.5891707975553, 
+                                "rib_pos": 0.55, 
+                                "force": 1.0, 
                                 "name": "4"
                             }
                         }, 
@@ -605,22 +760,55 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 3, 
+                                "rib_no": 7, 
                                 "layer": "", 
                                 "rib_pos": 0.55, 
-                                "force": 14.4149186826384, 
-                                "name": "3"
+                                "force": 1.0, 
+                                "name": "7"
                             }
                         }, 
                         {
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 0, 
+                                "rib_no": 10, 
                                 "layer": "", 
-                                "rib_pos": 0.55, 
-                                "force": 15.0963439090568, 
-                                "name": "0"
+                                "rib_pos": 0.5, 
+                                "force": 27.3297965848483, 
+                                "name": "10"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 4, 
+                                "layer": "", 
+                                "rib_pos": 0.77, 
+                                "force": 1.0, 
+                                "name": "4"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 5, 
+                                "layer": "", 
+                                "rib_pos": 0.28, 
+                                "force": 1.0, 
+                                "name": "5"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 2, 
+                                "layer": "", 
+                                "rib_pos": 0.28, 
+                                "force": 27.8920735700704, 
+                                "name": "2"
                             }
                         }, 
                         {
@@ -629,8 +817,32 @@
                             "data": {
                                 "layer": "", 
                                 "pos_2D": [
-                                    0.40633687376976013, 
-                                    -0.9595043063163757
+                                    0.3840513527393341, 
+                                    -0.6430792808532715
+                                ], 
+                                "name": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "BatchNode2D", 
+                            "data": {
+                                "layer": "", 
+                                "pos_2D": [
+                                    0.9558340311050415, 
+                                    1.0649244785308838
+                                ], 
+                                "name": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "BatchNode2D", 
+                            "data": {
+                                "layer": "", 
+                                "pos_2D": [
+                                    2.0195813179016113, 
+                                    -0.7607033252716064
                                 ], 
                                 "name": null
                             }
@@ -642,7 +854,7 @@
                                 "rib_no": 4, 
                                 "layer": "", 
                                 "rib_pos": 0.28, 
-                                "force": 26.003546335214, 
+                                "force": 1.0, 
                                 "name": "4"
                             }
                         }, 
@@ -652,21 +864,20 @@
                             "data": {
                                 "rib_no": 6, 
                                 "layer": "", 
-                                "rib_pos": 0.5, 
-                                "force": 27.3297965848483, 
+                                "rib_pos": 0.28, 
+                                "force": 1.0, 
                                 "name": "6"
                             }
                         }, 
                         {
                             "_module": "openglider.glider.parametric.lines", 
-                            "_type": "BatchNode2D", 
+                            "_type": "UpperNode2D", 
                             "data": {
+                                "rib_no": 5, 
                                 "layer": "", 
-                                "pos_2D": [
-                                    0.472499281167984, 
-                                    -0.32321831583976746
-                                ], 
-                                "name": null
+                                "rib_pos": 0.55, 
+                                "force": 1.0, 
+                                "name": "5"
                             }
                         }, 
                         {
@@ -675,8 +886,37 @@
                             "data": {
                                 "layer": "", 
                                 "pos_2D": [
-                                    2.4067673683166504, 
-                                    -0.6965799927711487
+                                    2.0849690437316895, 
+                                    -0.04110030084848404
+                                ], 
+                                "name": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "LowerNode2D", 
+                            "data": {
+                                "layer": "", 
+                                "pos_2D": [
+                                    -1.20449697971344, 
+                                    -1.3500800132751465
+                                ], 
+                                "pos_3D": [
+                                    1.0, 
+                                    0.3, 
+                                    -4.0
+                                ], 
+                                "name": 1
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "BatchNode2D", 
+                            "data": {
+                                "layer": "", 
+                                "pos_2D": [
+                                    2.7363076210021973, 
+                                    -1.6544935703277588
                                 ], 
                                 "name": null
                             }
@@ -685,22 +925,78 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 4, 
+                                "rib_no": 1, 
                                 "layer": "", 
-                                "rib_pos": 0.77, 
-                                "force": 5.14796474576208, 
-                                "name": "4"
+                                "rib_pos": 0.55, 
+                                "force": 15.3319978861405, 
+                                "name": "1"
                             }
                         }, 
                         {
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 3, 
+                                "rib_no": 6, 
                                 "layer": "", 
-                                "rib_pos": 0.77, 
-                                "force": 5.30251257838343, 
-                                "name": "3"
+                                "rib_pos": 0.11, 
+                                "force": 1.0, 
+                                "name": "6"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 2, 
+                                "layer": "", 
+                                "rib_pos": 0.55, 
+                                "force": 15.07313364543, 
+                                "name": "2"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 6, 
+                                "layer": "", 
+                                "rib_pos": 0.55, 
+                                "force": 1.0, 
+                                "name": "6"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 1, 
+                                "layer": "", 
+                                "rib_pos": 0.28, 
+                                "force": 28.3521571078094, 
+                                "name": "1"
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "BatchNode2D", 
+                            "data": {
+                                "layer": "", 
+                                "pos_2D": [
+                                    0.4094938337802887, 
+                                    -1.8196607828140259
+                                ], 
+                                "name": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "UpperNode2D", 
+                            "data": {
+                                "rib_no": 9, 
+                                "layer": "", 
+                                "rib_pos": 0.28, 
+                                "force": 26.003546335214, 
+                                "name": "9"
                             }
                         }, 
                         {
@@ -718,11 +1014,11 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 4, 
+                                "rib_no": 9, 
                                 "layer": "", 
-                                "rib_pos": 0.55, 
-                                "force": 14.0322320013242, 
-                                "name": "4"
+                                "rib_pos": 0.1, 
+                                "force": 26.5891707975553, 
+                                "name": "9"
                             }
                         }
                     ], 
@@ -731,75 +1027,9 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "Line2D", 
                             "data": {
-                                "upper_node": 23, 
+                                "upper_node": 30, 
                                 "layer": "", 
-                                "lower_node": 15, 
-                                "line_type": "cousin.ctl900360", 
-                                "target_length": 1.3
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 16, 
-                                "layer": "", 
-                                "lower_node": 23, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 3, 
-                                "layer": "", 
-                                "lower_node": 23, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 14, 
-                                "layer": "", 
-                                "lower_node": 23, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 12, 
-                                "layer": "", 
-                                "lower_node": 23, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 4, 
-                                "layer": "", 
-                                "lower_node": 15, 
-                                "line_type": "cousin.ctl900360", 
-                                "target_length": 1.1
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 1, 
-                                "layer": "", 
-                                "lower_node": 4, 
+                                "lower_node": 37, 
                                 "line_type": "cousin.vectraline12950", 
                                 "target_length": null
                             }
@@ -810,205 +1040,7 @@
                             "data": {
                                 "upper_node": 0, 
                                 "layer": "", 
-                                "lower_node": 4, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 8, 
-                                "layer": "", 
-                                "lower_node": 4, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 7, 
-                                "layer": "", 
-                                "lower_node": 4, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 20, 
-                                "layer": "", 
-                                "lower_node": 15, 
-                                "line_type": "cousin.ctl900360", 
-                                "target_length": 1.3
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 19, 
-                                "layer": "", 
-                                "lower_node": 20, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 11, 
-                                "layer": "", 
-                                "lower_node": 20, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 27, 
-                                "layer": "", 
-                                "lower_node": 20, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 2, 
-                                "layer": "", 
-                                "lower_node": 20, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 10, 
-                                "layer": "", 
-                                "lower_node": 15, 
-                                "line_type": "cousin.ctl900360", 
-                                "target_length": 1.1
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 6, 
-                                "layer": "", 
-                                "lower_node": 10, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 18, 
-                                "layer": "", 
-                                "lower_node": 10, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 13, 
-                                "layer": "", 
-                                "lower_node": 10, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 26, 
-                                "layer": "", 
-                                "lower_node": 10, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 24, 
-                                "layer": "", 
-                                "lower_node": 15, 
-                                "line_type": "cousin.ctl900360", 
-                                "target_length": 1.2
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 17, 
-                                "layer": "", 
-                                "lower_node": 24, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 9, 
-                                "layer": "", 
-                                "lower_node": 24, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 21, 
-                                "layer": "", 
-                                "lower_node": 24, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 22, 
-                                "layer": "", 
-                                "lower_node": 24, 
-                                "line_type": "cousin.vectraline12950", 
-                                "target_length": null
-                            }
-                        }, 
-                        {
-                            "_module": "openglider.glider.parametric.lines", 
-                            "_type": "Line2D", 
-                            "data": {
-                                "upper_node": 28, 
-                                "layer": "", 
-                                "lower_node": 24, 
+                                "lower_node": 37, 
                                 "line_type": "cousin.vectraline12950", 
                                 "target_length": null
                             }
@@ -1019,7 +1051,161 @@
                             "data": {
                                 "upper_node": 5, 
                                 "layer": "", 
-                                "lower_node": 24, 
+                                "lower_node": 37, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 50, 
+                                "layer": "", 
+                                "lower_node": 37, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 18, 
+                                "layer": "", 
+                                "lower_node": 28, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 27, 
+                                "layer": "", 
+                                "lower_node": 28, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 36, 
+                                "layer": "", 
+                                "lower_node": 28, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 4, 
+                                "layer": "", 
+                                "lower_node": 28, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 24, 
+                                "layer": "", 
+                                "lower_node": 51, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 46, 
+                                "layer": "", 
+                                "lower_node": 51, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 53, 
+                                "layer": "", 
+                                "lower_node": 51, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 16, 
+                                "layer": "", 
+                                "lower_node": 51, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 48, 
+                                "layer": "", 
+                                "lower_node": 8, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 19, 
+                                "layer": "", 
+                                "lower_node": 8, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 21, 
+                                "layer": "", 
+                                "lower_node": 8, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 15, 
+                                "layer": "", 
+                                "lower_node": 8, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 54, 
+                                "layer": "", 
+                                "lower_node": 6, 
                                 "line_type": "cousin.vectraline12950", 
                                 "target_length": null
                             }
@@ -1030,9 +1216,405 @@
                             "data": {
                                 "upper_node": 25, 
                                 "layer": "", 
-                                "lower_node": 24, 
+                                "lower_node": 6, 
                                 "line_type": "cousin.vectraline12950", 
                                 "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 52, 
+                                "layer": "", 
+                                "lower_node": 6, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 33, 
+                                "layer": "", 
+                                "lower_node": 6, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 26, 
+                                "layer": "", 
+                                "lower_node": 6, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 1, 
+                                "layer": "", 
+                                "lower_node": 6, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 3, 
+                                "layer": "", 
+                                "lower_node": 6, 
+                                "line_type": "cousin.vectraline12950", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 38, 
+                                "layer": "", 
+                                "lower_node": 44, 
+                                "line_type": "default", 
+                                "target_length": 1.0
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 22, 
+                                "layer": "", 
+                                "lower_node": 38, 
+                                "line_type": "default", 
+                                "target_length": 1.0
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 28, 
+                                "layer": "", 
+                                "lower_node": 22, 
+                                "line_type": "default", 
+                                "target_length": 1.0
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 37, 
+                                "layer": "", 
+                                "lower_node": 22, 
+                                "line_type": "default", 
+                                "target_length": 1.0
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 51, 
+                                "layer": "", 
+                                "lower_node": 14, 
+                                "line_type": "default", 
+                                "target_length": 1.0
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 8, 
+                                "layer": "", 
+                                "lower_node": 14, 
+                                "line_type": "default", 
+                                "target_length": 1.0
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 34, 
+                                "layer": "", 
+                                "lower_node": 12, 
+                                "line_type": "default", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 20, 
+                                "layer": "", 
+                                "lower_node": 12, 
+                                "line_type": "default", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 42, 
+                                "layer": "", 
+                                "lower_node": 12, 
+                                "line_type": "default", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 31, 
+                                "layer": "", 
+                                "lower_node": 12, 
+                                "line_type": "default", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 35, 
+                                "layer": "", 
+                                "lower_node": 39, 
+                                "line_type": "default", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 17, 
+                                "layer": "", 
+                                "lower_node": 39, 
+                                "line_type": "default", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 11, 
+                                "layer": "", 
+                                "lower_node": 39, 
+                                "line_type": "default", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 40, 
+                                "layer": "", 
+                                "lower_node": 39, 
+                                "line_type": "default", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 41, 
+                                "layer": "", 
+                                "lower_node": 23, 
+                                "line_type": "default", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 47, 
+                                "layer": "", 
+                                "lower_node": 23, 
+                                "line_type": "default", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 7, 
+                                "layer": "", 
+                                "lower_node": 23, 
+                                "line_type": "default", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 10, 
+                                "layer": "", 
+                                "lower_node": 23, 
+                                "line_type": "default", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 49, 
+                                "layer": "", 
+                                "lower_node": 45, 
+                                "line_type": "default", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 32, 
+                                "layer": "", 
+                                "lower_node": 45, 
+                                "line_type": "default", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 29, 
+                                "layer": "", 
+                                "lower_node": 45, 
+                                "line_type": "default", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 2, 
+                                "layer": "", 
+                                "lower_node": 45, 
+                                "line_type": "default", 
+                                "target_length": null
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 45, 
+                                "layer": "", 
+                                "lower_node": 13, 
+                                "line_type": "default", 
+                                "target_length": 1.0
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 12, 
+                                "layer": "", 
+                                "lower_node": 13, 
+                                "line_type": "default", 
+                                "target_length": 1.0
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 23, 
+                                "layer": "", 
+                                "lower_node": 43, 
+                                "line_type": "default", 
+                                "target_length": 1.0
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 39, 
+                                "layer": "", 
+                                "lower_node": 43, 
+                                "line_type": "default", 
+                                "target_length": 1.0
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 14, 
+                                "layer": "", 
+                                "lower_node": 9, 
+                                "line_type": "default", 
+                                "target_length": 1.0
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 9, 
+                                "layer": "", 
+                                "lower_node": 44, 
+                                "line_type": "default", 
+                                "target_length": 1.0
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 13, 
+                                "layer": "", 
+                                "lower_node": 9, 
+                                "line_type": "default", 
+                                "target_length": 1.0
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 43, 
+                                "layer": "", 
+                                "lower_node": 38, 
+                                "line_type": "default", 
+                                "target_length": 1.0
+                            }
+                        }, 
+                        {
+                            "_module": "openglider.glider.parametric.lines", 
+                            "_type": "Line2D", 
+                            "data": {
+                                "upper_node": 6, 
+                                "layer": "", 
+                                "lower_node": 38, 
+                                "line_type": "default", 
+                                "target_length": 2.0
                             }
                         }
                     ]
@@ -1055,19 +1637,11 @@
                                     ], 
                                     [
                                         0.0, 
-                                        -0.022510631009936333
+                                        -0.06126458942890167
                                     ], 
                                     [
-                                        0.13454890251159668, 
-                                        -0.0508367158472538
-                                    ], 
-                                    [
-                                        0.3953703045845032, 
-                                        -0.05582135170698166
-                                    ], 
-                                    [
-                                        0.7674573063850403, 
-                                        -0.030818404629826546
+                                        0.5485577583312988, 
+                                        -0.0868212953209877
                                     ], 
                                     [
                                         1.0, 
@@ -1082,552 +1656,552 @@
                                 0.0
                             ], 
                             [
-                                0.9661119397486291, 
-                                0.006578782752916809
+                                0.963253159579097, 
+                                0.007289434563485146
                             ], 
                             [
-                                0.932871185664093, 
-                                0.012942261416429833
+                                0.9272806822214524, 
+                                0.01433397153174519
                             ], 
                             [
-                                0.900277737746392, 
-                                0.019090435990539077
+                                0.8920825679270667, 
+                                0.021133610904780137
                             ], 
                             [
-                                0.8683315959955259, 
-                                0.025023306475244533
+                                0.8576588166959395, 
+                                0.027688352682589987
                             ], 
                             [
-                                0.8370327604114948, 
-                                0.030740872870546207
+                                0.8240094285280709, 
+                                0.03399819686517473
                             ], 
                             [
-                                0.8063812309942984, 
-                                0.0362431351764441
+                                0.7911344034234608, 
+                                0.04006314345253438
                             ], 
                             [
-                                0.7763770077439373, 
-                                0.041530093392938214
+                                0.7590337413821093, 
+                                0.04588319244466893
                             ], 
                             [
-                                0.7470200906604109, 
-                                0.04660174752002854
+                                0.7277074424040164, 
+                                0.05145834384157838
                             ], 
                             [
-                                0.7183104797437194, 
-                                0.05145809755771508
+                                0.6971555064891821, 
+                                0.056788597643262724
                             ], 
                             [
-                                0.6902481749938632, 
-                                0.05609914350599783
+                                0.6673779336376067, 
+                                0.061873953849721976
                             ], 
                             [
-                                0.6628331764108416, 
-                                0.06052488536487681
+                                0.6383747238492895, 
+                                0.06671441246095612
                             ], 
                             [
-                                0.6360654839946552, 
-                                0.064735323134352
+                                0.6101458771242312, 
+                                0.07130997347696517
                             ], 
                             [
-                                0.6099450977453037, 
-                                0.0687304568144234
+                                0.5826913934624314, 
+                                0.07566063689774913
                             ], 
                             [
-                                0.5844720176627871, 
-                                0.07251028640509102
+                                0.55601127286389, 
+                                0.07976640272330797
                             ], 
                             [
-                                0.5596462437471055, 
-                                0.07607481190635487
+                                0.5301055153286075, 
+                                0.08362727095364172
                             ], 
                             [
-                                0.5354677759982587, 
-                                0.07942403331821492
+                                0.5049741208565832, 
+                                0.08724324158875038
                             ], 
                             [
-                                0.5119366144162472, 
-                                0.0825579506406712
+                                0.480617089447818, 
+                                0.09061431462863392
                             ], 
                             [
-                                0.48905275900107026, 
-                                0.08547656387372368
+                                0.4570344211023111, 
+                                0.09374049007329238
                             ], 
                             [
-                                0.4668162097527284, 
-                                0.08817987301737237
+                                0.4342261158200628, 
+                                0.09662176792272573
                             ], 
                             [
-                                0.4452269666712215, 
-                                0.09066787807161732
+                                0.4121921736010732, 
+                                0.09925814817693399
                             ], 
                             [
-                                0.4242850297565496, 
-                                0.09294057903645844
+                                0.3909325944453421, 
+                                0.10164963083591713
                             ], 
                             [
-                                0.4039903990087126, 
-                                0.09499797591189581
+                                0.3704473783528696, 
+                                0.10379621589967518
                             ], 
                             [
-                                0.38434307442771065, 
-                                0.0968400686979294
+                                0.35073652532365596, 
+                                0.10569790336820815
                             ], 
                             [
-                                0.36534305601354355, 
-                                0.09846685739455918
+                                0.33180003535770064, 
+                                0.107354693241516
                             ], 
                             [
-                                0.3469903437662114, 
-                                0.09987834200178516
+                                0.31363790845500394, 
+                                0.10876658551959874
                             ], 
                             [
-                                0.32928493768571426, 
-                                0.1010745225196074
+                                0.2962501446155659, 
+                                0.1099335802024564
                             ], 
                             [
-                                0.3122268377720521, 
-                                0.10205539894802584
+                                0.2796367438393865, 
+                                0.11085567729008898
                             ], 
                             [
-                                0.2958160440252248, 
-                                0.1028209712870405
+                                0.26379770612646564, 
+                                0.11153287678249643
                             ], 
                             [
-                                0.2800525564452325, 
-                                0.10337123953665137
+                                0.24873303147680342, 
+                                0.11196517867967876
                             ], 
                             [
-                                0.2649363750320752, 
-                                0.10370620369685846
+                                0.23444271989039978, 
+                                0.11215258298163602
                             ], 
                             [
-                                0.2504674997857528, 
-                                0.10382586376766176
+                                0.22092677136725478, 
+                                0.1120950896883682
                             ], 
                             [
-                                0.2366459307062653, 
-                                0.10373021974906127
+                                0.20818518590736826, 
+                                0.11179269879987523
                             ], 
                             [
-                                0.22347166779361283, 
-                                0.10341927164105702
+                                0.19621796351074042, 
+                                0.1112454103161572
                             ], 
                             [
-                                0.21094471104779533, 
-                                0.10289301944364898
+                                0.18502510417737122, 
+                                0.11045322423721407
                             ], 
                             [
-                                0.199027189410201, 
-                                0.10216221034939965
+                                0.17454756069924493, 
+                                0.10943117076122218
                             ], 
                             [
-                                0.18749187652916, 
-                                0.10129132751368394
+                                0.16443104982826798, 
+                                0.10826943107723964
                             ], 
                             [
-                                0.1763009013460604, 
-                                0.1002911181290644
+                                0.15461652435642456, 
+                                0.10698303538344284
                             ], 
                             [
-                                0.16545426386090242, 
-                                0.099161582195541
+                                0.14510398428371488, 
+                                0.10557198367983173
                             ], 
                             [
-                                0.15495196407368594, 
-                                0.0979027197131137
+                                0.13589342961013884, 
+                                0.10403627596640633
                             ], 
                             [
-                                0.14479400198441095, 
-                                0.09651453068178256
+                                0.12698486033569636, 
+                                0.10237591224316663
                             ], 
                             [
-                                0.13498037759307754, 
-                                0.09499701510154758
+                                0.1183782764603876, 
+                                0.10059089251011266
                             ], 
                             [
-                                0.12551109089968557, 
-                                0.09335017297240872
+                                0.1100736779842124, 
+                                0.0986812167672444
                             ], 
                             [
-                                0.11638614190423521, 
-                                0.09157400429436599
+                                0.10207106490717092, 
+                                0.09664688501456184
                             ], 
                             [
-                                0.1076055306067263, 
-                                0.08966850906741941
+                                0.09437043722926303, 
+                                0.094487897252065
                             ], 
                             [
-                                0.09916925700715899, 
-                                0.08763368729156898
+                                0.08697179495048883, 
+                                0.09220425347975386
                             ], 
                             [
-                                0.0910773211055332, 
-                                0.0854695389668147
+                                0.07987513807084827, 
+                                0.08979595369762845
                             ], 
                             [
-                                0.08332972290184887, 
-                                0.0831760640931565
+                                0.0730804665903413, 
+                                0.08726299790568873
                             ], 
                             [
-                                0.07592646239610612, 
-                                0.08075326267059449
+                                0.06658778050896802, 
+                                0.08460538610393474
                             ], 
                             [
-                                0.06886753958830484, 
-                                0.0782011346991286
+                                0.060397079826728345, 
+                                0.08182311829236644
                             ], 
                             [
-                                0.062152954478445134, 
-                                0.07551968017875885
+                                0.05450836454362234, 
+                                0.07891619447098387
                             ], 
                             [
-                                0.05578270706652691, 
-                                0.07270889910948523
+                                0.04892163465964995, 
+                                0.07588461463978699
                             ], 
                             [
-                                0.04975679735255025, 
-                                0.06976879149130777
+                                0.04363689017481123, 
+                                0.07272837879877585
                             ], 
                             [
-                                0.04407522533651512, 
-                                0.06669935732422644
+                                0.038654131089106154, 
+                                0.06944748694795042
                             ], 
                             [
-                                0.03873799101842147, 
-                                0.06350059660824124
+                                0.03397335740253469, 
+                                0.06604193908731067
                             ], 
                             [
-                                0.033745094398269386, 
-                                0.06017250934335219
+                                0.0295945691150969, 
+                                0.06251173521685666
                             ], 
                             [
-                                0.029096535476058786, 
-                                0.056715095529559265
+                                0.025517766226792717, 
+                                0.05885687533658832
                             ], 
                             [
-                                0.024792314251789748, 
-                                0.053128355166862505
+                                0.021742948737622208, 
+                                0.05507735944650574
                             ], 
                             [
-                                0.02083243072546223, 
-                                0.04941228825526188
+                                0.01827011664758534, 
+                                0.05117318754660887
                             ], 
                             [
-                                0.01721688489707621, 
-                                0.04556689479475736
+                                0.015099269956682086, 
+                                0.04714435963689767
                             ], 
                             [
-                                0.01394567676663174, 
-                                0.04159217478534901
+                                0.012230408664912496, 
+                                0.042990875717372215
                             ], 
                             [
-                                0.011018806334128769, 
-                                0.037488128227036774
+                                0.00966353277227653, 
+                                0.03871273578803244
                             ], 
                             [
-                                0.008436273599567347, 
-                                0.033254755119820706
+                                0.007398642278774225, 
+                                0.03430993984887842
                             ], 
                             [
-                                0.006198078562947429, 
-                                0.028892055463700737
+                                0.005435737184405545, 
+                                0.029782487899910056
                             ], 
                             [
-                                0.0043042212242690525, 
-                                0.024400029258676945
+                                0.0037748174891705216, 
+                                0.025130379941127445
                             ], 
                             [
-                                0.002754701583532198, 
-                                0.019778676504749296
+                                0.0024158831930691372, 
+                                0.020353615972530555
                             ], 
                             [
-                                0.0015495196407368573, 
-                                0.015027997201917742
+                                0.0013589342961013863, 
+                                0.015452195994119325
                             ], 
                             [
-                                0.0006886753958830495, 
-                                0.01014799135018237
+                                0.0006039707982672843, 
+                                0.010426120005893854
                             ], 
                             [
-                                0.00017216884897076104, 
-                                0.005138658949543096
+                                0.00015099269956681994, 
+                                0.005275388007854051
                             ], 
                             [
                                 0.0, 
                                 0.0
                             ], 
                             [
-                                0.0002260851123908367, 
-                                -0.0025818750052561254
+                                0.00023043804172707367, 
+                                -0.003510834223155939
                             ], 
                             [
-                                0.0009043404495633468, 
-                                -0.00510764355495231
+                                0.0009217521669082947, 
+                                -0.006940196089272838
                             ], 
                             [
-                                0.00203476601151753, 
-                                -0.0075773056490885515
+                                0.0020739423755436626, 
+                                -0.0102880855983507
                             ], 
                             [
-                                0.0036173617982533874, 
-                                -0.009990861287664852
+                                0.0036870086676331786, 
+                                -0.013554502750389517
                             ], 
                             [
-                                0.005652127809770918, 
-                                -0.01234831047068121
+                                0.005760951043176842, 
+                                -0.016739447545389297
                             ], 
                             [
-                                0.00813906404607012, 
-                                -0.014649653198137626
+                                0.00829576950217465, 
+                                -0.019842919983350037
                             ], 
                             [
-                                0.011078170507150998, 
-                                -0.0168948894700341
+                                0.01129146404462661, 
+                                -0.022864920064271738
                             ], 
                             [
-                                0.01446944719301355, 
-                                -0.019084019286370633
+                                0.014748034670532715, 
+                                -0.025805447788154398
                             ], 
                             [
-                                0.01831289410365777, 
-                                -0.021217042647147223
+                                0.018665481379892965, 
+                                -0.028664503154998015
                             ], 
                             [
-                                0.02260851123908367, 
-                                -0.023293959552363873
+                                0.023043804172707367, 
+                                -0.031442086164802596
                             ], 
                             [
-                                0.027356298599291243, 
-                                -0.02531477000202058
+                                0.027883003048975917, 
+                                -0.034138196817568134
                             ], 
                             [
-                                0.03255625618428048, 
-                                -0.027279473996117343
+                                0.0331830780086986, 
+                                -0.036752835113294635
                             ], 
                             [
-                                0.0382083839940514, 
-                                -0.029188071534654168
+                                0.038944029051875446, 
+                                -0.0392860010519821
                             ], 
                             [
-                                0.04431268202860399, 
-                                -0.03104056261763105
+                                0.04516585617850644, 
+                                -0.041737694633630515
                             ], 
                             [
-                                0.05086915028793825, 
-                                -0.03283694724504799
+                                0.05184855938859157, 
+                                -0.04410791585823989
                             ], 
                             [
-                                0.0578777887720542, 
-                                -0.034577225416904986
+                                0.05899213868213086, 
+                                -0.046396664725810235
                             ], 
                             [
-                                0.0653385974809518, 
-                                -0.03626139713320205
+                                0.06659659405912428, 
+                                -0.048603941236341534
                             ], 
                             [
-                                0.07324375372753252, 
-                                -0.03788318047352797
+                                0.07466192551957186, 
+                                -0.05072974538983379
                             ], 
                             [
-                                0.0815741353877776, 
-                                -0.03942721963243321
+                                0.08318813306347358, 
+                                -0.05277407718628701
                             ], 
                             [
-                                0.09032887327423168, 
-                                -0.04089281661876095
+                                0.09217521669082947, 
+                                -0.05473693662570119
                             ], 
                             [
-                                0.09950796738689476, 
-                                -0.04227997143251121
+                                0.1016231764016395, 
+                                -0.05661832370807633
                             ], 
                             [
-                                0.1091114177257668, 
-                                -0.04358868407368398
+                                0.11153201219590367, 
+                                -0.05841823843341243
                             ], 
                             [
-                                0.11913922429084778, 
-                                -0.04481895454227924
+                                0.12190172407362196, 
+                                -0.060136680801709495
                             ], 
                             [
-                                0.12959138708213774, 
-                                -0.04597078283829702
+                                0.1327323120347944, 
+                                -0.06177365081296751
                             ], 
                             [
-                                0.14046790609963675, 
-                                -0.04704416896173732
+                                0.14402377607942105, 
+                                -0.06332914846718649
                             ], 
                             [
-                                0.1517687813433447, 
-                                -0.048039112912600115
+                                0.15577611620750179, 
+                                -0.06480317376436644
                             ], 
                             [
-                                0.16349401281326165, 
-                                -0.04895561469088543
+                                0.1679893324190367, 
+                                -0.06619572670450734
                             ], 
                             [
-                                0.1756436005093876, 
-                                -0.049793674296593246
+                                0.18066342471402577, 
+                                -0.06750680728760919
                             ], 
                             [
-                                0.18821754443172245, 
-                                -0.05055329172972357
+                                0.19379839309246893, 
+                                -0.068736415513672
                             ], 
                             [
-                                0.2012158445802663, 
-                                -0.05123446699027641
+                                0.20739423755436628, 
+                                -0.0698845513826958
                             ], 
                             [
-                                0.21463850095501918, 
-                                -0.05183720007825176
+                                0.2214509580997178, 
+                                -0.07095121489468054
                             ], 
                             [
-                                0.22848551355598104, 
-                                -0.05236149099364961
+                                0.23596855472852343, 
+                                -0.07193640604962623
                             ], 
                             [
-                                0.24275688238315188, 
-                                -0.05280733973646998
+                                0.25094702744078323, 
+                                -0.0728401248475329
                             ], 
                             [
-                                0.2574526074365317, 
-                                -0.05317474630671285
+                                0.26638637623649714, 
+                                -0.07366237128840053
                             ], 
                             [
-                                0.2725663846204121, 
-                                -0.05346091879765305
+                                0.28226620298152066, 
+                                -0.07439240951594173
                             ], 
                             [
-                                0.28806038936054323, 
-                                -0.0536491057689395
+                                0.29846411887098573, 
+                                -0.0749658243924323
                             ], 
                             [
-                                0.30392831756121674, 
-                                -0.053736515313847
+                                0.3149597257707481, 
+                                -0.07537188006158488
                             ], 
                             [
-                                0.32017016922243247, 
-                                -0.05372314743237557
+                                0.3317530236808074, 
+                                -0.07561057652339943
                             ], 
                             [
-                                0.3367859443441906, 
-                                -0.05360900212452519
+                                0.34884401260116377, 
+                                -0.07568191377787599
                             ], 
                             [
-                                0.35377564292649116, 
-                                -0.05339407939029588
+                                0.3662326925318172, 
+                                -0.07558589182501455
                             ], 
                             [
-                                0.3711392649693339, 
-                                -0.05307837922968764
+                                0.38391906347276783, 
+                                -0.07532251066481509
                             ], 
                             [
-                                0.3888768104727192, 
-                                -0.05266190164270045
+                                0.4019031254240155, 
+                                -0.07489177029727763
                             ], 
                             [
-                                0.4069882794366466, 
-                                -0.052144646629334324
+                                0.4201848783855602, 
+                                -0.07429367072240216
                             ], 
                             [
-                                0.42547367186111656, 
-                                -0.05152661418958925
+                                0.4387643223574022, 
+                                -0.07352821194018869
                             ], 
                             [
-                                0.4443329877461287, 
-                                -0.050807804323465246
+                                0.457641457339541, 
+                                -0.07259539395063722
                             ], 
                             [
-                                0.46356622709168327, 
-                                -0.04998821703096231
+                                0.47681628333197695, 
+                                -0.07149521675374773
                             ], 
                             [
-                                0.4831733898977802, 
-                                -0.04906785231208043
+                                0.4962888003347101, 
+                                -0.07022768034952023
                             ], 
                             [
-                                0.5031544761644193, 
-                                -0.048046710166819606
+                                0.5160590083477402, 
+                                -0.06879278473795475
                             ], 
                             [
-                                0.523509485891601, 
-                                -0.046924790595179844
+                                0.5361269073710675, 
+                                -0.06719052991905124
                             ], 
                             [
-                                0.5442384190793249, 
-                                -0.045702093597161146
+                                0.5564924974046918, 
+                                -0.06542091589280973
                             ], 
                             [
-                                0.5653412757275912, 
-                                -0.0443786191727635
+                                0.5771557784486134, 
+                                -0.06348394265923021
                             ], 
                             [
-                                0.5868161374143983, 
-                                -0.04295366933004768
+                                0.5981167505028318, 
+                                -0.0613796102183127
                             ], 
                             [
-                                0.6086207988557133, 
-                                -0.04141188824634997
+                                0.6193754135673473, 
+                                -0.05910791857005718
                             ], 
                             [
-                                0.6307379942535228, 
-                                -0.039746993994217064
+                                0.64093176764216, 
+                                -0.056668867714463646
                             ], 
                             [
-                                0.6531677236078266, 
-                                -0.03795898657364896
+                                0.6627858127272697, 
+                                -0.054062457651532114
                             ], 
                             [
-                                0.6759099869186251, 
-                                -0.03604786598464566
+                                0.6849375488226765, 
+                                -0.051288688381262555
                             ], 
                             [
-                                0.6989647841859179, 
-                                -0.03401363222720717
+                                0.7073869759283805, 
+                                -0.048347559903655024
                             ], 
                             [
-                                0.7223321154097053, 
-                                -0.0318562853013335
+                                0.7301340940443815, 
+                                -0.045239072218709486
                             ], 
                             [
-                                0.7460119805899871, 
-                                -0.029575825207024602
+                                0.7531789031706796, 
+                                -0.04196322532642591
                             ], 
                             [
-                                0.7700043797267633, 
-                                -0.027172251944280534
+                                0.7765214033072747, 
+                                -0.03852001922680435
                             ], 
                             [
-                                0.794309312820034, 
-                                -0.024645565513101243
+                                0.8001615944541671, 
+                                -0.03490945391984477
                             ], 
                             [
-                                0.818926779869799, 
-                                -0.02199576591348678
+                                0.8240994766113564, 
+                                -0.031131529405547205
                             ], 
                             [
-                                0.8438567808760589, 
-                                -0.019222853145437105
+                                0.8483350497788429, 
+                                -0.027186245683911602
                             ], 
                             [
-                                0.8690993158388127, 
-                                -0.01632682720895225
+                                0.8728683139566263, 
+                                -0.023073602754938024
                             ], 
                             [
-                                0.8946543847580612, 
-                                -0.013307688104032201
+                                0.8976992691447068, 
+                                -0.018793600618626446
                             ], 
                             [
-                                0.9205219876338043, 
-                                -0.010165435830676932
+                                0.9228279153430845, 
+                                -0.014346239274976825
                             ], 
                             [
-                                0.9467021244660416, 
-                                -0.006900070388886493
+                                0.9482542525517592, 
+                                -0.009731518723989236
                             ], 
                             [
-                                0.9731947952547738, 
-                                -0.003511591778660831
+                                0.9739782807707312, 
+                                -0.004949438965663602
                             ], 
                             [
                                 1.0, 
@@ -1646,12 +2220,12 @@
                                         0.0
                                     ], 
                                     [
-                                        0.4098479449748993, 
-                                        0.11534100025892258
+                                        0.35943812131881714, 
+                                        0.12785498797893524
                                     ], 
                                     [
                                         0.0, 
-                                        0.08975730836391449
+                                        0.09207560122013092
                                     ], 
                                     [
                                         0.0, 
@@ -1669,19 +2243,19 @@
                 "data": {
                     "controlpoints": [
                         [
-                            0.5242343497114672, 
+                            0.6224955139294703, 
                             0.0
                         ], 
                         [
-                            1.470026539647262, 
+                            1.7455646063470205, 
                             0.0
                         ], 
                         [
-                            2.274270801827006, 
+                            2.7005543844604794, 
                             0.0
                         ], 
                         [
-                            2.79541277885437, 
+                            3.319377899169922, 
                             0.0
                         ]
                     ]
@@ -1690,9 +2264,9 @@
         }
     }, 
     "MetaData": {
-        "date_created": "08.01.16 12:52", 
+        "date_created": "16.02.16 23:10", 
         "application": "openglider", 
-        "date_modified": "08.01.16 12:52", 
+        "date_modified": "16.02.16 23:10", 
         "version": "0.01", 
         "author": "lo-K50IN/lo"
     }

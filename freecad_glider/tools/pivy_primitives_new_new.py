@@ -112,7 +112,6 @@ class Object3D(coin.SoSeparator):
 
     def drag_start(self):
         self._tmp_points = self.points
-        print(self._tmp_points)
         if self.enabled:
             for i in self.on_drag_start:
                 i()
