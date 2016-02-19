@@ -58,4 +58,16 @@ class activeGlider(object):
         else:
             return "No Glider selected"
 
+    def addCut(self, pos, ribs=None):
+        if ribs == None:
+            cells = range(self.ParametricGlider.shape.half_cell_num)
+        cut = {
+            "left": pos,
+            "right": pos,
+            "cells": cells,
+            "type": "orthogonal"
+        }
+        self.ParametricGlider.elements["cuts"].append(cut)
+
+
 ActiveGlider = activeGlider()

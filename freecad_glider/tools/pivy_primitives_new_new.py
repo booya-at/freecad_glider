@@ -155,6 +155,7 @@ class Container(coin.SoSeparator):
     def __init__(self):
         super(Container, self).__init__()
         self.objects = []
+        self.static_objects = []
         self.select_object = []
         self.drag_objects = []
         self.over_object = None
@@ -170,6 +171,8 @@ class Container(coin.SoSeparator):
         if hasattr(child, "dynamic"):
             if child.dynamic:
                 self.objects.append(child)
+            else:
+                self.static_objects.append(child)
 
     def addChildren(self, children):
         for i in children:
@@ -185,14 +188,21 @@ class Container(coin.SoSeparator):
 
     def Select(self, obj, multi=False):
         if not multi:
+            print("multi")
             for o in self.select_object:
                 o.unselect()
             self.select_object = []
+        print(self.select_object)
+        print(obj)
         if obj:
+            print(obj in self.select_object)
             if obj in self.select_object:
+                print("delete")
                 self.select_object.remove(obj)
             else:
+                print("append")
                 self.select_object.append(obj)
+        print(1)
         self.ColorSelected()
         self.selection_changed()
 
@@ -371,15 +381,18 @@ class Container(coin.SoSeparator):
         temp = []
         for i in self.select_object:
             i.delete()
-        for i in self.objects:
+        for i in self.objects + self.static_objects:
             i.check_dependency()    #dependency length max = 1
-        for i in self.objects:
+        for i in self.objects + self.static_objects:
             if i._delete:
                 temp.append(i)
         self.select_object = []
         self.over_object = None
         for i in temp:
-            self.objects.remove(i)
+            if i in self.objects:
+                self.objects.remove(i)
+            else:
+                self.static_objects.remove(i)
             self.removeChild(i)
         self.selection_changed()
 
@@ -387,6 +400,7 @@ class Container(coin.SoSeparator):
         for i in self.objects:
             i.delete()
         self.objects = []
+        self.static_objects = []
         super(Container, self).removeAllChildren()
 
     def constrained_vector(self, vector):

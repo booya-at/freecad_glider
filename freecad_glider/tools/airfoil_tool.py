@@ -37,6 +37,8 @@ class AirfoilTool(BaseTool):
         self.lower_cpc = None
         self.previous_foil = None
         self.is_edit = False
+
+        # setup the GUI
         self.setup_widget()
         self.setup_pivy()
 

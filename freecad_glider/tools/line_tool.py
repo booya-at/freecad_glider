@@ -31,12 +31,32 @@ class LineTool(BaseTool):
         self.back = _shape.back
         self.xpos = self.ParametricGlider.shape.rib_x_values
 
-        # qt helper line
-        self.Qhl_pos = QtGui.QDoubleSpinBox()
+        # setup the GUI
+        self.setup_widget()
+        self.setup_pivy()
 
+
+    def setup_pivy(self):        
         # pivy helper line
         self.helper_line = coin.SoSeparator()
         self.temp_point = coin.SoSeparator()
+
+        # pivy lines, points, shape
+        self.shape = Container()
+        self.shape.selection_changed = self.selection_changed
+
+        self.shape.setName("shape")
+        self.shape.register(self.view)
+        self.task_separator += (self.shape, self.helper_line)
+        self.task_separator += (self.temp_point)
+        self.draw_shape()
+
+        self.update_helper_line()
+        self.setup_cb()
+
+    def setup_widget(self):
+        # qt helper line
+        self.Qhl_pos = QtGui.QDoubleSpinBox()
 
         # qt element widget
         self.tool_widget = QtGui.QStackedWidget()
@@ -48,15 +68,6 @@ class LineTool(BaseTool):
         self.layer_selection = LayerComboBox(self.layer_widget)
         self.layer_combobox = LayerComboBox(self.layer_widget)
 
-        # pivy lines, points, shape
-        self.shape = Container()
-        self.shape.selection_changed = self.selection_changed
-
-        # initialize qt and pivy
-        self.setup_widget()
-        self.setup_pivy()
-
-    def setup_widget(self):
         self.tool_widget.setWindowTitle("object properties")
         self.layer_widget.setWindowTitle("layers")
         self.form.append(self.layer_widget)
@@ -217,16 +228,6 @@ class LineTool(BaseTool):
         App.Console.PrintMessage("x...delete a point or a line\n")
         App.Console.PrintMessage("cltr + p...attachment point\n")
         App.Console.PrintMessage("cltr...multiselection\n")
-
-    def setup_pivy(self):
-        self.shape.setName("shape")
-        self.shape.register(self.view)
-        self.task_separator += (self.shape, self.helper_line)
-        self.task_separator += (self.temp_point)
-        self.draw_shape()
-
-        self.update_helper_line()
-        self.setup_cb()
 
     def setup_cb(self):
         self.point_preview_cb = self.view.addEventCallbackPivy(
