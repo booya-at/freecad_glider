@@ -7,6 +7,7 @@ import FreeCAD as App
 
 from openglider.jsonify import load, dumps, loads
 from openglider import mesh
+from openglider.utils.distribution import Distribution
 from .pivy_primitives_new_new import Line
 
 importpath = os.path.join(os.path.dirname(__file__), '..', 'demokite.ods')
@@ -97,6 +98,12 @@ class OGGliderVP(OGBaseVP):
         view_obj.addProperty("App::PropertyBool",
                              "half_glider", "visuals",
                              "show only one half")
+        view_obj.addProperty("App::PropertyBool",
+                             "draw_mesh", "visuals",
+                             "draw lines of the mesh")
+        view_obj.addProperty("App::PropertyInteger",
+                             "hole_num", "visuals",
+                             "number of hole vertices")
         view_obj.num_ribs = 0
         view_obj.profile_num = 20
         view_obj.line_num = 5
@@ -104,6 +111,8 @@ class OGGliderVP(OGBaseVP):
         view_obj.ribs = True
         view_obj.half_glider = True
         view_obj.panels =False
+        view_obj.draw_mesh = False
+        view_obj.hole_num = 10
         super(OGGliderVP, self).__init__(view_obj)
 
     def attach(self, view_obj):
@@ -123,7 +132,8 @@ class OGGliderVP(OGBaseVP):
     def _updateData(self, fp, prop="all"):
         if hasattr(fp, "ribs"):      # check for last attribute to be restored
             if prop in ["num_ribs", "profile_num", "hull", "panels",
-                        "half_glider", "ribs", "all"]:
+                        "half_glider", "ribs", "draw_mesh", "hole_num",
+                        "all"]:
                 numpoints = fp.profile_num
                 numpoints = max(numpoints, 5)
                 self.update_glider(midribs=fp.num_ribs,
@@ -131,20 +141,24 @@ class OGGliderVP(OGBaseVP):
                                    hull=fp.hull,
                                    panels=fp.panels,
                                    half=fp.half_glider,
-                                   ribs=fp.ribs)
+                                   ribs=fp.ribs,
+                                   draw_mesh=fp.draw_mesh,
+                                   hole_num=fp.hole_num)
         if hasattr(fp, "line_num"):
             if prop in ["line_num", "half_glider", "all"]:
                 self.update_lines(fp.line_num,
                                   half=fp.half_glider)
 
     def update_glider(self, midribs=0, profile_numpoints=20,
-                      hull=True, panels=False, half=False, ribs=False):
+                      hull=True, panels=False, half=False, ribs=False,
+                      draw_mesh=False, hole_num=10):
         self.vis_glider.removeAllChildren()
         if not half:
             glider = self.GliderInstance.copy_complete()
         else:
             glider = self.GliderInstance.copy()
-        draw_glider(glider, self.vis_glider, midribs, profile_numpoints, hull, panels, half, ribs)
+        draw_glider(glider, self.vis_glider, midribs, profile_numpoints, 
+                    hull, panels, half, ribs, draw_mesh, hole_num)
 
 
     def update_lines(self, num=3, half=False):
@@ -179,9 +193,9 @@ def hex_to_rgb(hex_string):
 
 
 def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
-                hull=True, panels=False, half=False, ribs=False):
+                hull=True, panels=False, half=False, ribs=False,
+                draw_mesh=False, hole_num=10):
     """draw the glider to the visglider seperator"""
-
     glider.profile_numpoints = profile_numpoints
     count = 0
     if hull:
@@ -242,46 +256,56 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
         msh = mesh.Mesh()
         for rib in glider.ribs:
             if not rib.profile_2d.has_zero_thickness:
-                msh += mesh.Mesh.from_rib(rib)
+                msh += mesh.Mesh.from_rib(rib, hole_num, mesh_option="QYqazip")
         if msh.vertices is not None:
             verts = list(msh.vertices)
             polygons = []
+            lines = []
             for i in msh.polygons:
                 polygons += i
+                lines += i
+                lines.append(i[0])
                 polygons.append(-1)
+                lines.append(-1)
 
             rib_sep = coin.SoSeparator()
             vis_glider += rib_sep
             vertex_property = coin.SoVertexProperty()
             face_set = coin.SoIndexedFaceSet()
+            line_set = coin.SoIndexedLineSet()
 
             shape_hint = coin.SoShapeHints()
             shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
 
-            material = coin.SoMaterial()
-            material.diffuseColor = (.0, .0, .7)
-            rib_sep += material
+            mat1 = coin.SoMaterial()
+            mat1.diffuseColor = (.3, .3, .3)
+            mat2 = coin.SoMaterial()
+            mat2.diffuseColor = (.0, .0, .0)
 
             vertex_property.vertex.setValues(0, len(verts), verts)
             face_set.coordIndex.setValues(0, len(polygons), list(polygons))
-            rib_sep += shape_hint, vertex_property, face_set
+            line_set.coordIndex.setValues(0, len(lines), list(lines))
+            rib_sep += shape_hint, vertex_property, mat1, face_set
+            if draw_mesh:
+                rib_sep += mat2, line_set
 
 
         msh = mesh.Mesh()
         for cell in glider.cells:
             for diagonal in cell.diagonals:
-                msh += mesh.Mesh.from_diagonal(diagonal, cell, insert_points=0)
+                msh += mesh.Mesh.from_diagonal(diagonal, cell, insert_points=4)
             if msh.vertices is not None:
                 verts = list(msh.vertices)
                 polygons = []
                 for i in msh.polygons:
                     polygons += i
+                    polygons.append(i[0])
                     polygons.append(-1)
 
                 diagonal_sep = coin.SoSeparator()
                 vis_glider += diagonal_sep
                 vertex_property = coin.SoVertexProperty()
-                face_set = coin.SoIndexedFaceSet()
+                face_set = coin.SoIndexedLineSet()
 
                 shape_hint = coin.SoShapeHints()
                 shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE

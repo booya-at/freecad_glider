@@ -275,3 +275,23 @@ class PanelTool(BaseTool):
         white = numpy.array(COLORS["white"])
         norm_val = (value - min_val) / (max_val - min_val)
         return list(f(3, 0, norm_val) * red + f(3,1,norm_val) * yellow + f(3,2,norm_val) * white + f(3,3,norm_val) * blue)
+
+
+def create_fem_dict(par_glider):
+    # create a ppm object and compute the pressure
+
+    # create a dict with:
+    #   nodes, elements, forces, bc, joints
+    vertices, panels, trailing_edges = ppm_Panels(
+        par_glider.get_glider_3d(),
+        midribs=0,
+        profile_numpoints=50,
+        num_average=4,
+        distribution=Profile2D.nose_cos_distribution(0.2),
+        symmetric=True
+        )
+    case.A_ref = par_glider.flat_area
+    case.v_inf = ppm.Vector(glider.v_inf)
+    self.case.farfield = 5
+    self.case.create_wake(9999, 10)
+    self.case.run()
