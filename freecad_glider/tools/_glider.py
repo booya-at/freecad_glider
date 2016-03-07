@@ -13,6 +13,39 @@ from .pivy_primitives_new_new import Line
 importpath = os.path.join(os.path.dirname(__file__), '..', 'demokite.ods')
 
 
+def mesh_sep(polygons, vertices, color, draw_lines=True):
+    _vertices = list(vertices)
+    _polygons = []
+    _lines = []
+    for i in polygons:
+        _polygons += i
+        _lines += i
+        _lines.append(i[0])
+        _polygons.append(-1)
+        _lines.append(-1)
+
+    sep = coin.SoSeparator()
+    vertex_property = coin.SoVertexProperty()
+    face_set = coin.SoIndexedFaceSet()
+    shape_hint = coin.SoShapeHints()
+    shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
+    shape_hint.creaseAngle = np.pi
+    face_mat = coin.SoMaterial()
+    face_mat.diffuseColor = color
+    vertex_property.vertex.setValues(0, len(_vertices), _vertices)
+    face_set.coordIndex.setValues(0, len(_polygons), list(_polygons))
+    vertex_property.materialBinding = coin.SoMaterialBinding.PER_VERTEX_INDEXED
+    sep += shape_hint, vertex_property, face_mat, face_set
+
+    if draw_lines:
+        line_set = coin.SoIndexedLineSet()
+        line_set.coordIndex.setValues(0, len(_lines), list(_lines))
+        line_mat = coin.SoMaterial()
+        line_mat.diffuseColor = (.0, .0, .0)
+        sep += line_mat, line_set
+    return sep
+
+
 class OGBaseObject(object):
     def __init__(self, obj):
         obj.Proxy = self
@@ -204,27 +237,11 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                 count += 1
                 for panel in cell.panels:
                     m = panel.get_mesh(cell, midribs)
-                    verts = m.vertices.tolist()
-                    tris = m.polygons
-                    tris_coin = []
-                    for tri in tris:
-                        tris_coin += tri
-                        tris_coin.append(-1)
-                    panel_sep = coin.SoSeparator()
-                    panel_face = coin.SoIndexedFaceSet()
-                    panel_verts = coin.SoVertexProperty()
-                    panel_material = coin.SoMaterial()
-                    shape_hint = coin.SoShapeHints()
-                    shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
-                    shape_hint.creaseAngle = np.pi
-                    panel_verts.vertex.setValues(0, len(verts), verts)
-                    panel_face.coordIndex.setValues(0, len(tris_coin), list(tris_coin))
+                    print(m.polygons)
+                    color = (.3, .3, .3)
                     if panel.material_code:
-                        panel_material.diffuseColor = hex_to_rgb(panel.material_code)
-
-                    panel_verts.materialBinding = coin.SoMaterialBinding.PER_VERTEX_INDEXED
-                    panel_sep += panel_material, shape_hint, panel_verts, panel_face
-                    vis_glider += panel_sep
+                        color = hex_to_rgb(panel.material_code)
+                    vis_glider += mesh_sep(m.polygons, m.vertices,  color, draw_mesh)
 
         elif midribs == 0:
             vertexproperty = coin.SoVertexProperty()
@@ -258,36 +275,37 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
             if not rib.profile_2d.has_zero_thickness:
                 msh += mesh.Mesh.from_rib(rib, hole_num, mesh_option="QYqazip")
         if msh.vertices is not None:
-            verts = list(msh.vertices)
-            polygons = []
-            lines = []
-            for i in msh.polygons:
-                polygons += i
-                lines += i
-                lines.append(i[0])
-                polygons.append(-1)
-                lines.append(-1)
+            vis_glider += mesh_sep(msh.polygons, msh.vertices, (.3, .3, .3), draw_mesh)
+            # verts = list(msh.vertices)
+            # polygons = []
+            # lines = []
+            # for i in msh.polygons:
+            #     polygons += i
+            #     lines += i
+            #     lines.append(i[0])
+            #     polygons.append(-1)
+            #     lines.append(-1)
 
-            rib_sep = coin.SoSeparator()
-            vis_glider += rib_sep
-            vertex_property = coin.SoVertexProperty()
-            face_set = coin.SoIndexedFaceSet()
-            line_set = coin.SoIndexedLineSet()
+            # rib_sep = coin.SoSeparator()
+            # vis_glider += rib_sep
+            # vertex_property = coin.SoVertexProperty()
+            # face_set = coin.SoIndexedFaceSet()
+            # line_set = coin.SoIndexedLineSet()
 
-            shape_hint = coin.SoShapeHints()
-            shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
+            # shape_hint = coin.SoShapeHints()
+            # shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
 
-            mat1 = coin.SoMaterial()
-            mat1.diffuseColor = (.3, .3, .3)
-            mat2 = coin.SoMaterial()
-            mat2.diffuseColor = (.0, .0, .0)
+            # mat1 = coin.SoMaterial()
+            # mat1.diffuseColor = (.3, .3, .3)
+            # mat2 = coin.SoMaterial()
+            # mat2.diffuseColor = (.0, .0, .0)
 
-            vertex_property.vertex.setValues(0, len(verts), verts)
-            face_set.coordIndex.setValues(0, len(polygons), list(polygons))
-            line_set.coordIndex.setValues(0, len(lines), list(lines))
-            rib_sep += shape_hint, vertex_property, mat1, face_set
-            if draw_mesh:
-                rib_sep += mat2, line_set
+            # vertex_property.vertex.setValues(0, len(verts), verts)
+            # face_set.coordIndex.setValues(0, len(polygons), list(polygons))
+            # line_set.coordIndex.setValues(0, len(lines), list(lines))
+            # rib_sep += shape_hint, vertex_property, mat1, face_set
+            # if draw_mesh:
+            #     rib_sep += mat2, line_set
 
 
         msh = mesh.Mesh()
@@ -295,27 +313,7 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
             for diagonal in cell.diagonals:
                 msh += mesh.Mesh.from_diagonal(diagonal, cell, insert_points=4)
             if msh.vertices is not None:
-                verts = list(msh.vertices)
-                polygons = []
-                for i in msh.polygons:
-                    polygons += i
-                    polygons.append(i[0])
-                    polygons.append(-1)
-
-                diagonal_sep = coin.SoSeparator()
-                vis_glider += diagonal_sep
-                vertex_property = coin.SoVertexProperty()
-                face_set = coin.SoIndexedLineSet()
-
-                shape_hint = coin.SoShapeHints()
-                shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
-
-                material = coin.SoMaterial()
-                material.diffuseColor = (.7, .0, .0)
-                diagonal_sep += material
-                vertex_property.vertex.setValues(0, len(verts), verts)
-                face_set.coordIndex.setValues(0, len(polygons), list(polygons))
-                diagonal_sep += shape_hint, vertex_property, face_set
+                vis_glider += mesh_sep(msh.polygons, msh.vertices, (.3, .3, .3), draw_mesh)
 
         _strap_verts = []
         _strap_lines = []
