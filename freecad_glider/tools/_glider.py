@@ -237,7 +237,6 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                 count += 1
                 for panel in cell.panels:
                     m = panel.get_mesh(cell, midribs)
-                    print(m.polygons)
                     color = (.3, .3, .3)
                     if panel.material_code:
                         color = hex_to_rgb(panel.material_code)

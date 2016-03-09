@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 import numpy
 
 from openglider.glider.in_out.export_3d import ppm_Panels
-from openglider.airfoil import Profile2D
+from openglider.utils.distribution import Distribution
 from ._tools import BaseTool, input_field, text_field
 from .pivy_primitives_new_new import Container, Marker, coin, Line, COLORS
 
@@ -29,7 +29,7 @@ class polars(BaseTool):
                 midribs=0,
                 profile_numpoints=50,
                 num_average=4,
-                distribution=Profile2D.nose_cos_distribution(0.2),
+                distribution=Distribution.nose_cos_distribution(0.2),
                 symmetric=True
                 )
             case = self.pan3d.DirichletDoublet0Source0Case3(self._panels, self._trailing_edges)
@@ -44,7 +44,7 @@ class polars(BaseTool):
             cD = []
             cP = []
             alpha = []
-            for i in pols.values:
+            for i in pols:
                 alpha.append(i.alpha)
                 cL.append(i.cL)
                 cD.append(i.cD * 10)
@@ -192,7 +192,7 @@ class PanelTool(BaseTool):
 
     def stream_line(self, point, interval, numpoints):
         flow_path = self.case.flow_path(self.ppm.Vector3(*point), interval, numpoints)
-        return [[p.x, p.y, p.z] for p in flow_path.values]
+        return [[p.x, p.y, p.z] for p in flow_path]
 
     def create_panels(self, midribs=0, profile_numpoints=10, mean=False, symmetric=True):
         self._vertices, self._panels, self._trailing_edges = ppm_Panels(
@@ -200,7 +200,7 @@ class PanelTool(BaseTool):
             midribs=midribs,
             profile_numpoints=profile_numpoints,
             num_average=mean*5,
-            distribution=Profile2D.nose_cos_distribution(0.2),
+            distribution=Distribution.nose_cos_distribution(0.2),
             symmetric=symmetric)
 
     def run(self):
@@ -216,8 +216,8 @@ class PanelTool(BaseTool):
 
     def show_glider(self):
         self.glider_result.removeAllChildren()
-        verts = [list(i) for i in self.case.vertices.values]
-        cols = [i.cp for i in self.case.vertices.values]
+        verts = [list(i) for i in self.case.vertices]
+        cols = [i.cp for i in self.case.vertices]
         pols = []
         pols_i =[]
         count = 0
@@ -287,7 +287,7 @@ def create_fem_dict(par_glider):
         midribs=0,
         profile_numpoints=50,
         num_average=4,
-        distribution=Profile2D.nose_cos_distribution(0.2),
+        distribution=Distribution.nose_cos_distribution(0.2),
         symmetric=True
         )
     case.A_ref = par_glider.flat_area
