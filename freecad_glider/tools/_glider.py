@@ -29,7 +29,7 @@ def mesh_sep(polygons, vertices, color, draw_lines=True):
     face_set = coin.SoIndexedFaceSet()
     shape_hint = coin.SoShapeHints()
     shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
-    shape_hint.creaseAngle = np.pi
+    shape_hint.creaseAngle = np.pi / 3
     face_mat = coin.SoMaterial()
     face_mat.diffuseColor = color
     vertex_property.vertex.setValues(0, len(_vertices), _vertices)
@@ -169,7 +169,9 @@ class OGGliderVP(OGBaseVP):
                         "all"]:
                 numpoints = fp.profile_num
                 numpoints = max(numpoints, 5)
-                glider_changed = "half_glider" in prop or "profile_num" in prop
+                glider_changed = ("half_glider" in prop or 
+                                  "profile_num" in prop or
+                                  "all" in prop)
                 self.update_glider(midribs=fp.num_ribs,
                                    profile_numpoints=numpoints,
                                    hull=fp.hull,
@@ -239,7 +241,7 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
             for cell in glider.cells:
                 count += 1
                 for panel in cell.panels:
-                    m = panel.get_mesh(cell, midribs)
+                    m = panel.get_mesh(cell, midribs, with_numpy=True)
                     color = (.3, .3, .3)
                     if panel.material_code:
                         color = hex_to_rgb(panel.material_code)
@@ -260,17 +262,20 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                 sep = coin.SoSeparator()
                 vertexproperty = coin.SoVertexProperty()
                 msh = coin.SoQuadMesh()
-                _ribs = [cell.midrib(pos / (midribs + 1))
-                        for pos in range(midribs + 2)]
-                flat_coords = [i for rib in _ribs for i in rib]
-                vertexproperty.vertex.setValues(0,
-                                                len(flat_coords),
-                                                flat_coords)
-                msh.verticesPerRow = len(_ribs[0])
-                msh.verticesPerColumn = len(_ribs)
-                msh.vertexProperty = vertexproperty
-                sep += vertexproperty, msh
-                vis_glider += sep
+                m = cell.get_mesh(midribs, with_numpy=True)
+                color = (.8, .8, .8)
+                vis_glider += mesh_sep(m.polygons, m.vertices,  color, draw_mesh)
+                # _ribs = [cell.midrib(pos / (midribs + 1))
+                #         for pos in range(midribs + 2)]
+                # flat_coords = [i for rib in _ribs for i in rib]
+                # vertexproperty.vertex.setValues(0,
+                #                                 len(flat_coords),
+                #                                 flat_coords)
+                # msh.verticesPerRow = len(_ribs[0])
+                # msh.verticesPerColumn = len(_ribs)
+                # msh.vertexProperty = vertexproperty
+                # sep += vertexproperty, msh
+                # vis_glider += sep
     if ribs:  # show ribs
         msh = mesh.Mesh()
         for rib in glider.ribs:
