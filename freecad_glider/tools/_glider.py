@@ -169,6 +169,7 @@ class OGGliderVP(OGBaseVP):
                         "all"]:
                 numpoints = fp.profile_num
                 numpoints = max(numpoints, 5)
+                glider_changed = "half_glider" in prop or "profile_num" in prop
                 self.update_glider(midribs=fp.num_ribs,
                                    profile_numpoints=numpoints,
                                    hull=fp.hull,
@@ -176,7 +177,8 @@ class OGGliderVP(OGBaseVP):
                                    half=fp.half_glider,
                                    ribs=fp.ribs,
                                    draw_mesh=fp.draw_mesh,
-                                   hole_num=fp.hole_num)
+                                   hole_num=fp.hole_num,
+                                   glider_changed=glider_changed)
         if hasattr(fp, "line_num"):
             if prop in ["line_num", "half_glider", "all"]:
                 self.update_lines(fp.line_num,
@@ -184,13 +186,14 @@ class OGGliderVP(OGBaseVP):
 
     def update_glider(self, midribs=0, profile_numpoints=20,
                       hull=True, panels=False, half=False, ribs=False,
-                      draw_mesh=False, hole_num=10):
+                      draw_mesh=False, hole_num=10, glider_changed=True):
         self.vis_glider.removeAllChildren()
-        if not half:
-            glider = self.GliderInstance.copy_complete()
-        else:
-            glider = self.GliderInstance.copy()
-        draw_glider(glider, self.vis_glider, midribs, profile_numpoints, 
+        if glider_changed or not hasattr(self, "glider"):
+            if not half:
+                self.glider = self.GliderInstance.copy_complete()
+            else:
+                self.glider = self.GliderInstance.copy()
+        draw_glider(self.glider, self.vis_glider, midribs, profile_numpoints, 
                     hull, panels, half, ribs, draw_mesh, hole_num)
 
 
