@@ -14,6 +14,10 @@ from ._tools import BaseTool, text_field, input_field
 from .pivy_primitives import Line, vector3D, vector2D, ControlPointContainer
 
 
+def refresh():
+    pass
+
+
 class ShapeTool(BaseTool):
 
     def __init__(self, obj):

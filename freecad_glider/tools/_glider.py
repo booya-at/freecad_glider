@@ -5,12 +5,19 @@ import numpy as np
 from pivy import coin
 import FreeCAD as App
 
-from openglider.jsonify import load, dumps, loads
+from openglider import jsonify
 from openglider import mesh
-from openglider.utils.distribution import Distribution
-from .pivy_primitives_new_new import Line
+from . import pivy_primitives_new_new as prim
 
 importpath = os.path.join(os.path.dirname(__file__), '..', 'demokite.ods')
+
+
+def refresh():
+    print("reloading")
+    reload(coin)
+    reload(jsonify)
+    reload(mesh)
+    reload(prim)
 
 
 def mesh_sep(polygons, vertices, color, draw_lines=True):
@@ -85,28 +92,29 @@ class OGGlider(OGBaseObject):
                         "ParametricGlider", "object",
                         "ParametricGlider", 2)
         with open(os.path.dirname(__file__) + "/../glider2d.json", "r") as importfile:
-            obj.ParametricGlider = load(importfile)["data"]
+            obj.ParametricGlider = jsonify.load(importfile)["data"]
         obj.GliderInstance = obj.ParametricGlider.get_glider_3d()
         obj.Proxy = self
         super(OGGlider, self).__init__(obj)
 
     def __getstate__(self):
         out = {
-            "ParametricGlider": dumps(self.obj.ParametricGlider),
+            "ParametricGlider": jsonify.dumps(self.obj.ParametricGlider),
             "name": self.obj.Name}
         return out
 
     def __setstate__(self, state):
         self.obj = App.ActiveDocument.getObject(state["name"])
         self.obj.addProperty("App::PropertyPythonObject",
-                        "GliderInstance", "object",
-                        "GliderInstance", 2)
+                             "GliderInstance", "object",
+                             "GliderInstance", 2)
         self.obj.addProperty("App::PropertyPythonObject",
-                        "ParametricGlider", "object",
-                        "parametric glider", 2)
-        self.obj.ParametricGlider = loads(state["ParametricGlider"])["data"]
+                             "ParametricGlider", "object",
+                             "parametric glider", 2)
+        self.obj.ParametricGlider = jsonify.loads(state["ParametricGlider"])["data"]
         self.obj.GliderInstance = self.obj.ParametricGlider.get_glider_3d()
         return None
+
 
 class OGGliderVP(OGBaseVP):
     def __init__(self, view_obj):
@@ -143,7 +151,7 @@ class OGGliderVP(OGBaseVP):
         view_obj.hull = True
         view_obj.ribs = True
         view_obj.half_glider = True
-        view_obj.panels =False
+        view_obj.panels = False
         view_obj.draw_mesh = False
         view_obj.hole_num = 10
         super(OGGliderVP, self).__init__(view_obj)
@@ -169,7 +177,7 @@ class OGGliderVP(OGBaseVP):
                         "all"]:
                 numpoints = fp.profile_num
                 numpoints = max(numpoints, 5)
-                glider_changed = ("half_glider" in prop or 
+                glider_changed = ("half_glider" in prop or
                                   "profile_num" in prop or
                                   "all" in prop)
                 self.update_glider(midribs=fp.num_ribs,
@@ -195,17 +203,17 @@ class OGGliderVP(OGBaseVP):
                 self.glider = self.GliderInstance.copy_complete()
             else:
                 self.glider = self.GliderInstance.copy()
-        draw_glider(self.glider, self.vis_glider, midribs, profile_numpoints, 
+        draw_glider(self.glider, self.vis_glider, midribs, profile_numpoints,
                     hull, panels, half, ribs, draw_mesh, hole_num)
-
 
     def update_lines(self, num=3, half=False):
         self.vis_lines.removeAllChildren()
         for line in self.GliderInstance.lineset.lines:
             points = line.get_line_points(numpoints=num)
             if not half:
-                self.vis_lines += (Line([[i[0], -i[1], i[2]] for i in points], dynamic=False))
-            self.vis_lines += (Line(points, dynamic=False))
+                mirrored = [[i[0], -i[1], i[2]] for i in points]
+                self.vis_lines += (prim.Line(mirrored, dynamic=False))
+            self.vis_lines += (prim.Line(points, dynamic=False))
 
     def onChanged(self, vp, prop):
         self._updateData(vp, prop)

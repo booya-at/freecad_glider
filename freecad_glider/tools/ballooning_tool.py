@@ -7,6 +7,10 @@ from .pivy_primitives import Line, vector3D, ControlPointContainer, coin
 from openglider.glider.ballooning import BallooningBezier
 
 
+def refresh():
+    pass
+
+
 class BallooningTool(BaseTool):
     def __init__(self, obj):
         super(BallooningTool, self).__init__(obj, widget_name="selection")

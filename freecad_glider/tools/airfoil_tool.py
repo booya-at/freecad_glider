@@ -10,6 +10,9 @@ from ._tools import BaseTool
 from .pivy_primitives import Line, vector3D, ControlPointContainer
 
 
+def refresh():
+    pass
+
 class AirfoilTool(BaseTool):
 
     def __init__(self, obj):

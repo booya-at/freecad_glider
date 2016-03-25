@@ -10,6 +10,10 @@ from ._tools import BaseTool
 from .pivy_primitives import Line, ControlPointContainer, vector3D
 
 
+def refresh():
+    pass
+
+
 class BaseMergeTool(BaseTool):
     def __init__(self, obj):
         super(BaseMergeTool, self).__init__(obj)

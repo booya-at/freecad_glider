@@ -9,6 +9,10 @@ from openglider.jsonify import dump, load
 from openglider.vector.spline import BernsteinBase, BSplineBase
 from openglider.glider import ParametricGlider
 
+
+def refresh():
+    pass
+
 # from openglider.glider.parametric import Glider2D
 
 

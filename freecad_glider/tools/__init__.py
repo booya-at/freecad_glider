@@ -18,7 +18,7 @@ import tools.aoa_tool as aoa_tool
 import tools.ballooning_tool as ballooning_tool
 import tools.line_tool as line_tool
 import tools.merge_tool as merge_tool
-import tools.panel_methode as pm
+import tools.panel_method as pm
 import tools.cell_tool as cell_tool
 import tools.design_tool as design_tool
 import openglider
@@ -259,7 +259,7 @@ def check_glider(obj):
 
 class PanelCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'panel_methode.svg',
+        return {'Pixmap': 'panel_method.svg',
                 'MenuText': 'panelmethode', 
                 'ToolTip': 'panelmethode'}
 
@@ -292,7 +292,10 @@ class RefreshCommand():
     def Activated(self):
         mods = [glider, tools, airfoil_tool, shape_tool, arc_tool, aoa_tool]
         mods += [ballooning_tool, line_tool, merge_tool, pm, cell_tool, design_tool]
-        mods += [openglider]
         for mod in mods:
             reload(mod)
+            try:
+                mod.refresh()
+            except AttributeError:
+                App.Console.PrintWarning(str(mod) + " has no refresh function implemented\n")
         App.Console.PrintLog("RELOADED GLIDER WORKBENCH\n")

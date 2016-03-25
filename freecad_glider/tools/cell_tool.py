@@ -6,6 +6,10 @@ from ._glider import draw_glider
 from .table import base_table_widget
 
 
+def refresh():
+    pass
+
+
 class CellTool(BaseTool):
     def __init__(self, obj):
         super(CellTool, self).__init__(obj, hide=True, turn=False)

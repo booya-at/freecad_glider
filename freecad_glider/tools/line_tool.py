@@ -12,6 +12,10 @@ from openglider.glider.parametric.lines import UpperNode2D, LowerNode2D, \
 from openglider.lines.line_types import LineType
 
 
+def refresh():
+    pass
+
+
 # all line info goes into the tool.
 # the lineset will be totally reloaded after the tool work is ready
 # if an error occurs nothing will happen

@@ -8,6 +8,10 @@ from ._tools import BaseTool, text_field, input_field, spline_select
 from .pivy_primitives import Line, ControlPointContainer, vector3D
 
 
+def refresh():
+    pass
+
+
 class ZrotTool(BaseTool):
     num_on_drag = 80
     num_release = 200

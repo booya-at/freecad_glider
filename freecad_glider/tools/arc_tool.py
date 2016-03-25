@@ -5,6 +5,10 @@ from ._tools import BaseTool, text_field, input_field, spline_select
 from .pivy_primitives import Line, ControlPointContainer
 
 
+def refresh():
+    pass
+
+
 class ArcTool(BaseTool):
 
     def __init__(self, obj):

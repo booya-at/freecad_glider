@@ -8,6 +8,10 @@ from ._tools import BaseTool, input_field, text_field
 from .pivy_primitives_new_new import coin, Line, Marker, Container, vector3D
 
 
+def refresh():
+    pass
+
+
 # idea: draw lines between ribs and fill the panels with color
 # only straight lines, no curves
 # later create some helpers to generate parametric cuts

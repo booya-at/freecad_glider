@@ -1,8 +1,9 @@
 from __future__ import division
-import FreeCAD as App
-from PySide import QtGui
-from matplotlib import pyplot as plt
+import FreeCADGui as Gui
+from PySide import QtGui, QtCore
+
 import numpy
+from copy import deepcopy
 
 from openglider.glider.in_out.export_3d import ppm_Panels
 from openglider.utils.distribution import Distribution
@@ -10,7 +11,31 @@ from ._tools import BaseTool, input_field, text_field
 from .pivy_primitives_new_new import Container, Marker, coin, Line, COLORS
 
 
-class polars(BaseTool):
+import matplotlib
+matplotlib.use('Qt4Agg')
+matplotlib.rcParams['backend.qt4']='PySide'
+
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+import matplotlib.pyplot as plt
+
+def refresh():
+    pass
+
+class MplCanvas(FigureCanvas):
+    """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
+
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        self.fig = plt.figure(figsize=(width, height), dpi=dpi)
+        super(MplCanvas, self).__init__(self.fig)
+        self.axes = self.fig.add_subplot(111)
+        self.setParent(parent)
+        self.updateGeometry()
+
+    def plot(self, *args, **kwargs):
+        self.axes.plot(*args, **kwargs)
+
+
+class polars():
     try:
         ppm = __import__("ppm")
         pan3d = __import__("ppm.pan3d", globals(), locals(), ["abc"])
@@ -19,9 +44,10 @@ class polars(BaseTool):
         ppm = None
 
     def __init__(self, obj):
-        # super(polars, self).__init__(obj, widget_name="Properties", hide=True)
+        self.obj = obj
+        self.ParametricGlider = deepcopy(self.obj.ParametricGlider)
         if not self.ppm:
-            self.QWarning = QtGui.QLabel("no panel_methode installed")
+            self.QWarning = QtGui.QLabel("no panel_method installed")
             self.layout.addWidget(self.QWarning)
         else:
             self._vertices, self._panels, self._trailing_edges = ppm_Panels(
@@ -33,29 +59,43 @@ class polars(BaseTool):
                 symmetric=True
                 )
             case = self.pan3d.DirichletDoublet0Source0Case3(self._panels, self._trailing_edges)
-            case.A_ref = self.ParametricGlider.flat_area
+            case.A_ref = self.ParametricGlider.shape.area
             case.mom_ref_point = self.ppm.Vector3(1.25, 0, -6)
             case.v_inf = self.ppm.Vector(self.ParametricGlider.v_inf)
             case.drag_calc = "trefftz"
             case.farfield = 5
             case.create_wake(10000000, 20)
-            pols = case.polars(self.ppm_utils.vinf_deg_range3(case.v_inf, -10, 10, 30))
+            pols = case.polars(self.ppm_utils.vinf_deg_range3(case.v_inf, -10, 15, 30))
             cL = []
             cD = []
             cP = []
             alpha = []
-            for i in pols:
+            for i in pols.values:
                 alpha.append(i.alpha)
                 cL.append(i.cL)
                 cD.append(i.cD * 10)
                 cP.append(-i.cP)
-            plt.plot(cL, alpha, label="Lift $c_L$")
-            plt.plot(cD, alpha, label="Drag $c_D * 10$")
-            plt.plot(cP, alpha, label="Pitch -$c_P$")
-            plt.ylabel("$\\alpha$")
-            plt.legend()
-            plt.grid()
-            plt.show()
+
+            self.canvas = MplCanvas()
+            self.canvas.plot(cL, alpha, label="Lift $c_L$")
+            self.canvas.plot(cD, alpha, label="Drag $c_D * 10$")
+            self.canvas.plot(cP, alpha, label="Pitch -$c_P$")
+            self.canvas.axes.xaxis.set_label("$\\alpha$")
+            self.canvas.axes.legend()
+            self.canvas.axes.grid()
+            self.canvas.draw()
+            self.canvas.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+            self.canvas.show()
+
+    def accept(self):
+        self.canvas.hide()
+        del(self.canvas)
+        Gui.Control.closeDialog()
+
+    def reject(self):
+        self.canvas.hide()
+        del(self.canvas)
+        Gui.Control.closeDialog()
 
 
 class PanelTool(BaseTool):
@@ -68,7 +108,7 @@ class PanelTool(BaseTool):
     def __init__(self, obj):
         super(PanelTool, self).__init__(obj, widget_name="Properties", hide=True)
         if not self.ppm:
-            self.QWarning = QtGui.QLabel("no panel_methode installed")
+            self.QWarning = QtGui.QLabel("no panel_method installed")
             self.layout.addWidget(self.QWarning)
         else:
             self.case = None

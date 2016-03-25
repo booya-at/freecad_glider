@@ -3,6 +3,10 @@ from PySide import QtCore, QtGui
 from ._tools import BaseTool, text_field, input_field
 
 
+def refresh():
+    pass
+
+
 class table_tool(BaseTool):
     def __init__(self, obj):
         super(table_tool, self).__init__(obj, hide=False)
