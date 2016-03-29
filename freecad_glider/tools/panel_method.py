@@ -3,6 +3,7 @@ import FreeCADGui as Gui
 from PySide import QtGui, QtCore
 
 import numpy
+import numpy as np
 from copy import deepcopy
 
 from openglider.glider.in_out.export_3d import ppm_Panels
@@ -46,6 +47,11 @@ class polars():
     def __init__(self, obj):
         self.obj = obj
         self.ParametricGlider = deepcopy(self.obj.ParametricGlider)
+        self.create_potential_table()
+        self.solve_const_vert_Force()
+
+    
+    def create_potential_table(self):
         if not self.ppm:
             self.QWarning = QtGui.QLabel("no panel_method installed")
             self.layout.addWidget(self.QWarning)
@@ -65,36 +71,71 @@ class polars():
             case.drag_calc = "trefftz"
             case.farfield = 5
             case.create_wake(10000000, 20)
-            pols = case.polars(self.ppm_utils.vinf_deg_range3(case.v_inf, -10, 15, 30))
-            cL = []
-            cD = []
-            cP = []
-            alpha = []
+            pols = case.polars(self.ppm_utils.vinf_deg_range3(case.v_inf, 5, 15, 20))
+            self.cL = []
+            self.cDi = []
+            self.cPi = []
+            self.alpha = []
             for i in pols.values:
-                alpha.append(i.alpha)
-                cL.append(i.cL)
-                cD.append(i.cD * 10)
-                cP.append(-i.cP)
+                self.alpha.append(i.alpha)
+                self.cL.append(i.cL)
+                self.cDi.append(i.cD)
+                self.cPi.append(i.cP)
 
-            self.canvas = MplCanvas()
-            self.canvas.plot(cL, alpha, label="Lift $c_L$")
-            self.canvas.plot(cD, alpha, label="Drag $c_D * 10$")
-            self.canvas.plot(cP, alpha, label="Pitch -$c_P$")
-            self.canvas.axes.xaxis.set_label("$\\alpha$")
-            self.canvas.axes.legend()
-            self.canvas.axes.grid()
-            self.canvas.draw()
-            self.canvas.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-            self.canvas.show()
+    def potentialPlot(self):
+        self.canvas = MplCanvas()
+        self.canvas.plot(cD, cL, label="Drag $c_D * 10$")
+        self.canvas.plot(cP, cL, label="Pitch -$c_P$")
+        self.canvas.axes.xaxis.set_label("$\\alpha$")
+        self.canvas.axes.legend()
+        self.canvas.axes.grid()
+        self.canvas.draw()
+        self.canvas.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        self.canvas.show()
+
+    def solve_const_vert_Force(self):
+        from scipy.optimize import newton_krylov
+        from scipy import interpolate
+        # constants:
+        c0 = 0.01        # const profile drag
+        c2 = 0.01        # c2 * alpha**2 + c0 = cDpr
+        cDpi = 0.01     # drag cooefficient of pilot
+        cDl = 0.02      # line drag
+        rho = 1.2
+        mass = 90
+        g = 9.81
+        area = self.ParametricGlider.shape.area
+
+        def minimize(velocity):
+            alpha = np.array(self.alpha)
+            cL = np.array(self.cL)
+            cDi = np.array(self.cDi)
+            force_factor = rho * velocity ** 2 / 2 * area
+            gravity_force = np.ones_like(alpha) * (- mass * g)
+            lift_vert_force = cL * force_factor * np.cos(alpha)
+            drag_vert_force = (cDi + np.ones_like(alpha) * (cDpi + cDl + c0) + c2 * alpha**2) * force_factor
+            return gravity_force + lift_vert_force + drag_vert_force
+
+        def force_gz():
+            alpha = np.array(self.alpha)
+            cDi = np.array(self.cDi)
+            cL_ges = np.array(self.cL)
+            cD_ges = cDi + np.ones_like(alpha) * (cDpi + cDl + c0) + c2 * alpha**2
+            return cL_ges / cD_ges
+        sol = newton_krylov(minimize, np.ones_like(self.alpha))
+        canvas = MplCanvas()
+        canvas.plot(sol, 1 / np.tan(self.alpha), label="solution for const vert_lift")
+        canvas.plot(sol, force_gz(), label="cA/cD")
+        canvas.axes.legend()
+        canvas.axes.grid()
+        canvas.draw()
+        canvas.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        canvas.show()
 
     def accept(self):
-        self.canvas.hide()
-        del(self.canvas)
         Gui.Control.closeDialog()
 
     def reject(self):
-        self.canvas.hide()
-        del(self.canvas)
         Gui.Control.closeDialog()
 
 
