@@ -12,6 +12,13 @@ from ._tools import BaseTool, input_field, text_field
 from .pivy_primitives_new_new import Container, Marker, coin, Line, COLORS
 
 
+### idea for polars
+
+# create a polar object:
+#   properties: glider_obj, alpha_min, alpha_max, c0, c2, 
+
+
+
 import matplotlib
 matplotlib.use('Qt4Agg')
 matplotlib.rcParams['backend.qt4']='PySide'
@@ -97,14 +104,14 @@ class polars():
         from scipy.optimize import newton_krylov
         from scipy import interpolate
         # constants:
-        c0 = 0.01        # const profile drag
-        c2 = 0.01        # c2 * alpha**2 + c0 = cDpr
+        c0 = 0.015       # const profile drag
+        c2 = 0.00        # c2 * alpha**2 + c0 = cDpr
         cDpi = 0.01     # drag cooefficient of pilot
-        cDl = 0.02      # line drag
         rho = 1.2
         mass = 90
         g = 9.81
         area = self.ParametricGlider.shape.area
+        cDl = self.obj.GliderInstance.lineset.get_normalized_drag() / area
 
         def minimize(velocity):
             alpha = np.array(self.alpha)
