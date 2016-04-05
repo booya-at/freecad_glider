@@ -45,11 +45,11 @@ class MplCanvas(FigureCanvas):
 
 class polars():
     try:
-        ppm = __import__("ppm")
-        pan3d = __import__("ppm.pan3d", globals(), locals(), ["abc"])
-        ppm_utils = __import__("ppm.utils", globals(), locals(), ["abc"])
+        paraBEM = __import__("paraBEM")
+        pan3d = __import__("paraBEM.pan3d", globals(), locals(), ["abc"])
+        ppm_utils = __import__("paraBEM.utils", globals(), locals(), ["abc"])
     except ImportError:
-        ppm = None
+        paraBEM = None
 
     def __init__(self, obj):
         self.obj = obj
@@ -59,7 +59,7 @@ class polars():
 
     
     def create_potential_table(self):
-        if not self.ppm:
+        if not self.paraBEM:
             self.QWarning = QtGui.QLabel("no panel_method installed")
             self.layout.addWidget(self.QWarning)
         else:
@@ -73,12 +73,12 @@ class polars():
                 )
             case = self.pan3d.DirichletDoublet0Source0Case3(self._panels, self._trailing_edges)
             case.A_ref = self.ParametricGlider.shape.area
-            case.mom_ref_point = self.ppm.Vector3(1.25, 0, -6)
-            case.v_inf = self.ppm.Vector(self.ParametricGlider.v_inf)
+            case.mom_ref_point = self.paraBEM.Vector3(1.25, 0, -6)
+            case.v_inf = self.paraBEM.Vector(self.ParametricGlider.v_inf)
             case.drag_calc = "trefftz"
             case.farfield = 5
             case.create_wake(10000000, 20)
-            pols = case.polars(self.ppm_utils.vinf_deg_range3(case.v_inf, 5, 15, 20))
+            pols = case.polars(self.ppm_utils.v_inf_deg_range3(case.v_inf, 2, 15, 20))
             self.cL = []
             self.cDi = []
             self.cPi = []
@@ -88,6 +88,10 @@ class polars():
                 self.cL.append(i.cL)
                 self.cDi.append(i.cD)
                 self.cPi.append(i.cP)
+            self.alpha = np.array(self.alpha)
+            self.cL = np.array(self.cL)
+            self.cDi = np.array(self.cDi)
+            self.cPi = np.array(self.cPi)
 
     def potentialPlot(self):
         self.canvas = MplCanvas()
@@ -102,38 +106,48 @@ class polars():
 
     def solve_const_vert_Force(self):
         from scipy.optimize import newton_krylov
-        from scipy import interpolate
         # constants:
-        c0 = 0.015       # const profile drag
-        c2 = 0.00        # c2 * alpha**2 + c0 = cDpr
-        cDpi = 0.01     # drag cooefficient of pilot
+        c0 = 0.010       # const profile drag
+        c2 = 0.01        # c2 * alpha**2 + c0 = cDpr
+        cDpi = 0.01    # drag cooefficient of pilot
         rho = 1.2
         mass = 90
         g = 9.81
         area = self.ParametricGlider.shape.area
-        cDl = self.obj.GliderInstance.lineset.get_normalized_drag() / area
+        cDl = self.obj.GliderInstance.lineset.get_normalized_drag() / area * 2
+        print(cDl)
+        alpha = self.alpha
+        cL = self.cL
+        cDi = self.cDi
 
-        def minimize(velocity):
-            alpha = np.array(self.alpha)
-            cL = np.array(self.cL)
-            cDi = np.array(self.cDi)
-            force_factor = rho * velocity ** 2 / 2 * area
-            gravity_force = np.ones_like(alpha) * (- mass * g)
-            lift_vert_force = cL * force_factor * np.cos(alpha)
-            drag_vert_force = (cDi + np.ones_like(alpha) * (cDpi + cDl + c0) + c2 * alpha**2) * force_factor
-            return gravity_force + lift_vert_force + drag_vert_force
+        cD_ges = (cDi + np.ones_like(alpha) * (cDpi + cDl + c0) + c2 * cL**2)
 
-        def force_gz():
-            alpha = np.array(self.alpha)
-            cDi = np.array(self.cDi)
-            cL_ges = np.array(self.cL)
-            cD_ges = cDi + np.ones_like(alpha) * (cDpi + cDl + c0) + c2 * alpha**2
-            return cL_ges / cD_ges
-        sol = newton_krylov(minimize, np.ones_like(self.alpha))
+        def minimize(phi):
+            return np.arctan(cD_ges / cL) - self.alpha + phi
+
+        def gz():
+            return cL / cD_ges
+
+        def vel(phi):
+            return np.sqrt(2 * mass * g * np.cos(alpha - phi) / cL / rho / area)
+
+        def find_zeros(x, y):
+            sign = np.sign(y[0])
+            i = 1
+            while i < len(y):
+                if sign != np.sign(y[i]):
+                    return x[i-1] + (x[i-1] - x[i]) * y[i-1] / (y[i] - y[i-1])
+                i += 1
+                if i > len(x):
+                    return
+
+
+        phi = newton_krylov(minimize, np.ones_like(self.alpha)) 
+        a_p = [find_zeros(vel(phi), phi), find_zeros(gz(), phi)]
         canvas = MplCanvas()
-        canvas.plot(sol, 1 / np.tan(self.alpha), label="solution for const vert_lift")
-        canvas.plot(sol, force_gz(), label="cA/cD")
-        canvas.axes.legend()
+        canvas.plot(vel(phi), gz())
+        canvas.plot(a_p[0], a_p[1], marker="o")
+        canvas.plot()
         canvas.axes.grid()
         canvas.draw()
         canvas.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
@@ -148,14 +162,14 @@ class polars():
 
 class PanelTool(BaseTool):
     try:
-        ppm = __import__("ppm")
-        pan3d = __import__("ppm.pan3d", globals(), locals(), ["abc"])
+        paraBEM = __import__("paraBEM")
+        pan3d = __import__("paraBEM.pan3d", globals(), locals(), ["abc"])
     except ImportError:
-        ppm = None
+        paraBEM = None
 
     def __init__(self, obj):
         super(PanelTool, self).__init__(obj, widget_name="Properties", hide=True)
-        if not self.ppm:
+        if not self.paraBEM:
             self.QWarning = QtGui.QLabel("no panel_method installed")
             self.layout.addWidget(self.QWarning)
         else:
@@ -279,7 +293,7 @@ class PanelTool(BaseTool):
         self.obj.ViewObject.profile_num = self.Qprofile_points.value()
 
     def stream_line(self, point, interval, numpoints):
-        flow_path = self.case.flow_path(self.ppm.Vector3(*point), interval, numpoints)
+        flow_path = self.case.flow_path(self.paraBEM.Vector3(*point), interval, numpoints)
         return [[p.x, p.y, p.z] for p in flow_path]
 
     def create_panels(self, midribs=0, profile_numpoints=10, mean=False, symmetric=True):
@@ -296,7 +310,7 @@ class PanelTool(BaseTool):
         self.create_panels(self.Qmidribs.value(), self.Qprofile_points.value(),
                            self.Qmean_profile.isChecked(), self.Qsymmetric.isChecked())
         self.case = self.pan3d.DirichletDoublet0Source0Case3(self._panels, self._trailing_edges)
-        self.case.v_inf = self.ppm.Vector(self.ParametricGlider.v_inf)
+        self.case.v_inf = self.paraBEM.Vector(self.ParametricGlider.v_inf)
         self.case.farfield = 5
         self.case.create_wake(9999, 10)
         self.case.run()
@@ -366,7 +380,7 @@ class PanelTool(BaseTool):
 
 
 def create_fem_dict(par_glider):
-    # create a ppm object and compute the pressure
+    # create a paraBEM object and compute the pressure
 
     # create a dict with:
     #   nodes, elements, forces, bc, joints
@@ -379,7 +393,7 @@ def create_fem_dict(par_glider):
         symmetric=True
         )
     case.A_ref = par_glider.flat_area
-    case.v_inf = ppm.Vector(glider.v_inf)
+    case.v_inf = paraBEM.Vector(glider.v_inf)
     self.case.farfield = 5
     self.case.create_wake(9999, 10)
     self.case.run()

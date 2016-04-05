@@ -56,6 +56,7 @@ def mesh_sep(polygons, vertices, color, draw_lines=True):
 class OGBaseObject(object):
     def __init__(self, obj):
         obj.Proxy = self
+        self.obj = obj
 
     def execute(self, fp):
         pass
@@ -64,6 +65,8 @@ class OGBaseObject(object):
 class OGBaseVP(object):
     def __init__(self, obj):
         obj.Proxy = self
+        self.view_obj = obj
+        self.obj = obj.Object
 
     def attach(self, vobj):
         pass
@@ -208,11 +211,9 @@ class OGGliderVP(OGBaseVP):
 
     def update_lines(self, num=3, half=False):
         self.vis_lines.removeAllChildren()
-        for line in self.GliderInstance.lineset.lines:
+        self.glider.lineset.recalc()
+        for line in self.glider.lineset.lines:
             points = line.get_line_points(numpoints=num)
-            if not half:
-                mirrored = [[i[0], -i[1], i[2]] for i in points]
-                self.vis_lines += (prim.Line(mirrored, dynamic=False))
             self.vis_lines += (prim.Line(points, dynamic=False))
 
     def onChanged(self, vp, prop):
