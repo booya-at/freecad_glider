@@ -9,18 +9,18 @@ except ImportError:
     App.Console.PrintWarning("there is a newer version (python3)\n")
     App.Console.PrintMessage("try to motivate dev to port to python3\n")
 
-import tools._glider as glider
-import tools._tools as tools
-import tools.airfoil_tool as airfoil_tool
-import tools.shape_tool as shape_tool
-import tools.arc_tool as arc_tool
-import tools.aoa_tool as aoa_tool
-import tools.ballooning_tool as ballooning_tool
-import tools.line_tool as line_tool
-import tools.merge_tool as merge_tool
-import tools.panel_method as pm
-import tools.cell_tool as cell_tool
-import tools.design_tool as design_tool
+from . import _glider as glider
+from . import _tools as tools
+from . import airfoil_tool as airfoil_tool
+from . import shape_tool as shape_tool
+from . import arc_tool as arc_tool
+from . import aoa_tool as aoa_tool
+from . import ballooning_tool as ballooning_tool
+from . import line_tool as line_tool
+from . import merge_tool as merge_tool
+from . import panel_method as pm
+from . import cell_tool as cell_tool
+from . import design_tool as design_tool
 import openglider
 
 

@@ -6,7 +6,7 @@ import numpy
 import numpy as np
 from copy import deepcopy
 
-from openglider.glider.in_out.export_3d import ppm_Panels
+from openglider.glider.in_out.export_3d import paraBEM_Panels
 from openglider.utils.distribution import Distribution
 from ._tools import BaseTool, input_field, text_field
 from .pivy_primitives_new_new import Container, Marker, coin, Line, COLORS
@@ -47,7 +47,7 @@ class polars():
     try:
         paraBEM = __import__("paraBEM")
         pan3d = __import__("paraBEM.pan3d", globals(), locals(), ["abc"])
-        ppm_utils = __import__("paraBEM.utils", globals(), locals(), ["abc"])
+        paraBEM_utils = __import__("paraBEM.utils", globals(), locals(), ["abc"])
     except ImportError:
         paraBEM = None
 
@@ -63,7 +63,7 @@ class polars():
             self.QWarning = QtGui.QLabel("no panel_method installed")
             self.layout.addWidget(self.QWarning)
         else:
-            self._vertices, self._panels, self._trailing_edges = ppm_Panels(
+            self._vertices, self._panels, self._trailing_edges = paraBEM_Panels(
                 self.ParametricGlider.get_glider_3d(),
                 midribs=0,
                 profile_numpoints=50,
@@ -78,7 +78,7 @@ class polars():
             case.drag_calc = "trefftz"
             case.farfield = 5
             case.create_wake(10000000, 20)
-            pols = case.polars(self.ppm_utils.v_inf_deg_range3(case.v_inf, 2, 15, 20))
+            pols = case.polars(self.paraBEM_utils.v_inf_deg_range3(case.v_inf, 2, 15, 20))
             self.cL = []
             self.cDi = []
             self.cPi = []
@@ -297,7 +297,7 @@ class PanelTool(BaseTool):
         return [[p.x, p.y, p.z] for p in flow_path]
 
     def create_panels(self, midribs=0, profile_numpoints=10, mean=False, symmetric=True):
-        self._vertices, self._panels, self._trailing_edges = ppm_Panels(
+        self._vertices, self._panels, self._trailing_edges = paraBEM_Panels(
             self.ParametricGlider.get_glider_3d(),
             midribs=midribs,
             profile_numpoints=profile_numpoints,
@@ -384,7 +384,7 @@ def create_fem_dict(par_glider):
 
     # create a dict with:
     #   nodes, elements, forces, bc, joints
-    vertices, panels, trailing_edges = ppm_Panels(
+    vertices, panels, trailing_edges = paraBEM_Panels(
         par_glider.get_glider_3d(),
         midribs=0,
         profile_numpoints=50,
