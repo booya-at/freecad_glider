@@ -18,6 +18,7 @@ class gliderWorkbench(Gui.Workbench):
     Icon = "glider_workbench.svg"
     toolBox = [
         "CreateGlider",
+        "ImportGlider",
         "ShapeCommand",
         "ArcCommand",
         "AoaCommand",
@@ -47,7 +48,8 @@ class gliderWorkbench(Gui.Workbench):
 
     def Initialize(self):
         import tools
-
+        global Dir
+        
         Gui.addCommand('CreateGlider', tools.CreateGlider())
         Gui.addCommand('ShapeCommand', tools.ShapeCommand())
         Gui.addCommand('AirfoilCommand', tools.AirfoilCommand())
@@ -55,6 +57,8 @@ class gliderWorkbench(Gui.Workbench):
         Gui.addCommand("AoaCommand", tools.AoaCommand())
         Gui.addCommand("BallooningCommand", tools.BallooningCommand())
         Gui.addCommand("LineCommand", tools.LineCommand())
+
+        Gui.addCommand("ImportGlider", tools.ImportGlider())
         Gui.addCommand("Gl2dExport", tools.Gl2dExport())
         Gui.addCommand("AirfoilMergeCommand", tools.AirfoilMergeCommand())
         Gui.addCommand("BallooningMergeCommand", tools.BallooningMergCommand())
@@ -73,6 +77,8 @@ class gliderWorkbench(Gui.Workbench):
         self.appendToolbar("Develop", self.devBox)
         self.appendMenu("Tools", self.toolBox)
         self.appendMenu("Production", self.productionBox)
+
+        Gui.addPreferencePage(Dir + "/ui/preferences.ui", "Display")
 
     def Activated(self):
         pass

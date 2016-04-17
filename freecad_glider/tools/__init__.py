@@ -31,6 +31,8 @@ import openglider
 #   -optimisation                                           -red
 
 
+# Commands-------------------------------------------------------------
+
 class BaseCommand(object):
     def __init__(self):
         pass
@@ -84,16 +86,28 @@ class Gl2dExport(BaseCommand):
             tools.export_2d(obj)
 
 
-class Gl2dImport(BaseCommand):
+class CreateGlider(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'gl2d_import.svg',
-                'MenuText': 'import 2D',
-                'ToolTip': 'import 2D'}
+        return {'Pixmap': 'new_glider.svg',
+                'MenuText': 'create glider',
+                'ToolTip': 'create glider'}
+
+    @staticmethod
+    def create_glider(import_path=None, parametric_glider=None):
+        glider_object = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "Glider")
+        glider.OGGlider(glider_object, import_path=import_path, parametric_glider=parametric_glider)
+        vp = glider.OGGliderVP(glider_object.ViewObject)
+        vp.updateData()
+        FreeCAD.ActiveDocument.recompute()
+        Gui.SendMsgToActiveView("ViewFit")
+        return glider_object
+
+    @property
+    def glider_obj(self):
+        return True
 
     def Activated(self):
-        obj = self.glider_obj
-        if obj:
-            tools.import_2d(obj)
+        CreateGlider.create_glider()
 
 
 class PatternCommand(BaseCommand):
@@ -137,26 +151,14 @@ class PatternCommand(BaseCommand):
         return FreeCAD.Vector(vec[0], vec[1], 0.)
 
 
-class CreateGlider(BaseCommand):
-    @staticmethod
-    def create_glider(import_path=None, parametric_glider=None):
-        glider_object = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "Glider")
-        glider.OGGlider(glider_object, import_path=import_path, parametric_glider=parametric_glider)
-        vp = glider.OGGliderVP(glider_object.ViewObject)
-        vp.updateData()
-        FreeCAD.ActiveDocument.recompute()
-        Gui.SendMsgToActiveView("ViewFit")
-        return glider_object
-
+class ImportGlider(BaseCommand):
     @staticmethod
     def create_glider_with_dialog():
         file_name = QtGui.QFileDialog.getOpenFileName(
             parent=None,
             caption="import glider",
             directory='~')
-        if file_name[0] == "":
-            CreateGlider.create_glider()
-        else:
+        if not file_name[0] == "":
             file_name = file_name[0]
             file_type = file_name.split(".")[1]
             if file_type == "json":
@@ -166,9 +168,9 @@ class CreateGlider(BaseCommand):
                 CreateGlider.create_glider(parametric_glider=par_glider)
 
     def GetResources(self):
-        return {'Pixmap': "new_glider.svg",
-                'MenuText': 'glider',
-                'ToolTip': 'glider'}
+        return {'Pixmap': 'import_glider.svg',
+                'MenuText': 'import glider',
+                'ToolTip': 'import glider'}
 
     @property
     def glider_obj(self):

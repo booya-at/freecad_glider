@@ -12,6 +12,23 @@ from . import pivy_primitives_new_new as prim
 importpath = os.path.join(os.path.dirname(__file__), '..', 'demokite.ods')
 
 
+# a list of all deafault parameters
+preference_table = {"default_show_half_glider": (bool, True),
+                    "default_show_panels": (bool, False),
+                    "default_num_prof_points": (int, 20),
+                    "default_num_cell_points": (int, 0),
+                    "default_num_line_points": (int, 2),
+                    "default_num_hole_points": (int, 10)}
+
+
+def get_parameter(name):
+    glider_defaults = App.ParamGet("User parameter:BaseApp/Preferences/Mod/glider")
+    if preference_table[name][0] == bool:
+        return glider_defaults.GetBool(name, preference_table[name][1])
+    elif preference_table[name][0] == int:
+        return glider_defaults.GetInt(name, preference_table[name][1])
+
+
 def refresh():
     print("reloading")
     reload(coin)
@@ -152,15 +169,15 @@ class OGGliderVP(OGBaseVP):
         view_obj.addProperty("App::PropertyInteger",
                              "hole_num", "visuals",
                              "number of hole vertices")
-        view_obj.num_ribs = 0
-        view_obj.profile_num = 20
-        view_obj.line_num = 5
+        view_obj.num_ribs = get_parameter("default_num_cell_points")
+        view_obj.profile_num = get_parameter("default_num_prof_points")
+        view_obj.line_num = get_parameter("default_num_line_points")
         view_obj.hull = True
         view_obj.ribs = True
-        view_obj.half_glider = True
-        view_obj.panels = False
+        view_obj.half_glider = get_parameter("default_show_half_glider")
+        view_obj.panels = get_parameter("default_show_panels")
         view_obj.draw_mesh = False
-        view_obj.hole_num = 10
+        view_obj.hole_num = get_parameter("default_num_hole_points")
         super(OGGliderVP, self).__init__(view_obj)
 
     def attach(self, view_obj):
