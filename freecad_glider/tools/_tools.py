@@ -10,8 +10,8 @@ from openglider.vector.spline import BernsteinBase, BSplineBase
 from openglider.glider import ParametricGlider
 
 
-# def refresh():
-#     pass
+def refresh():
+    pass
 
 # from openglider.glider.parametric import Glider2D
 

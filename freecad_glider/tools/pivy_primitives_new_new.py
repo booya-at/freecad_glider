@@ -188,21 +188,15 @@ class Container(coin.SoSeparator):
 
     def Select(self, obj, multi=False):
         if not multi:
-            print("multi")
             for o in self.select_object:
                 o.unselect()
             self.select_object = []
-        print(self.select_object)
-        print(obj)
         if obj:
             print(obj in self.select_object)
             if obj in self.select_object:
-                print("delete")
                 self.select_object.remove(obj)
             else:
-                print("append")
                 self.select_object.append(obj)
-        print(1)
         self.ColorSelected()
         self.selection_changed()
 

@@ -201,7 +201,7 @@ class Line(object):
     def update(self, points=None):
         if points is not None:
             self.points = list(map(vector3D, points))
-        self.data.point.setValue(0, 0, 0)
+        self.data.point.deleteValues(0)
         self.data.point.setValues(0, len(self.points), self.points)
 
 class Line1(coin.SoSeparator):
@@ -217,7 +217,7 @@ class Line1(coin.SoSeparator):
     def update(self, points=None):
         if points is not None:
             self.points = list(map(vector3D, points))
-        self.data.point.setValue(0, 0, 0)
+        self.data.point = coin.deleteValues(0)
         self.data.point.setValues(0, len(self.points), self.points)
 
     def set_color(self, color):
@@ -238,7 +238,7 @@ class Marker(coin.SoSeparator):
     def update(self, points=None):
         if points is not None:
             self.points = list(map(vector3D, points))
-        self.data.point.setValue(0, 0, 0)
+        self.data.point = coin.deleteValues(0)
         self.data.point.setValues(0, len(self.points), self.points)
 
     def set_color(self, color):
