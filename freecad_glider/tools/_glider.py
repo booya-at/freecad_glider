@@ -86,7 +86,7 @@ class OGBaseVP(object):
 
 
 class OGGlider(OGBaseObject):
-    def __init__(self, obj):
+    def __init__(self, obj, parametric_glider=None, import_path=None):
         self.obj = obj
         obj.addProperty("App::PropertyPythonObject",
                         "GliderInstance", "object",
@@ -94,8 +94,12 @@ class OGGlider(OGBaseObject):
         obj.addProperty("App::PropertyPythonObject",
                         "ParametricGlider", "object",
                         "ParametricGlider", 2)
-        with open(os.path.dirname(__file__) + "/../glider2d.json", "r") as importfile:
-            obj.ParametricGlider = jsonify.load(importfile)["data"]
+        if parametric_glider:
+            obj.ParametricGlider = parametric_glider
+        else:
+            import_path = import_path or os.path.dirname(__file__) + "/../glider2d.json"
+            with open(import_path, "r") as importfile:
+                obj.ParametricGlider = jsonify.load(importfile)["data"]
         obj.GliderInstance = obj.ParametricGlider.get_glider_3d()
         obj.Proxy = self
         super(OGGlider, self).__init__(obj)

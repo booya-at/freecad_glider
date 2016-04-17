@@ -18,7 +18,6 @@ class gliderWorkbench(Gui.Workbench):
     Icon = "glider_workbench.svg"
     toolBox = [
         "CreateGlider",
-        "Gl2dImport",
         "ShapeCommand",
         "ArcCommand",
         "AoaCommand",
@@ -56,7 +55,6 @@ class gliderWorkbench(Gui.Workbench):
         Gui.addCommand("AoaCommand", tools.AoaCommand())
         Gui.addCommand("BallooningCommand", tools.BallooningCommand())
         Gui.addCommand("LineCommand", tools.LineCommand())
-        Gui.addCommand("Gl2dImport", tools.Gl2dImport())
         Gui.addCommand("Gl2dExport", tools.Gl2dExport())
         Gui.addCommand("AirfoilMergeCommand", tools.AirfoilMergeCommand())
         Gui.addCommand("BallooningMergeCommand", tools.BallooningMergCommand())

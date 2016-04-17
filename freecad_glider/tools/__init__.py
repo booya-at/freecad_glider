@@ -1,6 +1,7 @@
 import FreeCAD
 import FreeCAD as App
 import FreeCADGui as Gui
+from PySide import QtGui
 
 try:
     from importlib import reload
@@ -138,13 +139,31 @@ class PatternCommand(BaseCommand):
 
 class CreateGlider(BaseCommand):
     @staticmethod
-    def create_glider():
-        a = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "Glider")
-        glider.OGGlider(a)
-        vp = glider.OGGliderVP(a.ViewObject)
+    def create_glider(import_path=None, parametric_glider=None):
+        glider_object = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "Glider")
+        glider.OGGlider(glider_object, import_path=import_path, parametric_glider=parametric_glider)
+        vp = glider.OGGliderVP(glider_object.ViewObject)
         vp.updateData()
         FreeCAD.ActiveDocument.recompute()
         Gui.SendMsgToActiveView("ViewFit")
+        return glider_object
+
+    @staticmethod
+    def create_glider_with_dialog():
+        file_name = QtGui.QFileDialog.getOpenFileName(
+            parent=None,
+            caption="import glider",
+            directory='~')
+        if file_name[0] == "":
+            CreateGlider.create_glider()
+        else:
+            file_name = file_name[0]
+            file_type = file_name.split(".")[1]
+            if file_type == "json":
+                CreateGlider.create_glider(import_path=file_name)
+            elif file_type == "ods":
+                par_glider = openglider.glider.ParametricGlider.import_ods(file_name)
+                CreateGlider.create_glider(parametric_glider=par_glider)
 
     def GetResources(self):
         return {'Pixmap': "new_glider.svg",
@@ -156,7 +175,7 @@ class CreateGlider(BaseCommand):
         return True
 
     def Activated(self):
-        self.create_glider()
+        self.create_glider_with_dialog()
 
 
 class ShapeCommand(BaseCommand):
