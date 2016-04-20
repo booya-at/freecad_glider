@@ -31,11 +31,17 @@
      </item>
      <item row="0" column="1">
       <widget class="Gui::PrefCheckBox" name="gui::prefcheckbox_2">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="toolTip">
         <string>check this if you want to use the color/linewidth from the toolbar as default</string>
        </property>
        <property name="text">
         <string/>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
        <property name="prefEntry" stdset="0">
         <cstring>default_show_half_glider</cstring>
@@ -82,11 +88,20 @@
      </item>
      <item row="1" column="1">
       <widget class="Gui::PrefCheckBox" name="gui::prefcheckbox">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="toolTip">
         <string>check this if you want to use the color/linewidth from the toolbar as default</string>
        </property>
        <property name="text">
         <string/>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <property name="tristate">
+        <bool>false</bool>
        </property>
        <property name="prefEntry" stdset="0">
         <cstring>default_show_panels</cstring>

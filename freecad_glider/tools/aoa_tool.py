@@ -85,8 +85,7 @@ class ZrotTool(BaseTool):
             self.spline.get_sequence(num=self.num_on_drag) * self.scale)
 
     def update_spline_type(self):
-        self.aoa_cpc.control_pos = vector3D(
-            numpy.array(self.spline.controlpoints) * self.scale)
+        self.aoa_cpc.control_pos = numpy.array(self.spline.controlpoints) * self.scale
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
             self.ParametricGlider.shape.span, pos[1], pos[2]]
         self.update_aoa()
@@ -164,8 +163,7 @@ class ZrotTool(BaseTool):
 
     def update_num(self):
         self.spline.numpoints = self.Qnum_aoa.value()
-        self.aoa_cpc.control_pos = vector3D(
-            numpy.array(self.spline.controlpoints) * self.scale)
+        self.aoa_cpc.control_pos = numpy.array(self.spline.controlpoints) * self.scale
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
             self.ParametricGlider.shape.span, pos[1], pos[2]]
         self.update_aoa()

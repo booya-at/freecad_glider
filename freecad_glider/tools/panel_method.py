@@ -309,6 +309,7 @@ class PanelTool(BaseTool):
         self.update_glider()
         self.create_panels(self.Qmidribs.value(), self.Qprofile_points.value(),
                            self.Qmean_profile.isChecked(), self.Qsymmetric.isChecked())
+        del self.case
         self.case = self.pan3d.DirichletDoublet0Source0Case3(self._panels, self._trailing_edges)
         self.case.v_inf = self.paraBEM.Vector(self.ParametricGlider.v_inf)
         self.case.farfield = 5
