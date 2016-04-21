@@ -2,7 +2,7 @@ from __future__ import division
 
 from copy import deepcopy
 
-from PySide import QtGui
+from PySide import QtGui, QtCore
 from pivy import coin
 import FreeCADGui as Gui
 from openglider.jsonify import dump, load
@@ -95,11 +95,20 @@ class spline_select(QtGui.QComboBox):
 
 
 class BaseTool(object):
-    def __init__(self, obj, widget_name="BaseWidget", hide=True, turn=True):
+    def __init__(self, obj, widget_name="BaseWidget", hide=False, turn=True):
         self.obj = obj
         self.ParametricGlider = deepcopy(self.obj.ParametricGlider)
         self.obj.ViewObject.Visibility = not hide
-        self.view = Gui.ActiveDocument.ActiveView
+        #self.view = Gui.ActiveDocument.ActiveView
+        self.view = Gui.createQuaterWidget()
+        qt_obj = self.view.getQtObject()
+        qt_obj.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
+        q_doc_view = Gui.ActiveDocument.ActiveView.getQtObject()
+        pos_upper_left = -q_doc_view.mapFromGlobal(q_doc_view.pos())
+        height = q_doc_view.geometry().height()
+        width = q_doc_view.geometry().width()
+        qt_obj.setGeometry(pos_upper_left.x(), pos_upper_left.y(), width/2, height)
+        qt_obj.show()
         Gui.Selection.clearSelection()
         if turn:
             self.view.viewTop()
@@ -130,13 +139,15 @@ class BaseTool(object):
         self.obj.ViewObject.Visibility = True
         self.scene.removeChild(self.task_separator)
         Gui.Control.closeDialog()
-        self.view.setNavigationType(self.nav_bak)
+        self.view.getQtObject().hide()
+        del self.view
 
     def reject(self):
         self.obj.ViewObject.Visibility = True
         self.scene.removeChild(self.task_separator)
         Gui.Control.closeDialog()
-        self.view.setNavigationType(self.nav_bak)
+        self.view.getQtObject().hide()
+        del self.view
 
     def setup_widget(self):
         pass

@@ -51,9 +51,16 @@ class ShapeTool(BaseTool):
 
         self.setup_widget()
         self.setup_pivy()
-        Gui.SendMsgToActiveView("ViewFit")
+        self.view.fitAll()
 
     def accept(self):
+        self.update_glider()
+        self.back_cpc.remove_callbacks()
+        self.front_cpc.remove_callbacks()
+        self.cell_dist_cpc.remove_callbacks()
+        super(ShapeTool, self).accept()
+
+    def update_glider(self):
         self.ParametricGlider.rescale_curves()
         try:
             self.ParametricGlider.get_glider_3d(self.obj.GliderInstance)
@@ -64,10 +71,6 @@ class ShapeTool(BaseTool):
             return
         self.obj.ParametricGlider = self.ParametricGlider
         self.obj.ViewObject.Proxy.updateData()
-        self.back_cpc.remove_callbacks()
-        self.front_cpc.remove_callbacks()
-        self.cell_dist_cpc.remove_callbacks()
-        super(ShapeTool, self).accept()
 
     def reject(self):
         self.back_cpc.remove_callbacks()
@@ -118,6 +121,9 @@ class ShapeTool(BaseTool):
         Qaspect_ratio_layout.addWidget(self.Qaspect_ratio)
         Qaspect_ratio_layout.addWidget(self.Qaspect_ratio_fixed)
 
+        self.Qupdate_glider = QtGui.QPushButton("update glider")
+        self.Qupdate_glider.clicked.connect(self.update_glider)
+
         # self.layout.setWidget(1, text_field, QtGui.QLabel("manual shape edit"))
         # self.layout.setWidget(1, input_field, self.Qmanual_edit)
         self.layout.setWidget(2, text_field, QtGui.QLabel("front num_points"))
@@ -140,6 +146,7 @@ class ShapeTool(BaseTool):
         self.layout.setLayout(9, input_field, Qarea_layout)
         self.layout.setWidget(10, text_field, QtGui.QLabel("aspect ratio:"))
         self.layout.setLayout(10, input_field, Qaspect_ratio_layout)
+        self.layout.setWidget(11, input_field, self.Qupdate_glider)
 
         self.update_properties()
 
