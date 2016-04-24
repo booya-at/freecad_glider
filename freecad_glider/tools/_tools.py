@@ -99,19 +99,13 @@ class BaseTool(object):
         self.obj = obj
         self.ParametricGlider = deepcopy(self.obj.ParametricGlider)
         self.obj.ViewObject.Visibility = not hide
-        #self.view = Gui.ActiveDocument.ActiveView
-        self.view = Gui.createQuaterWidget()
-        qt_obj = self.view.getQtObject()
-        qt_obj.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
-        q_doc_view = Gui.ActiveDocument.ActiveView.getQtObject()
-        pos_upper_left = -q_doc_view.mapFromGlobal(q_doc_view.pos())
-        height = q_doc_view.geometry().height()
-        width = q_doc_view.geometry().width()
-        qt_obj.setGeometry(pos_upper_left.x(), pos_upper_left.y(), width/2, height)
-        qt_obj.show()
+        scene = Gui.ActiveDocument.ActiveView.getSceneGraph()
+        _views = Gui.createViewer(2)
+        self.view = _views.getViewer(0)
+        _views.getViewer(1).getSoRenderManager().getSceneGraph().addChild(scene)
         Gui.Selection.clearSelection()
         if turn:
-            self.view.viewTop()
+            _views.viewTop()
 
         # self.view.setNavigationType('Gui::TouchpadNavigationStyle')
         # disable the rotation function
@@ -157,7 +151,7 @@ class BaseTool(object):
 
     @property
     def scene(self):
-        return self.view.getSceneGraph()
+        return self.view.getSoRenderManager().getSceneGraph()
 
     @property
     def nav_bak(self):
