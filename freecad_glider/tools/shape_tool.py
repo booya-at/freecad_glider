@@ -51,7 +51,7 @@ class ShapeTool(BaseTool):
 
         self.setup_widget()
         self.setup_pivy()
-        # self.view.fitAll()
+        self._views.fitAll()
 
     def accept(self):
         self.update_glider()

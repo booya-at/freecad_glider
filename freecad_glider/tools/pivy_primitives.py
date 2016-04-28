@@ -82,22 +82,26 @@ class ControlPoint(coin.SoSeparator):
 class ControlPointContainer(coin.SoSeparator):
     def __init__(self, points=None, view=None):
         super(ControlPointContainer, self).__init__()
+        self.vis = coin.SoSeparator()
+        self += self.vis
         self.control_points = []
         if points is not None:
             for point in points:
                 cp = ControlPoint(*point)
                 self.control_points.append(cp)
-                self += cp
+                self.vis += cp
         self.view = view
         self._current_point = None
-        self.drag = None
+        self._drag_cb = None
         self.old_mouse_pos = None
         self.new_mouse_pos = None
         self.on_drag = []
         self.drag_start = []
         self.drag_release = []
-        self.highlite_main = self.view.addEventCallbackPivy(coin.SoLocation2Event.getClassTypeId(), self.highlight_cb)
-        self.drag_main = self.view.addEventCallbackPivy(coin.SoMouseButtonEvent.getClassTypeId(), self.drag_main_cb)
+        self.events = coin.SoEventCallback()
+        self += self.events
+        self._highlight_cb = self.events.addEventCallback(coin.SoLocation2Event.getClassTypeId(), self.highlight_cb)
+        self._drag_main_cb = self.events.addEventCallback(coin.SoMouseButtonEvent.getClassTypeId(), self.drag_main_cb)
 
     @property
     def control_pos(self):
@@ -106,8 +110,8 @@ class ControlPointContainer(coin.SoSeparator):
     @control_pos.setter
     def control_pos(self, points):
         self.control_points = [ControlPoint(*point) for point in points]
-        self.removeAllChildren()
-        self += self.control_points
+        self.vis.removeAllChildren()
+        self.vis += self.control_points
 
     @property
     def current_point(self):
@@ -122,11 +126,11 @@ class ControlPointContainer(coin.SoSeparator):
             if self._current_point is not None:
                 self._current_point.set_edit()
 
-    def highlight_cb(self, event_callback):
+    def highlight_cb(self, arg1, event_callback):
         if not ControlPoint.lock or self.current_point is not None:
             event = event_callback.getEvent()
             pos = event.getPosition()
-            render_manager = self.view.getViewer().getSoRenderManager()
+            render_manager = self.view.getSoRenderManager()
             ray_pick = coin.SoRayPickAction(render_manager.getViewportRegion())
             ray_pick.setPoint(coin.SbVec2s(*pos))
             ray_pick.setRadius(10)
@@ -145,23 +149,23 @@ class ControlPointContainer(coin.SoSeparator):
                 self.current_point = None
 
         #---------INITDRAG---------------------#
-    def drag_main_cb(self, event_callback):
+    def drag_main_cb(self, arg1, event_callback):
         event = event_callback.getEvent()
         if self.current_point is not None and event.getState():
             pos = event.getPosition()
             self.old_mouse_pos = self.view.getPoint(*pos)
-            self.drag = self.view.addEventCallbackPivy(coin.SoLocation2Event.getClassTypeId(), self.drag_cb) 
-            self.view.removeEventCallbackPivy(coin.SoLocation2Event.getClassTypeId(), self.highlite_main)
+            self._drag_cb = self.events.addEventCallback(coin.SoLocation2Event.getClassTypeId(), self.drag_cb) 
+            self.events.removeEventCallback(coin.SoLocation2Event.getClassTypeId(), self._highlight_cb)
             for foo in self.drag_start:
                 foo()
-        elif self.drag is not None:
-            self.view.removeEventCallbackPivy(coin.SoLocation2Event.getClassTypeId(), self.drag)
-            self.highlite_main = self.view.addEventCallbackPivy(coin.SoLocation2Event.getClassTypeId(), self.highlight_cb)
-            self.drag = None
+        elif self._drag_cb is not None:
+            self.events.removeEventCallback(coin.SoLocation2Event.getClassTypeId(), self._drag_cb)
+            self._highlight_cb = self.events.addEventCallback(coin.SoLocation2Event.getClassTypeId(), self.highlight_cb)
+            self._drag_cb = None
             for foo in self.drag_release:
                 foo()
 
-    def drag_cb(self, event_callback):
+    def drag_cb(self, arg1, event_callback):
         event = event_callback.getEvent()
         pos = event.getPosition()
         if type(event) == coin.SoLocation2Event and self.current_point:
@@ -179,10 +183,10 @@ class ControlPointContainer(coin.SoSeparator):
                     foo()
 
     def remove_callbacks(self):
-        if self.highlite_main:
-            self.view.removeEventCallbackPivy(coin.SoLocation2Event.getClassTypeId(), self.highlite_main)
-        if self.drag_main:
-            self.view.removeEventCallbackPivy(coin.SoMouseButtonEvent.getClassTypeId(), self.drag_main)
+        if self._highlight_cb:
+            self.events.removeEventCallback(coin.SoLocation2Event.getClassTypeId(), self._highlight_cb)
+        if self._drag_cb:
+            self.events.removeEventCallback(coin.SoMouseButtonEvent.getClassTypeId(), self._drag_cb)
 
 
 class Line(object):

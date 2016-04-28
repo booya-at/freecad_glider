@@ -100,12 +100,12 @@ class BaseTool(object):
         self.ParametricGlider = deepcopy(self.obj.ParametricGlider)
         self.obj.ViewObject.Visibility = not hide
         scene = Gui.ActiveDocument.ActiveView.getSceneGraph()
-        _views = Gui.createViewer(2)
-        self.view = _views.getViewer(0)
-        _views.getViewer(1).getSoRenderManager().getSceneGraph().addChild(scene)
+        self._views = Gui.createViewer(2)
+        self.view = self._views.getViewer(0)
+        self._views.getViewer(1).getSoRenderManager().getSceneGraph().addChild(scene)
         Gui.Selection.clearSelection()
         if turn:
-            _views.viewTop()
+            self._views.viewTop()
 
         # self.view.setNavigationType('Gui::TouchpadNavigationStyle')
         # disable the rotation function
@@ -133,15 +133,13 @@ class BaseTool(object):
         self.obj.ViewObject.Visibility = True
         self.scene.removeChild(self.task_separator)
         Gui.Control.closeDialog()
-        self.view.getQtObject().hide()
-        del self.view
+        self._views.close()
 
     def reject(self):
         self.obj.ViewObject.Visibility = True
         self.scene.removeChild(self.task_separator)
         Gui.Control.closeDialog()
-        self.view.getQtObject().hide()
-        del self.view
+        self._views.close()
 
     def setup_widget(self):
         pass
