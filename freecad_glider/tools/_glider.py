@@ -37,8 +37,10 @@ def refresh():
     reload(prim)
 
 
-def mesh_sep(polygons, vertices, color, draw_lines=True):
-    _vertices = list(vertices)
+def mesh_sep(mesh, color, draw_lines=True):
+    vertices, polygons_grouped, _ = mesh.get_indexed()
+    polygons = sum(polygons_grouped.values(), [])
+    _vertices = [list(v) for v in vertices]
     _polygons = []
     _lines = []
     for i in polygons:
@@ -275,7 +277,7 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                     color = (.3, .3, .3)
                     if panel.material_code:
                         color = hex_to_rgb(panel.material_code)
-                    vis_glider += mesh_sep(m.polygons, m.vertices,  color, draw_mesh)
+                    vis_glider += mesh_sep(m,  color, draw_mesh)
 
         elif midribs == 0:
             vertexproperty = coin.SoVertexProperty()
@@ -294,7 +296,7 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                 msh = coin.SoQuadMesh()
                 m = cell.get_mesh(midribs, with_numpy=True)
                 color = (.8, .8, .8)
-                vis_glider += mesh_sep(m.polygons, m.vertices,  color, draw_mesh)
+                vis_glider += mesh_sep(m,  color, draw_mesh)
                 # _ribs = [cell.midrib(pos / (midribs + 1))
                 #         for pos in range(midribs + 2)]
                 # flat_coords = [i for rib in _ribs for i in rib]
@@ -312,7 +314,7 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
             if not rib.profile_2d.has_zero_thickness:
                 msh += mesh.Mesh.from_rib(rib, hole_num, mesh_option="QYqazip")
         if msh.vertices is not None:
-            vis_glider += mesh_sep(msh.polygons, msh.vertices, (.3, .3, .3), draw_mesh)
+            vis_glider += mesh_sep(msh, (.3, .3, .3), draw_mesh)
             # verts = list(msh.vertices)
             # polygons = []
             # lines = []
@@ -350,7 +352,7 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
             for diagonal in cell.diagonals:
                 msh += mesh.Mesh.from_diagonal(diagonal, cell, insert_points=4)
             if msh.vertices is not None:
-                vis_glider += mesh_sep(msh.polygons, msh.vertices, (.3, .3, .3), draw_mesh)
+                vis_glider += mesh_sep(msh, (.3, .3, .3), draw_mesh)
 
         _strap_verts = []
         _strap_lines = []
