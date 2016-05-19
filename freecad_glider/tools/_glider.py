@@ -38,7 +38,8 @@ def refresh():
 
 
 def mesh_sep(mesh, color, draw_lines=True):
-    vertices, polygons, _ = mesh.get_indexed()
+    vertices, polygons_grouped, _ = mesh.get_indexed()
+    polygons = sum(polygons_grouped.values(), [])
     _vertices = [list(v) for v in vertices]
     _polygons = []
     _lines = []
