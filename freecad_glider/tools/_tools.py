@@ -100,12 +100,17 @@ class BaseTool(object):
         self.ParametricGlider = deepcopy(self.obj.ParametricGlider)
         self.obj.ViewObject.Visibility = not hide
         scene = Gui.ActiveDocument.ActiveView.getSceneGraph()
-        self._views = Gui.createViewer(2)
-        self.view = self._views.getViewer(0)
-        self._views.getViewer(1).getSoRenderManager().getSceneGraph().addChild(scene)
         Gui.Selection.clearSelection()
-        if turn:
-            self._views.viewTop()
+        if not hide:
+            self._views = Gui.createViewer(2)
+            self.view = self._views.getViewer(0)
+            self._views.getViewer(1).getSoRenderManager().getSceneGraph().addChild(scene)
+            if turn:
+                self._views.viewTop()
+        else:
+            self.view = Gui.ActiveDocument.ActiveView
+            if turn:
+                self.view.viewTop()
 
         # self.view.setNavigationType('Gui::TouchpadNavigationStyle')
         # disable the rotation function
@@ -133,13 +138,15 @@ class BaseTool(object):
         self.obj.ViewObject.Visibility = True
         self.scene.removeChild(self.task_separator)
         Gui.Control.closeDialog()
-        self._views.close()
+        if hasattr(self, "_views"):
+            self._views.close()
 
     def reject(self):
         self.obj.ViewObject.Visibility = True
         self.scene.removeChild(self.task_separator)
         Gui.Control.closeDialog()
-        self._views.close()
+        if hasattr(self, "_views"):
+            self._views.close()
 
     def setup_widget(self):
         pass
@@ -149,7 +156,10 @@ class BaseTool(object):
 
     @property
     def scene(self):
-        return self.view.getSoRenderManager().getSceneGraph()
+        try:
+            return self.view.getSceneGraph()
+        except AttributeError:
+            return self.view.getSoRenderManager().getSceneGraph()
 
     @property
     def nav_bak(self):

@@ -19,6 +19,8 @@ COL_STD = COLORS["black"]
 COL_OVR = COLORS["red"]
 COL_SEL = COLORS["yellow"]
 
+LOCATION_EVENT = coin.SoLocation2Event.getClassTypeId()
+BUTTON_EVENT = coin.SoMouseButtonEvent.getClassTypeId()
 
 class ControlPoint(coin.SoSeparator):
     lock = False
@@ -100,8 +102,8 @@ class ControlPointContainer(coin.SoSeparator):
         self.drag_release = []
         self.events = coin.SoEventCallback()
         self += self.events
-        self._highlight_cb = self.events.addEventCallback(coin.SoLocation2Event.getClassTypeId(), self.highlight_cb)
-        self._drag_main_cb = self.events.addEventCallback(coin.SoMouseButtonEvent.getClassTypeId(), self.drag_main_cb)
+        self._highlight_cb = self.events.addEventCallback(LOCATION_EVENT, self.highlight_cb)
+        self._drag_main_cb = self.events.addEventCallback(BUTTON_EVENT, self.drag_main_cb)
 
     @property
     def control_pos(self):
@@ -126,6 +128,10 @@ class ControlPointContainer(coin.SoSeparator):
             if self._current_point is not None:
                 self._current_point.set_edit()
 
+    @staticmethod
+    def _test_foo(point):
+        return lambda ctrl: ctrl.getNodeId() == point.getNodeId()
+
     def highlight_cb(self, arg1, event_callback):
         if not ControlPoint.lock or self.current_point is not None:
             event = event_callback.getEvent()
@@ -134,14 +140,14 @@ class ControlPointContainer(coin.SoSeparator):
             ray_pick = coin.SoRayPickAction(render_manager.getViewportRegion())
             ray_pick.setPoint(coin.SbVec2s(*pos))
             ray_pick.setRadius(10)
-            ray_pick.setPickAll(True) 
+            ray_pick.setPickAll(True)
             ray_pick.apply(render_manager.getSceneGraph())
             picked_point = ray_pick.getPickedPointList()
             for point in picked_point:
                 path = point.getPath()
                 length = path.getLength()
                 point = path.getNode(length - 2)
-                point = list(filter(lambda ctrl: ctrl.getNodeId() == point.getNodeId(), self.control_points))
+                point = list(filter(self._test_foo(point), self.control_points))
                 if point != []:
                     self.current_point = point[0]
                     break

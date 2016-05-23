@@ -3,7 +3,7 @@ try:
     import FreeCADGui as Gui
     import FreeCAD
 except ImportError:
-    print("module not loaded with freecad")
+    print("module not loaded with FreeCAD")
 
 import glider_metadata
 Dir = os.path.dirname(glider_metadata.__file__)
@@ -41,7 +41,6 @@ class gliderWorkbench(Gui.Workbench):
     devBox = [
         "RefreshCommand"
         ]
-
 
     def GetClassName(self):
         return "Gui::PythonWorkbench"

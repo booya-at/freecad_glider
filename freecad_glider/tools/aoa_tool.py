@@ -17,7 +17,7 @@ class ZrotTool(BaseTool):
     num_release = 200
 
     def __init__(self, obj):
-        super(ZrotTool, self).__init__(obj)
+        super(ZrotTool, self).__init__(obj, hide=False)
         pts = numpy.array(self.spline.controlpoints) * self.scale
         pts = list(map(vector3D, pts))
         self.aoa_cpc = ControlPointContainer(pts, self.view)

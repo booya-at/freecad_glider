@@ -16,7 +16,7 @@ def refresh():
 
 class BaseMergeTool(BaseTool):
     def __init__(self, obj):
-        super(BaseMergeTool, self).__init__(obj)
+        super(BaseMergeTool, self).__init__(obj, hide=False)
         self.bezier_curve = Bezier([[0, 0], [1, 1]])
         self.bezier_cpc = ControlPointContainer(self.bezier_curve.controlpoints, self.view)
         self.shape = coin.SoSeparator()

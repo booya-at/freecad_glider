@@ -2,8 +2,9 @@ from pivy import coin
 import FreeCAD as App
 import numpy
 
+
 def depth(l):
-    return isinstance(l, list) and max(map(depth, l))+1
+    return isinstance(l, list) and max(map(depth, l)) + 1
 
 
 def vector3D(vec):
@@ -376,7 +377,7 @@ class Container(coin.SoSeparator):
         for i in self.select_object:
             i.delete()
         for i in self.objects + self.static_objects:
-            i.check_dependency()    #dependency length max = 1
+            i.check_dependency()    # dependency length max = 1
         for i in self.objects + self.static_objects:
             if i._delete:
                 temp.append(i)
@@ -406,3 +407,43 @@ class Container(coin.SoSeparator):
             return [0, vector[1], 0]
         elif self._direction == "z":
             return [0, 0, vector[2]]
+
+
+def mesh_sep(mesh, color, draw_lines=True):
+    """
+    create a mesh from a openglider.numeric.mesh.Mesh
+    """
+    # TODO: use the full mesh of a glider to simplify the sceengraph.
+
+    vertices, polygons_grouped, _ = mesh.get_indexed()
+    polygons = sum(polygons_grouped.values(), [])
+    _vertices = [list(v) for v in vertices]
+    _polygons = []
+    _lines = []
+    for i in polygons:
+        _polygons += i
+        _lines += i
+        _lines.append(i[0])
+        _polygons.append(-1)
+        _lines.append(-1)
+
+    sep = coin.SoSeparator()
+    vertex_property = coin.SoVertexProperty()
+    face_set = coin.SoIndexedFaceSet()
+    shape_hint = coin.SoShapeHints()
+    shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
+    shape_hint.creaseAngle = 1.05  # ~pi / 3
+    face_mat = coin.SoMaterial()
+    face_mat.diffuseColor = color
+    vertex_property.vertex.setValues(0, len(_vertices), _vertices)
+    face_set.coordIndex.setValues(0, len(_polygons), list(_polygons))
+    vertex_property.materialBinding = coin.SoMaterialBinding.PER_VERTEX_INDEXED
+    sep += shape_hint, vertex_property, face_mat, face_set
+
+    if draw_lines:
+        line_set = coin.SoIndexedLineSet()
+        line_set.coordIndex.setValues(0, len(_lines), list(_lines))
+        line_mat = coin.SoMaterial()
+        line_mat.diffuseColor = (.0, .0, .0)
+        sep += line_mat, line_set
+    return sep

@@ -13,7 +13,7 @@ class ArcTool(BaseTool):
 
     def __init__(self, obj):
         """adds a symmetric spline to the scene"""
-        super(ArcTool, self).__init__(obj, widget_name="ArcTool")
+        super(ArcTool, self).__init__(obj, widget_name="ArcTool", hide=False)
 
         self.arc_cpc = ControlPointContainer(
             self.ParametricGlider.arc.curve.controlpoints, self.view)

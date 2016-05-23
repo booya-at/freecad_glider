@@ -26,7 +26,7 @@ def refresh():
 
 class LineTool(BaseTool):
     def __init__(self, obj):
-        super(LineTool, self).__init__(obj, widget_name="LineTool")
+        super(LineTool, self).__init__(obj, widget_name="LineTool", hide=True)
 
         # get the parametric shape
         _shape = self.ParametricGlider.shape.get_half_shape()
