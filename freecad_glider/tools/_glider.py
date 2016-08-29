@@ -190,13 +190,23 @@ class OGGliderVP(OGBaseVP):
         self.view_obj = view_obj
         self.GliderInstance = view_obj.Object.GliderInstance
         self.material.diffuseColor = (.7, .7, .7)
-        self.seperator += (self.vis_glider, self.vis_glider, self.vis_lines)
+        self.seperator += (self.vis_glider, self.vis_lines)
         view_obj.addDisplayMode(self.seperator, 'out')
 
     def updateData(self, prop="all", *args):
         self._updateData(self.view_obj, prop)
 
+
     def _updateData(self, fp, prop="all"):
+        if not hasattr(fp, "half_glider"):
+            print(prop)
+            return  # the vieprovider isn't set up at this moment
+                    # but calls already the update function
+        if not hasattr(self, "glider"):
+            if not fp.half_glider:
+                self.glider = self.GliderInstance.copy_complete()
+            else:
+                self.glider = self.GliderInstance.copy()
         if hasattr(fp, "ribs"):      # check for last attribute to be restored
             if prop in ["num_ribs", "profile_num", "hull", "panels",
                         "half_glider", "ribs", "draw_mesh", "hole_num",
@@ -206,33 +216,32 @@ class OGGliderVP(OGBaseVP):
                 glider_changed = ("half_glider" in prop or
                                   "profile_num" in prop or
                                   "all" in prop)
+                if glider_changed:
+                    if not fp.half_glider:
+                        self.glider = self.GliderInstance.copy_complete()
+                    else:
+                        self.glider = self.GliderInstance.copy()
+
                 self.update_glider(midribs=fp.num_ribs,
                                    profile_numpoints=numpoints,
                                    hull=fp.hull,
                                    panels=fp.panels,
-                                   half=fp.half_glider,
                                    ribs=fp.ribs,
                                    draw_mesh=fp.draw_mesh,
                                    hole_num=fp.hole_num,
                                    glider_changed=glider_changed)
         if hasattr(fp, "line_num"):
             if prop in ["line_num", "half_glider", "all"]:
-                self.update_lines(fp.line_num,
-                                  half=fp.half_glider)
+                self.update_lines(fp.line_num)
 
     def update_glider(self, midribs=0, profile_numpoints=20,
-                      hull=True, panels=False, half=False, ribs=False,
+                      hull=True, panels=False, ribs=False,
                       draw_mesh=False, hole_num=10, glider_changed=True):
         self.vis_glider.removeAllChildren()
-        if glider_changed or not hasattr(self, "glider"):
-            if not half:
-                self.glider = self.GliderInstance.copy_complete()
-            else:
-                self.glider = self.GliderInstance.copy()
         draw_glider(self.glider, self.vis_glider, midribs, profile_numpoints,
-                    hull, panels, half, ribs, draw_mesh, hole_num)
+                    hull, panels, ribs, draw_mesh, hole_num)
 
-    def update_lines(self, num=3, half=False):
+    def update_lines(self, num=3):
         self.vis_lines.removeAllChildren()
         self.glider.lineset.recalc()
         for line in self.glider.lineset.lines:
@@ -263,7 +272,7 @@ def hex_to_rgb(hex_string):
 
 
 def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
-                hull=True, panels=False, half=False, ribs=False,
+                hull=True, panels=False, ribs=False,
                 draw_mesh=False, hole_num=10):
     """draw the glider to the visglider seperator"""
     glider.profile_numpoints = profile_numpoints
@@ -297,17 +306,7 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                 m = cell.get_mesh(midribs, with_numpy=True)
                 color = (.8, .8, .8)
                 vis_glider += mesh_sep(m,  color, draw_mesh)
-                # _ribs = [cell.midrib(pos / (midribs + 1))
-                #         for pos in range(midribs + 2)]
-                # flat_coords = [i for rib in _ribs for i in rib]
-                # vertexproperty.vertex.setValues(0,
-                #                                 len(flat_coords),
-                #                                 flat_coords)
-                # msh.verticesPerRow = len(_ribs[0])
-                # msh.verticesPerColumn = len(_ribs)
-                # msh.vertexProperty = vertexproperty
-                # sep += vertexproperty, msh
-                # vis_glider += sep
+
     if ribs:  # show ribs
         msh = mesh.Mesh()
         for rib in glider.ribs:
@@ -315,36 +314,6 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
                 msh += mesh.Mesh.from_rib(rib, hole_num, mesh_option="QYqazip")
         if msh.vertices is not None:
             vis_glider += mesh_sep(msh, (.3, .3, .3), draw_mesh)
-            # verts = list(msh.vertices)
-            # polygons = []
-            # lines = []
-            # for i in msh.polygons:
-            #     polygons += i
-            #     lines += i
-            #     lines.append(i[0])
-            #     polygons.append(-1)
-            #     lines.append(-1)
-
-            # rib_sep = coin.SoSeparator()
-            # vis_glider += rib_sep
-            # vertex_property = coin.SoVertexProperty()
-            # face_set = coin.SoIndexedFaceSet()
-            # line_set = coin.SoIndexedLineSet()
-
-            # shape_hint = coin.SoShapeHints()
-            # shape_hint.vertexOrdering = coin.SoShapeHints.COUNTERCLOCKWISE
-
-            # mat1 = coin.SoMaterial()
-            # mat1.diffuseColor = (.3, .3, .3)
-            # mat2 = coin.SoMaterial()
-            # mat2.diffuseColor = (.0, .0, .0)
-
-            # vertex_property.vertex.setValues(0, len(verts), verts)
-            # face_set.coordIndex.setValues(0, len(polygons), list(polygons))
-            # line_set.coordIndex.setValues(0, len(lines), list(lines))
-            # rib_sep += shape_hint, vertex_property, mat1, face_set
-            # if draw_mesh:
-            #     rib_sep += mat2, line_set
 
 
         msh = mesh.Mesh()
