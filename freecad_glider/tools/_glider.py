@@ -238,11 +238,17 @@ class OGGliderVP(OGBaseVP):
                       hull=True, panels=False, ribs=False,
                       draw_mesh=False, hole_num=10, glider_changed=True):
         self.vis_glider.removeAllChildren()
+        pick_style = coin.SoPickStyle()
+        pick_style.style.setValue(coin.SoPickStyle.BOUNDING_BOX)
+        self.vis_glider += pick_style
         draw_glider(self.glider, self.vis_glider, midribs, profile_numpoints,
                     hull, panels, ribs, draw_mesh, hole_num)
 
     def update_lines(self, num=3):
         self.vis_lines.removeAllChildren()
+        pick_style = coin.SoPickStyle()
+        pick_style.style.setValue(coin.SoPickStyle.BOUNDING_BOX)
+        self.vis_lines += pick_style
         self.glider.lineset.recalc()
         for line in self.glider.lineset.lines:
             points = line.get_line_points(numpoints=num)
