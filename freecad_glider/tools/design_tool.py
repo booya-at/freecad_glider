@@ -4,8 +4,8 @@ from PySide import QtGui, QtCore
 import numpy as np
 import FreeCAD as App
 
-from ._tools import BaseTool, input_field, text_field
-from .pivy_primitives_new_new import coin, Line, Marker, Container, vector3D
+from ._tools import BaseTool, input_field, text_field, coin
+from .pivy_primitives_new_new import Line, Marker, Container, vector3D
 
 
 def refresh():
@@ -140,10 +140,13 @@ class CutPoint(Marker):
         self.max= self.ParametricGlider.shape[tmp_rib, 1.][1]
         self.min= self.ParametricGlider.shape[tmp_rib, 0.][1]
         self.points = [point]
-  
+
     def get_2D(self):
-        rib_nr = self.rib_nr - self.ParametricGlider.shape.has_center_cell
-        return self.ParametricGlider.shape[rib_nr, abs(self.rib_pos)] + [0]
+        try:
+            return list(self.ParametricGlider.shape.get_rib_point(self.rib_nr, abs(self.rib_pos))) + [0]
+        except IndexError:
+            raise "index " + self.rib_nr + " out of range"
+
 
     def get_rib_pos(self):
         rib_nr = self.rib_nr - self.ParametricGlider.shape.has_center_cell
@@ -153,7 +156,7 @@ class CutPoint(Marker):
         chord = rib[0][1] - rib[1][1]
         sign = ((self.rib_pos >= 0) * 2 - 1)
         return round(sign * (abs(rib[0][1]- self.pos[1])) / chord, 3)
-    
+
     def __eq__(self, other):
         if isinstance(other, CutPoint):
             if self.rib_nr == other.rib_nr:

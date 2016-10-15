@@ -333,10 +333,11 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
         _strap_lines = []
         _strap_count = 0
         for cell in glider.cells:
-            for i, strap in enumerate(cell.straps):
-                _strap_verts += strap.get_3d(cell)
-                _strap_lines += [_strap_count * 2, _strap_count * 2 + 1, -1]
-                _strap_count += 1
+            for strap in cell.straps:
+                for strap in strap.get_3d(cell):
+                    _strap_verts += list(strap)
+                    _strap_lines += [_strap_count * 2, _strap_count * 2 + 1, -1]
+                    _strap_count += 1
         strap_sep = coin.SoSeparator()
         vis_glider += strap_sep
         strap_material = coin.SoMaterial()
