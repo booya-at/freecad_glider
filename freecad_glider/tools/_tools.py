@@ -98,11 +98,14 @@ class spline_select(QtGui.QComboBox):
 
     @property
     def current_spline_type(self):
-        base = self.spline_objects[0].basefactory
-        if base.__class__ == BernsteinBase.__class__:
-            return "Bezier"
+        if self.spline_objects:
+            base = self.spline_objects[0].basefactory
+            if base.__class__ == BernsteinBase.__class__:
+                return "Bezier"
+            else:
+                return "BSpline_" + str(base.degree)
         else:
-            return "BSpline_" + str(base.degree)
+            return "Bezier"
 
     def set_spline_type(self, *args):
         for spline in self.spline_objects:
