@@ -131,31 +131,28 @@ class CutPoint(Marker):
         super(CutPoint, self).__init__([[0, 0, 0]], True)
         self.marker.markerIndex = coin.SoMarkerSet.CROSS_7_7
         self.ParametricGlider = ParametricGlider
-        self.rib_nr = rib_nr
+        self.rib_nr = rib_nr - ParametricGlider.shape.has_center_cell
         self.rib_pos = rib_pos
         self.lines = []
         point = self.get_2D()
         self.x_value = point[0]
-        tmp_rib = self.rib_nr - self.ParametricGlider.shape.has_center_cell
-        self.max= self.ParametricGlider.shape[tmp_rib, 1.][1]
-        self.min= self.ParametricGlider.shape[tmp_rib, 0.][1]
+        self.max= self.ParametricGlider.shape[self.rib_nr, 1.][1]
+        self.min= self.ParametricGlider.shape[self.rib_nr, 0.][1]
         self.points = [point]
 
     def get_2D(self):
         try:
-            return list(self.ParametricGlider.shape.get_rib_point(self.rib_nr, abs(self.rib_pos))) + [0]
+            return list(self.ParametricGlider.shape[self.rib_nr, abs(self.rib_pos)] + [0])
         except IndexError:
             raise "index " + self.rib_nr + " out of range"
 
-
     def get_rib_pos(self):
-        rib_nr = self.rib_nr - self.ParametricGlider.shape.has_center_cell
-        if rib_nr < 0:
-            rib_nr = self.rib_nr
-        rib = self.ParametricGlider.shape.ribs[rib_nr]
-        chord = rib[0][1] - rib[1][1]
+        # we have to do this 
+        le = self.ParametricGlider.shape[self.rib_nr, 0][1]
+        te = self.ParametricGlider.shape[self.rib_nr, 1][1]
+        chord = le - te
         sign = ((self.rib_pos >= 0) * 2 - 1)
-        return round(sign * (abs(rib[0][1]- self.pos[1])) / chord, 3)
+        return round(sign * (abs(le - self.pos[1])) / chord, 3)
 
     def __eq__(self, other):
         if isinstance(other, CutPoint):
@@ -279,9 +276,13 @@ class CutLine(Line):
             l.replace_points_by_set()
             l.setup_visuals()
 
+    @property
+    def cell_nr(self):
+        return self.point1.rib_nr + self.point1.ParametricGlider.shape.has_center_cell
+
     def get_dict(self):
         return {
-            "cells": [self.point1.rib_nr],
+            "cells": [self.cell_nr],
             "left": self.point1.get_rib_pos(),
             "right" : self.point2.get_rib_pos(),
             "type" : self.cut_type
