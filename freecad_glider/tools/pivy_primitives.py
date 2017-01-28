@@ -96,6 +96,7 @@ class ControlPointContainer(coin.SoSeparator):
         self.on_drag = []
         self.drag_start = []
         self.drag_release = []
+        self.grid = [0.1, 0.1, 100]
         self.highlite_main = self.view.addEventCallbackPivy(coin.SoLocation2Event.getClassTypeId(), self.highlight_cb)
         self.drag_main = self.view.addEventCallbackPivy(coin.SoMouseButtonEvent.getClassTypeId(), self.drag_main_cb)
 
@@ -170,7 +171,7 @@ class ControlPointContainer(coin.SoSeparator):
                 if event.wasCtrlDown():
                     scaled_pos = [(i-j)* 0.2 + k for i, j, k in zip(self.new_mouse_pos, self.old_mouse_pos, self.current_point.pos)]
                 elif event.wasShiftDown():
-                    scaled_pos = [round(i, 1) for i in self.new_mouse_pos]
+                    scaled_pos = [round(pos/self.grid[i]) * self.grid[i] for i, pos in enumerate(self.new_mouse_pos)]
                 else:
                     scaled_pos = self.new_mouse_pos
                 self.current_point.pos = scaled_pos

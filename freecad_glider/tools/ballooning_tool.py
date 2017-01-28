@@ -2,7 +2,7 @@ from __future__ import division
 
 import numpy
 import FreeCADGui as Gui
-from ._tools import BaseTool, QtGui
+from ._tools import BaseTool, QtGui, spline_select
 from .pivy_primitives import Line, vector3D, ControlPointContainer, coin
 from openglider.glider.ballooning import BallooningBezier
 
@@ -63,6 +63,10 @@ class BallooningTool(BaseTool):
         self.Qballooning_name.textChanged.connect(self.update_name)
         self.Qfit_button.clicked.connect(self.spline_edit)
 
+        self.spline_select = spline_select([], self.update_degree)
+        self.layout.addWidget(self.spline_select)
+
+
     def setup_pivy(self):
         self.task_separator += self.ballooning_sep, self.spline_sep
         self.update_selection()
@@ -70,10 +74,11 @@ class BallooningTool(BaseTool):
         self.task_separator += self.grid
         self._update_grid()
         Gui.SendMsgToActiveView("ViewFit")
+        self.insert_cb = self.view.addEventCallbackPivy(coin.SoKeyboardEvent.getClassTypeId(), self.insert_point)
 
     def _update_grid(self, grid_x=None, grid_y=None):
-        grid_x = grid_x or numpy.linspace(0., 1., int(10 + 1))
-        grid_y = grid_y or numpy.linspace(-0.1, 0.1, int(10 + 1))
+        grid_x = grid_x or numpy.linspace(0., 1., int(20 + 1))
+        grid_y = grid_y or numpy.linspace(-0.1, 0.1, int(20 + 1))
         self.grid.removeAllChildren()
         x_points_lower = [[x, grid_y[0], -0.001] for x in grid_x]
         x_points_upper = [[x, grid_y[-1], -0.001] for x in grid_x]
@@ -148,7 +153,9 @@ class BallooningTool(BaseTool):
             self.ballooning_sep.removeAllChildren()
             self.spline_sep.removeAllChildren()
             self.upper_cpc = ControlPointContainer(view=self.view)
+            self.upper_cpc.grid = [0.01, 0.01, 100]
             self.lower_cpc = ControlPointContainer(view=self.view)
+            self.lower_cpc.grid = [0.01, 0.01, 100]
             self.upper_cpc.control_pos = self.current_ballooning.upper_controlpoints
             self.lower_cpc.control_pos = self.current_ballooning.lower_controlpoints
             self.upper_cpc.control_points[-1].fix = True
@@ -161,6 +168,13 @@ class BallooningTool(BaseTool):
             self.lower_cpc.on_drag.append(self.lower_on_change)
             self.upper_cpc.drag_release.append(self.upper_drag_release)
             self.lower_cpc.drag_release.append(self.lower_drag_release)
+            self.upper_drag_release()
+            self.lower_drag_release()
+            self.spline_select.spline_objects = [self.current_ballooning.ballooning.upper_spline, 
+                                                 self.current_ballooning.ballooning.lower_spline]
+
+    def update_degree(self, *args):
+        if self.current_ballooning is not None and self.is_edit:
             self.upper_drag_release()
             self.lower_drag_release()
 
@@ -197,6 +211,24 @@ class BallooningTool(BaseTool):
         l = Line(vector3D(self.current_ballooning.get_expl_lower_spline(num)),
                  color="red", width=2)
         self.lower_spline += l.object
+
+    def insert_point(self, event_callback):
+        event = event_callback.getEvent()
+        if (event.getKey() == ord("i")):
+            if not self.is_edit:
+                return
+            if event.getState() == event.DOWN:
+                pos = list(self.view.getPoint(*event.getPosition()))[0:2]
+                self.unset_edit_mode()
+                if pos[1] > 0:
+                    self.current_ballooning.upper_controlpoints = insert_point(
+                        self.current_ballooning.upper_controlpoints, pos)
+                else:
+                    self.current_ballooning.lower_controlpoints = insert_point(
+                        self.current_ballooning.lower_controlpoints, pos)
+                self.current_ballooning.apply_splines()
+                self.set_edit_mode()
+
 
     def unset_edit_mode(self):
         if self.is_edit:
@@ -245,3 +277,13 @@ class QBalooning(QtGui.QListWidgetItem):
         self.ballooning.controlpoints = [
             self.upper_controlpoints,
             numpy.array([1, -1]) * self.lower_controlpoints]
+
+def insert_point(points, insert_point):
+    forward = points[-1][0] > points[0][0]
+    for i, point in enumerate(points):
+        if (point[0] < insert_point[0]) == forward:
+            pass
+        else:
+            break
+    points.insert(i, insert_point)
+    return points

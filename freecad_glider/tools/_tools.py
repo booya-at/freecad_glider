@@ -9,6 +9,22 @@ from openglider.jsonify import dump, load
 from openglider.vector.spline import BernsteinBase, BSplineBase
 from openglider.glider import ParametricGlider
 
+# as long as this isn't part of std pivy:
+
+def SoGroup__iadd__(self, other):
+    if isinstance(other, (list, tuple)):
+        for other_i in other:
+            self.__iadd__(other_i)
+        return self
+    else:
+        try:
+            self.addChild(other)
+            return self
+        except TypeError as e:
+            raise TypeError(str(self.__class__) + " accepts only objects of type pivy.coin.SoNode")
+
+coin.SoGroup.__iadd__ = SoGroup__iadd__
+
 
 def refresh():
     pass
@@ -82,11 +98,14 @@ class spline_select(QtGui.QComboBox):
 
     @property
     def current_spline_type(self):
-        base = self.spline_objects[0].basefactory
-        if base.__class__ == BernsteinBase.__class__:
-            return "Bezier"
+        if self.spline_objects:
+            base = self.spline_objects[0].basefactory
+            if base.__class__ == BernsteinBase.__class__:
+                return "Bezier"
+            else:
+                return "BSpline_" + str(base.degree)
         else:
-            return "BSpline_" + str(base.degree)
+            return "Bezier"
 
     def set_spline_type(self, *args):
         for spline in self.spline_objects:

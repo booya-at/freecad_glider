@@ -68,7 +68,7 @@ class polars():
                 midribs=0,
                 profile_numpoints=50,
                 num_average=4,
-                distribution=Distribution.nose_cos_distribution(0.2),
+                distribution=Distribution.from_nose_cos_distribution(0.2),
                 symmetric=True
                 )
             case = self.pan3d.DirichletDoublet0Source0Case3(self._panels, self._trailing_edges)
@@ -304,7 +304,7 @@ class PanelTool(BaseTool):
             midribs=midribs,
             profile_numpoints=profile_numpoints,
             num_average=mean*5,
-            distribution=Distribution.nose_cos_distribution(0.2),
+            distribution=Distribution.from_nose_cos_distribution(0.2),
             symmetric=symmetric)
 
     def run(self):
@@ -392,7 +392,7 @@ def create_fem_dict(par_glider):
         midribs=0,
         profile_numpoints=50,
         num_average=4,
-        distribution=Distribution.nose_cos_distribution(0.2),
+        distribution=Distribution.from_nose_cos_distribution(0.2),
         symmetric=True
         )
     case.A_ref = par_glider.flat_area
