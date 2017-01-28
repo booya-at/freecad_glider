@@ -5,6 +5,26 @@ try:
 except ImportError:
     print("module not loaded with freecad")
 
+
+from pivy import coin
+
+try:
+    sep1 = coin.SoSeparator()
+    sep2 = coin.SoSeparator()
+    sep1 += sep2
+except TypeError:
+    class newSeparator(coin.SoSeparator):
+        def __iadd__(self, other):
+            #if isinstance(other, coin.SoSeparator):
+            #    self.addChild(other)
+            #else:
+
+            for child in other:
+                self.addChild(child)
+            return self
+
+    coin.SoSeparator = newSeparator
+
 import glider_metadata
 Dir = os.path.dirname(glider_metadata.__file__)
 

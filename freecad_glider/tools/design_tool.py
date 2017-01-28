@@ -27,8 +27,9 @@ def refresh():
 
 
 class DesignTool(BaseTool):
+    widget_name = "Design Tool"
     def __init__(self, obj):
-        super(DesignTool, self).__init__(obj, widget_name="DesignTool")
+        super(DesignTool, self).__init__(obj)
         self.side = "upper"
 
         # get 2d shape properties

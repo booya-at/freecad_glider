@@ -8,8 +8,9 @@ def refresh():
 
 
 class table_tool(BaseTool):
+    hide = False
     def __init__(self, obj):
-        super(table_tool, self).__init__(obj, hide=False)
+        super(table_tool, self).__init__(obj)
 
         self.table_widget = base_table_widget()
         self.table_button = QtGui.QPushButton("table")

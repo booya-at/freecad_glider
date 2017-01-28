@@ -2,7 +2,7 @@ from pivy import coin
 from PySide import QtGui
 
 from ._tools import BaseTool, text_field, input_field, spline_select
-from .pivy_primitives import Line, ControlPointContainer
+from .pivy_primitives import Line, ControlPointContainer, vector3D, vector2D
 
 
 def refresh():
@@ -10,18 +10,20 @@ def refresh():
 
 
 class ArcTool(BaseTool):
+    hide = True
+    widget_name = "ArcTool"
 
     def __init__(self, obj):
         """adds a symmetric spline to the scene"""
-        super(ArcTool, self).__init__(obj, widget_name="ArcTool")
+        super(ArcTool, self).__init__(obj)
 
-        self.arc_cpc = ControlPointContainer(
-            self.ParametricGlider.arc.curve.controlpoints, self.view)
+        controlpoints = list(map(vector3D, self.ParametricGlider.arc.curve.controlpoints))
+        self.arc_cpc = ControlPointContainer(controlpoints, self.view)
         self.Qnum_arc = QtGui.QSpinBox(self.base_widget)
         self.spline_select = spline_select(
             [self.ParametricGlider.arc.curve], self.update_spline_type, self.base_widget)
         self.shape = coin.SoSeparator()
-        self.task_separator += self.shape
+        self.task_separator.addChild(self.shape)
 
         self.setup_widget()
         self.setup_pivy()
@@ -43,21 +45,19 @@ class ArcTool(BaseTool):
     def setup_pivy(self):
         self.arc_cpc.on_drag.append(self.update_spline)
         self.arc_cpc.drag_release.append(self.update_real_arc)
-        self.task_separator += self.arc_cpc
-        self.shape += (
-            Line(self.ParametricGlider.arc.curve.get_sequence(num=30), color="grey").object
-        )
-        self.shape += (
-            Line(self.get_arc_positions(), color="red", width=2).object
-        )
+        self.task_separator.addChild(self.arc_cpc)
+
+        self.update_spline()
+        self.update_real_arc()
+        self.update_num()
 
     # def set_edit(self, *arg):
     #     self.arc_cpc.set_edit_mode(self.view)
 
     def update_spline(self):
         self.shape.removeAllChildren()
-        self.ParametricGlider.arc.curve.controlpoints = [i[:-1] for i in self.arc_cpc.control_pos]
-        self.shape += (Line(self.ParametricGlider.arc.curve.get_sequence(num=30), color="grey").object)
+        self.ParametricGlider.arc.curve.controlpoints = [vector2D(i) for i in self.arc_cpc.control_pos]
+        self.shape.addChild(Line(self.ParametricGlider.arc.curve.get_sequence(num=30), color="grey").object)
 
     def update_spline_type(self):
         self.arc_cpc.control_pos = self.ParametricGlider.arc.curve.controlpoints
@@ -67,7 +67,7 @@ class ArcTool(BaseTool):
         return self.ParametricGlider.arc.get_arc_positions(self.ParametricGlider.shape.rib_x_values)
 
     def update_real_arc(self):
-        self.shape += (Line(self.get_arc_positions(), color="red", width=2).object)
+        self.shape.addChild(Line(self.get_arc_positions(), color="red", width=2).object)
 
     def update_num(self, *arg):
         self.ParametricGlider.arc.curve.numpoints = self.Qnum_arc.value()

@@ -161,6 +161,8 @@ class polars():
 
 
 class PanelTool(BaseTool):
+    widget_name = "Properties"
+    hide = True
     try:
         paraBEM = __import__("paraBEM")
         pan3d = __import__("paraBEM.pan3d", globals(), locals(), ["abc"])
@@ -168,7 +170,7 @@ class PanelTool(BaseTool):
         paraBEM = None
 
     def __init__(self, obj):
-        super(PanelTool, self).__init__(obj, widget_name="Properties", hide=True)
+        super(PanelTool, self).__init__(obj)
         if not self.paraBEM:
             self.QWarning = QtGui.QLabel("no panel_method installed")
             self.layout.addWidget(self.QWarning)

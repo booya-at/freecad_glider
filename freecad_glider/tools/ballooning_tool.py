@@ -12,8 +12,10 @@ def refresh():
 
 
 class BallooningTool(BaseTool):
+    widget_name = "Selection"
+
     def __init__(self, obj):
-        super(BallooningTool, self).__init__(obj, widget_name="selection")
+        super(BallooningTool, self).__init__(obj)
         # base_widget
         self.QList_View = QtGui.QListWidget(self.base_widget)
         self.Qdelete_button = QtGui.QPushButton("delete", self.base_widget)

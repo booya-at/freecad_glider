@@ -11,8 +11,11 @@ def refresh():
 
 
 class CellTool(BaseTool):
+    hide = True
+    turn = False
+
     def __init__(self, obj):
-        super(CellTool, self).__init__(obj, hide=True, turn=False)
+        super(CellTool, self).__init__(obj)
         self.diagonals_table = diagonals_table()
         self.diagonals_table.get_from_ParametricGlider(self.ParametricGlider)
         self.diagonals_button = QtGui.QPushButton("diagonals")

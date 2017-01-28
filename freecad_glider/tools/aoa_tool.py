@@ -15,6 +15,7 @@ def refresh():
 class ZrotTool(BaseTool):
     num_on_drag = 80
     num_release = 200
+    widget_name = "Z rotation"
 
     def __init__(self, obj):
         super(ZrotTool, self).__init__(obj)

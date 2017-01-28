@@ -14,9 +14,10 @@ def refresh():
     pass
 
 class AirfoilTool(BaseTool):
+    widget_name = "Selection"
 
     def __init__(self, obj):
-        super(AirfoilTool, self).__init__(obj, widget_name="selection")
+        super(AirfoilTool, self).__init__(obj)
         # base_widget
         self.QList_View = QtGui.QListWidget(self.base_widget)
         self.Qdelete_button = QtGui.QPushButton("delete", self.base_widget)

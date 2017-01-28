@@ -95,13 +95,17 @@ class spline_select(QtGui.QComboBox):
 
 
 class BaseTool(object):
-    def __init__(self, obj, widget_name="BaseWidget", hide=True, turn=True):
+    hide = True
+    widget_name = "Unnamed"
+    turn = True
+
+    def __init__(self, obj):
         self.obj = obj
         self.ParametricGlider = deepcopy(self.obj.ParametricGlider)
-        self.obj.ViewObject.Visibility = not hide
+        self.obj.ViewObject.Visibility = not self.hide
         self.view = Gui.ActiveDocument.ActiveView
         Gui.Selection.clearSelection()
-        if turn:
+        if self.turn:
             self.view.viewTop()
 
         # self.view.setNavigationType('Gui::TouchpadNavigationStyle')
@@ -114,7 +118,7 @@ class BaseTool(object):
         self.base_widget = QtGui.QWidget()
         self.form.append(self.base_widget)
         self.layout = QtGui.QFormLayout(self.base_widget)
-        self.base_widget.setWindowTitle(widget_name)
+        self.base_widget.setWindowTitle(self.widget_name)
 
         # scene container
         self.task_separator = coin.SoSeparator()

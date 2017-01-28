@@ -25,8 +25,9 @@ def refresh():
 # 3: eventhandler for adding and connecting lines
 
 class LineTool(BaseTool):
+    widget_name = "Line Tool"
     def __init__(self, obj):
-        super(LineTool, self).__init__(obj, widget_name="LineTool")
+        super(LineTool, self).__init__(obj)
 
         # get the parametric shape
         _shape = self.ParametricGlider.shape.get_half_shape()

@@ -19,9 +19,10 @@ def refresh():
 
 
 class ShapeTool(BaseTool):
+    widget_name = "Shape Tool"
 
     def __init__(self, obj):
-        super(ShapeTool, self).__init__(obj, widget_name="shape tool")
+        super(ShapeTool, self).__init__(obj)
 
         # scene components
         self.shape = coin.SoSeparator()
