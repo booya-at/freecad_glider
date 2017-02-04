@@ -122,7 +122,7 @@ class Object3D(coin.SoSeparator):
             return [self]
 
     def delete(self):
-        if self.enabled:
+        if self.enabled and not self._delete:
             self.removeAllChildren()
             self._delete = True
 
@@ -192,7 +192,6 @@ class Container(coin.SoSeparator):
                 o.unselect()
             self.select_object = []
         if obj:
-            print(obj in self.select_object)
             if obj in self.select_object:
                 self.select_object.remove(obj)
             else:
@@ -291,7 +290,6 @@ class Container(coin.SoSeparator):
             try:
                 key = chr(event.getKey())
             except ValueError:
-                print(event.getKey())
                 # there is no character for this value
                 key = "_"
             if key in "xyz" and key != self._direction:
@@ -343,7 +341,7 @@ class Container(coin.SoSeparator):
         event = event_callback.getEvent()
         # get all drag objects, every selected object can add some drag objects
         # but the eventhandler is not allowed to call the drag twice on an object
-        if event.getKey() == ord(u"\uffff"):
+        if event.getKey() == ord(u"\uffff") and (event.getState() == 1):
             self.removeSelected()
 
     def register(self, view):

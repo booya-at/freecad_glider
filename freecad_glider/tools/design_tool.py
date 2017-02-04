@@ -39,6 +39,7 @@ class DesignTool(BaseTool):
         self.ribs = zip(self.front, self.back)
         CutLine.cuts_to_lines(self.ParametricGlider)
 
+        self._add_mode = False
         # setup the GUI
         self.setup_widget()
         self.setup_pivy()
@@ -56,6 +57,8 @@ class DesignTool(BaseTool):
         self.Qcut_type = QtGui.QComboBox()
         self.Qcut_type.addItem("folded")
         self.Qcut_type.addItem("orthogonal")
+        self.Qcut_type.setEnabled(False)
+        self.Qcut_type.currentIndexChanged.connect(self.cut_type_changed)
 
         self.tool_layout.setWidget(0, text_field, QtGui.QLabel("cut type"))
         self.tool_layout.setWidget(0, input_field, self.Qcut_type)
@@ -64,6 +67,7 @@ class DesignTool(BaseTool):
         self.QPointPos.setMinimum(0)
         self.QPointPos.setMaximum(1)
         self.QPointPos.setSingleStep(0.01)
+        self.QPointPos.valueChanged.connect(self.point_pos_changed)
 
         self.tool_layout.setWidget(1, text_field, QtGui.QLabel("point position"))
         self.tool_layout.setWidget(1, input_field, self.QPointPos)
@@ -76,15 +80,66 @@ class DesignTool(BaseTool):
         """set up the scene"""
         self.shape = coin.SoSeparator()
         self.task_separator += self.shape
+        self.add_separator = Container()
+        self.shape += self.add_separator
         self.draw_shape()
         self.drag_separator = coin.SoSeparator()
         self.event_separator = Container()
+        self.event_separator.selection_changed = self.selection_changed
         self.event_separator.register(self.view)
         self.toggle_side()
-        # self.event_separator += list(CutLine.upper_point_set)
-        # self.event_separator += CutLine.upper_line_list
-        # self.drag_separator += self.event_separator
-        # self.task_separator += self.drag_separator
+        self.add_cb = self.view.addEventCallbackPivy(
+            coin.SoKeyboardEvent.getClassTypeId(), self.add_geo)
+
+    def selection_changed(self):
+        points = set()
+        lines = []
+        for element in self.event_separator.select_object:
+            if isinstance(element, CutPoint):
+                points.add(element)
+            elif isinstance(element, CutLine):
+                lines.append(element)
+                points.add(element.point1)
+                points.add(element.point2)
+
+        self.Qcut_type.setEnabled(bool(lines))
+        self.QPointPos.setEnabled(bool(points))
+        if lines:
+            self.set_cut_type(lines[0].cut_type)
+        if points:
+            self.QPointPos.blockSignals(True)
+            self.QPointPos.setValue(list(points)[0].rib_pos)  # maybe summing over all points?
+            self.QPointPos.blockSignals(False)
+
+    def set_cut_type(self, text):
+        index = self.Qcut_type.findText(text)
+        if index is not None:
+            self.Qcut_type.setCurrentIndex(index)
+
+
+    def cut_type_changed(self):
+        for element in self.event_separator.select_object:
+            if isinstance(element, CutLine):
+                element.cut_type = self.Qcut_type.currentText()
+
+    def point_pos_changed(self):
+        points = set()
+        lines = set()
+        for element in self.event_separator.select_object:
+            if isinstance(element, CutPoint):
+                points.add(element)
+            elif isinstance(element, CutLine):
+                lines.add(element)
+                points.add(element.point1)
+                points.add(element.point2)
+        for point in points:
+            point.rib_pos = self.QPointPos.value()
+            point.update_position()
+            for line in point.lines:
+                lines.add(line)
+        for line in lines:
+            line.update_Line()
+
 
     def accept(self):
         self.event_separator.unregister()
@@ -112,6 +167,7 @@ class DesignTool(BaseTool):
         self.event_separator.unregister()
         self.drag_separator.removeAllChildren()
         self.event_separator = Container()
+        self.event_separator.selection_changed = self.selection_changed
         if self.side == "upper":
             self.side = "lower"
             self.Qtoggle_side.setText("show upper side")
@@ -125,6 +181,109 @@ class DesignTool(BaseTool):
         self.drag_separator += self.event_separator
         self.task_separator += self.drag_separator
         self.event_separator.register(self.view)
+
+    def add_geo(self, event_callback):
+        '''this function provides some interaction functionality to create points and lines
+           press v to start the mode. if a point is selected, the left and right rib will offer the possebility to add
+           a point + line, if no point is selected, it's possible to add a point to any rib'''
+
+        # self.add_separator.register(self.view)
+        event = event_callback.getEvent()
+        if (event.getKey() == ord("v") and event.getState() == 1):
+            if self._add_mode: return
+            self._add_mode = True
+            # first we check if nothing is selected:
+            select_obj = self.event_separator.select_object
+            num_of_obj = len(select_obj)
+            action = None
+            add_event = None
+            close_event = None
+
+            # insert a point
+            if num_of_obj == 0:
+                add_event = self.view.addEventCallbackPivy(coin.SoLocation2Event.getClassTypeId(), self.add_point)
+                action = self.add_point
+
+            # insert a line + point
+            elif num_of_obj == 1 and isinstance(select_obj[0], CutPoint):
+                add_event = self.view.addEventCallbackPivy(coin.SoLocation2Event.getClassTypeId(), self.add_neighbour)
+                action = self.add_neighbour
+
+            # join two points with a line
+            elif num_of_obj == 2 and all(isinstance(el, CutPoint) for el in select_obj):
+                if abs(select_obj[0].rib_nr - select_obj[1].rib_nr) == 1:
+                    add_event = self.view.addEventCallbackPivy(coin.SoLocation2Event.getClassTypeId(), self.add_line)
+                    action = self.add_line
+
+            def remove_cb(*arg):
+                if add_event:
+                    self.view.removeEventCallbackPivy(
+                        coin.SoLocation2Event.getClassTypeId(), add_event)
+                if close_event:
+                    self.view.removeEventCallbackPivy(
+                        coin.SoMouseButtonEvent.getClassTypeId(), close_event)
+
+                if action == self.add_neighbour:
+                    assert(len(self.add_separator.static_objects) == 2)
+                    assert(isinstance(self.add_separator.static_objects[0], Marker))
+                    assert(isinstance(self.add_separator.static_objects[1], Line))
+                    m1 = self.add_separator.static_objects[0]
+                    line = self.add_separator.static_objects[1]
+                    cut_point_1 = CutPoint.from_position_and_rib(m1.rib_nr, m1.points[0][1], self.side == "upper", self.ParametricGlider)
+                    cut_point_2 = line.active_point
+                    cut_line = CutLine(cut_point_1, cut_point_2, "folded")
+                    cut_line.replace_points_by_set()
+                    cut_line.update_Line()
+                    cut_line.setup_visuals()
+                    self.event_separator += cut_point_1, cut_line
+
+                self._add_mode = False
+                self.add_separator.removeAllChildren()
+            
+            close_event = self.view.addEventCallbackPivy(coin.SoMouseButtonEvent.getClassTypeId(), remove_cb)
+
+    def add_point(self, event_callback=None):
+        event = event_callback.getEvent()
+
+
+    def add_line(self, event_callback=None):
+        # we need the position of the mouse and the position of the 2 neares ribs.
+        # with this information we can snap to the lines by a radius (project the mopuse point on the line
+        # and display a temporary marker in blue color
+        event = event_callback.getEvent()
+
+
+
+    def add_neighbour(self, event_callback=None):
+        event = event_callback.getEvent()
+        select_obj = self.event_separator.select_object[0]
+        rib_nr = select_obj.rib_nr
+        min1 = self.ParametricGlider.shape[rib_nr - 1, 1.][1]
+        x1, max1 = self.ParametricGlider.shape[rib_nr - 1, 0.]
+        min2 = self.ParametricGlider.shape[rib_nr + 1, 1.][1]
+        x2, max2 = self.ParametricGlider.shape[rib_nr + 1, 0.]
+        show_point = False
+        pos = event.getPosition()
+        pos = list(self.view.getPoint(*pos))
+        pos[2] = 0
+        if abs(pos[0] - x1) < abs(pos[0] - x2):
+            pos[0] = x1
+            if pos[1] > min1 and pos[1] < max1:
+                new_rib_nr = rib_nr - 1
+                show_point = True
+        else:
+            pos[0] = x2
+            if pos[1] > min2 and pos[1] < max2:
+                new_rib_nr = rib_nr + 1
+                show_point = True
+        self.add_separator.removeAllChildren()
+        if show_point:
+            m = Marker([pos])
+            m.rib_nr = new_rib_nr
+            l = Line([list(select_obj.points[0]), pos])
+            l.active_point = select_obj
+            self.add_separator += m
+            self.add_separator += l
 
 
 class CutPoint(Marker):
@@ -140,6 +299,9 @@ class CutPoint(Marker):
         self.max= self.ParametricGlider.shape[self.rib_nr, 1.][1]
         self.min= self.ParametricGlider.shape[self.rib_nr, 0.][1]
         self.points = [point]
+
+    def update_position(self):
+        self.points = [self.get_2D()]
 
     def get_2D(self):
         try:
@@ -195,6 +357,14 @@ class CutPoint(Marker):
             self.points = pts
             for i in self.on_drag:
                 i()
+
+    @classmethod
+    def from_position_and_rib(cls, rib_nr, y_pos, upper, ParametricGlider):
+        i = 0
+        max_val = ParametricGlider.shape[rib_nr, 1.][1]
+        min_val = ParametricGlider.shape[rib_nr, 0.][1]
+        rib_pos = -(upper * 2. - 1.) * abs(y_pos - min_val) / abs(max_val - min_val) 
+        return cls(rib_nr + ParametricGlider.shape.has_center_cell, rib_pos, ParametricGlider)
 
 
 class CutLine(Line):
@@ -259,8 +429,6 @@ class CutLine(Line):
 
     @classmethod
     def cuts_to_lines(cls, ParametricGlider):
-        # left = inner rib
-        # right = outer rib
         CutLine.upper_point_set = set()
         CutLine.lower_point_set = set()
         CutLine.upper_line_list = []
@@ -279,13 +447,19 @@ class CutLine(Line):
 
     @property
     def cell_nr(self):
-        return self.point1.rib_nr + self.point1.ParametricGlider.shape.has_center_cell
+        return self.get_point(inner=True).rib_nr + self.point1.ParametricGlider.shape.has_center_cell
+
+    def get_point(self, inner=True):
+        if (self.point1.rib_nr < self.point2.rib_nr) == inner:
+            return self.point1
+        else:
+            return self.point2
 
     def get_dict(self):
         return {
             "cells": [self.cell_nr],
-            "left": self.point1.get_rib_pos(),
-            "right" : self.point2.get_rib_pos(),
+            "left": self.get_point(inner=True).get_rib_pos(),
+            "right" : self.get_point(inner=False).get_rib_pos(),
             "type" : self.cut_type
         }
 
@@ -303,8 +477,8 @@ class CutLine(Line):
                 sorted_cuts[-1]["cells"].append(cut["cells"][0])
         return sorted_cuts
 
-    def check_dependency(self): 
-        if self.point1._delete or self.point2._delete:
+    def check_dependency(self):
+        if (not self._delete) and (self.point1._delete or self.point2._delete):
             self.delete()
 
     def delete(self):
