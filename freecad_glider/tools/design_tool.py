@@ -18,12 +18,14 @@ def refresh():
 
 # TODO
 
-# switch upper lower      x
-# add new line            
-# save to dict            x
-# set cut type
-# q set position
-# delete                  x
+# switch upper lower        x
+# add new line              x
+# add new point             
+# create line of two nodes
+# save to dict              x
+# set cut type              x
+# q set position            x
+# delete                    x
 
 
 class DesignTool(BaseTool):
