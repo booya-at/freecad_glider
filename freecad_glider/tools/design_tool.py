@@ -209,6 +209,7 @@ class DesignTool(BaseTool):
             # insert a line + point
             elif num_of_obj == 1 and isinstance(select_obj[0], CutPoint):
                 add_event = self.view.addEventCallbackPivy(coin.SoLocation2Event.getClassTypeId(), self.add_neighbour)
+                self.add_neighbour(event_callback)
                 action = self.add_neighbour
 
             # join two points with a line
@@ -238,6 +239,7 @@ class DesignTool(BaseTool):
                     cut_line.update_Line()
                     cut_line.setup_visuals()
                     self.event_separator += cut_point_1, cut_line
+                    self.event_separator.Select(cut_point_1)
 
                 self._add_mode = False
                 self.add_separator.removeAllChildren()
@@ -246,6 +248,8 @@ class DesignTool(BaseTool):
 
     def add_point(self, event_callback=None):
         event = event_callback.getEvent()
+        # first get the closest rib
+        x_values = self.ParametricGlider.shape
 
 
     def add_line(self, event_callback=None):
@@ -260,32 +264,40 @@ class DesignTool(BaseTool):
         event = event_callback.getEvent()
         select_obj = self.event_separator.select_object[0]
         rib_nr = select_obj.rib_nr
-        min1 = self.ParametricGlider.shape[rib_nr - 1, 1.][1]
-        x1, max1 = self.ParametricGlider.shape[rib_nr - 1, 0.]
-        min2 = self.ParametricGlider.shape[rib_nr + 1, 1.][1]
-        x2, max2 = self.ParametricGlider.shape[rib_nr + 1, 0.]
+        try:
+            min1 = self.ParametricGlider.shape[rib_nr - 1, 1.][1]
+            x1, max1 = self.ParametricGlider.shape[rib_nr - 1, 0.]
+        except IndexError:
+            min1, x1, max1 = None, None, None
+        try:
+            min2 = self.ParametricGlider.shape[rib_nr + 1, 1.][1]
+            x2, max2 = self.ParametricGlider.shape[rib_nr + 1, 0.]
+        except IndexError:
+            min2, x2, max2 = None, None, None
         show_point = False
         pos = event.getPosition()
         pos = list(self.view.getPoint(*pos))
         pos[2] = 0
-        if abs(pos[0] - x1) < abs(pos[0] - x2):
+        if not x2 or abs(pos[0] - x1) < abs(pos[0] - x2):
             pos[0] = x1
             if pos[1] > min1 and pos[1] < max1:
                 new_rib_nr = rib_nr - 1
                 show_point = True
-        else:
+        elif not x1 or abs(pos[0] - x1) > abs(pos[0] - x2):
             pos[0] = x2
             if pos[1] > min2 and pos[1] < max2:
                 new_rib_nr = rib_nr + 1
                 show_point = True
+        else:
+            return
         self.add_separator.removeAllChildren()
         if show_point:
-            m = Marker([pos])
-            m.rib_nr = new_rib_nr
-            l = Line([list(select_obj.points[0]), pos])
-            l.active_point = select_obj
-            self.add_separator += m
-            self.add_separator += l
+            marker = Marker([pos])
+            marker.rib_nr = new_rib_nr
+            line = Line([list(select_obj.points[0]), pos])
+            line.active_point = select_obj
+            self.add_separator += marker
+            self.add_separator += line
 
 
 class CutPoint(Marker):
