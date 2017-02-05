@@ -20,8 +20,8 @@ def refresh():
 
 # switch upper lower        x
 # add new line              x
-# add new point             
-# create line of two nodes
+# add new point             x
+# create line of two nodes  x
 # save to dict              x
 # set cut type              x
 # q set position            x
@@ -39,6 +39,7 @@ class DesignTool(BaseTool):
         self.front = list(map(vector3D, _shape.front))
         self.back = list(map(vector3D, _shape.back))
         self.ribs = zip(self.front, self.back)
+        self.x_values = self.ParametricGlider.shape.rib_x_values
         CutLine.cuts_to_lines(self.ParametricGlider)
 
         self._add_mode = False
@@ -213,10 +214,17 @@ class DesignTool(BaseTool):
                 action = self.add_neighbour
 
             # join two points with a line
+            # add-line
             elif num_of_obj == 2 and all(isinstance(el, CutPoint) for el in select_obj):
-                if abs(select_obj[0].rib_nr - select_obj[1].rib_nr) == 1:
-                    add_event = self.view.addEventCallbackPivy(coin.SoLocation2Event.getClassTypeId(), self.add_line)
-                    action = self.add_line
+                cut_point_1 = select_obj[0]
+                cut_point_2 = select_obj[1]
+                if abs(cut_point_1.rib_nr - cut_point_2.rib_nr) == 1:
+                    cut_line = CutLine(cut_point_1, cut_point_2, "folded")
+                    cut_line.replace_points_by_set()
+                    cut_line.update_Line()
+                    cut_line.setup_visuals()
+                    self.event_separator += cut_line
+
 
             def remove_cb(*arg):
                 if add_event:
@@ -230,9 +238,9 @@ class DesignTool(BaseTool):
                     assert(len(self.add_separator.static_objects) == 2)
                     assert(isinstance(self.add_separator.static_objects[0], Marker))
                     assert(isinstance(self.add_separator.static_objects[1], Line))
-                    m1 = self.add_separator.static_objects[0]
+                    marker = self.add_separator.static_objects[0]
                     line = self.add_separator.static_objects[1]
-                    cut_point_1 = CutPoint.from_position_and_rib(m1.rib_nr, m1.points[0][1], self.side == "upper", self.ParametricGlider)
+                    cut_point_1 = CutPoint.from_position_and_rib(marker.rib_nr, marker.points[0][1], self.side == "upper", self.ParametricGlider)
                     cut_point_2 = line.active_point
                     cut_line = CutLine(cut_point_1, cut_point_2, "folded")
                     cut_line.replace_points_by_set()
@@ -241,23 +249,47 @@ class DesignTool(BaseTool):
                     self.event_separator += cut_point_1, cut_line
                     self.event_separator.Select(cut_point_1)
 
+                elif action == self.add_point:
+                    assert(len(self.add_separator.static_objects) == 1)
+                    assert(isinstance(self.add_separator.static_objects[0], Marker))
+                    marker = self.add_separator.static_objects[0]
+                    cut_point = CutPoint.from_position_and_rib(marker.rib_nr, marker.points[0][1], self.side == "upper", self.ParametricGlider)
+                    self.event_separator += cut_point
+                    self.event_separator.Select(cut_point)
+
+
                 self._add_mode = False
                 self.add_separator.removeAllChildren()
-            
-            close_event = self.view.addEventCallbackPivy(coin.SoMouseButtonEvent.getClassTypeId(), remove_cb)
+
+            if action in [self.add_neighbour, self.add_point]:
+                # these functions need an extra callback for closing on
+                # mouse button press
+                close_event = self.view.addEventCallbackPivy(coin.SoMouseButtonEvent.getClassTypeId(), remove_cb)
+            else: # add line: call remove_callback directly
+                remove_cb()
 
     def add_point(self, event_callback=None):
         event = event_callback.getEvent()
         # first get the closest rib
-        x_values = self.ParametricGlider.shape
+        pos = event.getPosition()
+        pos = list(self.view.getPoint(*pos))
+        pos[2] = 0.
+        smallest_diff = None, None
 
-
-    def add_line(self, event_callback=None):
-        # we need the position of the mouse and the position of the 2 neares ribs.
-        # with this information we can snap to the lines by a radius (project the mopuse point on the line
-        # and display a temporary marker in blue color
-        event = event_callback.getEvent()
-
+        for index, value in enumerate(self.x_values):
+            diff = abs(pos[0] - value)
+            if (not smallest_diff[0]) or smallest_diff[0] > diff:
+                smallest_diff = diff, index
+        index = smallest_diff[1]
+        x, min_y = self.ParametricGlider.shape[index, 1.]
+        _, max_y = self.ParametricGlider.shape[index, 0.]
+        pos[0] = x
+        self.add_separator.removeAllChildren()
+        print(index)
+        if pos[1] > min_y and pos[1] < max_y:
+            marker = Marker([pos])
+            marker.rib_nr = index
+            self.add_separator += marker
 
 
     def add_neighbour(self, event_callback=None):
