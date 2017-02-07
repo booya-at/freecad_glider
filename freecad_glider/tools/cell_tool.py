@@ -149,7 +149,6 @@ class vector_table(base_table_widget):
     def get_row(self, n_row):
         str_row = [self.table.item(n_row, i).text() for i in range(3) if self.table.item(n_row, i)]
 
-        print(str_row)
         str_row = [item for item in str_row if item != ""]
         if len(str_row) != 3:
             print("something wrong with row " + str(n_row))

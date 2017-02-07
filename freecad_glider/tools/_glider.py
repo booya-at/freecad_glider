@@ -199,7 +199,6 @@ class OGGliderVP(OGBaseVP):
 
     def _updateData(self, fp, prop="all"):
         if not hasattr(fp, "half_glider"):
-            print(prop)
             return  # the vieprovider isn't set up at this moment
                     # but calls already the update function
         if not hasattr(self, "glider"):

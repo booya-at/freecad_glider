@@ -388,7 +388,7 @@ class LineTool(BaseTool):
                 if len(pos) > 1:
                     self.up_att_pos.setDisabled(True)
                 else:
-                    print(list(pos)[0])
+                    # print(list(pos)[0])
                     self.up_att_pos.setValue(list(pos)[0])
                     self.up_att_pos.setEnabled(True)
             else:
@@ -422,7 +422,7 @@ class LineTool(BaseTool):
             obj.rib_nr = self.up_att_rib.value()
 
     def update_up_att_pos(self, *args):
-        print("update pos")
+        # print("update pos")
         for obj in self.shape.select_object:
             obj.rib_pos = self.up_att_pos.value()
 
@@ -573,7 +573,7 @@ class Upper_Att_Marker(NodeMarker):
     @rib_pos.setter
     def rib_pos(self, pos):
         self._node.rib_pos = pos
-        print("update pos")
+        # print("update pos")
         self.pos = vector3D(self._node.get_2D(self.par_glider.shape))
         for foo in self.on_drag:
             foo()

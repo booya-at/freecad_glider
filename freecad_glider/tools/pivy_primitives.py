@@ -276,7 +276,3 @@ def vector3D(vec):
 
 def vector2D(vec):
     return vec[0:2]
-
-if __name__ == "__main__":
-    print(vector3D([[0, 1], [2, 3]]))
-

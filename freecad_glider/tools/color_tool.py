@@ -11,19 +11,6 @@ from .pivy_primitives_new_new import Polygon, Container, vector3D
 def refresh():
     pass
 
-
-# idea: choose color of selected panels
-# fullshape is drawn, select panels and press button to choose color
-
-# TODO
-# dynamic polygon-container wo drag + deleting:   x
-# draw upper and lower shape:                       
-# qt color to coin
-# colorDialog button c
-
-
-
-
 class ColorTool(BaseTool):
     widget_name = "Color Tool"
     def __init__(self, obj):

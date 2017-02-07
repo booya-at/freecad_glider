@@ -59,7 +59,6 @@ class ShapeTool(BaseTool):
         try:
             self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
         except Exception as e:
-            print("verdammt")
             App.Console.PrintError(e)
             self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
             return
