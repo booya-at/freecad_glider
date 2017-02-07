@@ -74,10 +74,7 @@ class ColorTool(BaseTool):
             panel.set_color(color)
 
     def accept(self):
-        # self.event_separator.unregister()
-        # self.view.removeEventCallbackPivy(
-        #     coin.SoKeyboardEvent.getClassTypeId(), self.add_cb)
-        # self.parametric_glider.elements["cuts"] = CutLine.get_cut_dict()
+        self.selector.unregister()
         colors = []
         for cell in self.panels:
             cell_colors = []
@@ -93,9 +90,7 @@ class ColorTool(BaseTool):
 
 
     def reject(self):
-        # self.event_separator.unregister()
-        # self.view.removeEventCallbackPivy(
-        #     coin.SoKeyboardEvent.getClassTypeId(), self.add_cb)
+        self.selector.unregister()
         super(ColorTool, self).reject()
 
 
