@@ -48,7 +48,7 @@ class activeGlider(object):
     def apply(self):
         self._update()
         if self._glider:
-            self.ParametricGlider.get_glider_3d(self.GliderInstance)
+            self.parametric_glider.get_glider_3d(self.GliderInstance)
             self.visuals.Proxy.updateData()
             App.ActiveDocument.recompute()
 
@@ -60,14 +60,14 @@ class activeGlider(object):
 
     def addCut(self, pos, cells=None):
         if cells == None:
-            cells = range(self.ParametricGlider.shape.half_cell_num)
+            cells = range(self.parametric_glider.shape.half_cell_num)
         cut = {
             "left": pos,
             "right": pos,
             "cells": cells,
             "type": "orthogonal"
         }
-        self.ParametricGlider.elements["cuts"].append(cut)
+        self.parametric_glider.elements["cuts"].append(cut)
 
 
 ActiveGlider = activeGlider()

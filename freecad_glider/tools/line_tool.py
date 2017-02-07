@@ -30,11 +30,11 @@ class LineTool(BaseTool):
         super(LineTool, self).__init__(obj)
 
         # get the parametric shape
-        _shape = self.ParametricGlider.shape.get_half_shape()
+        _shape = self.parametric_glider.shape.get_half_shape()
         self.ribs = _shape.ribs
         self.front = _shape.front
         self.back = _shape.back
-        self.xpos = self.ParametricGlider.shape.rib_x_values
+        self.xpos = self.parametric_glider.shape.rib_x_values
 
         # setup the GUI
         self.setup_widget()
@@ -126,7 +126,7 @@ class LineTool(BaseTool):
 
         self.up_att_rib = QtGui.QSpinBox()
         self.up_att_rib.setMinimum(0)
-        self.up_att_rib.setMaximum(self.ParametricGlider.shape.half_rib_num - 1)
+        self.up_att_rib.setMaximum(self.parametric_glider.shape.half_rib_num - 1)
         self.up_att_lay.setWidget(1, text_field, QtGui.QLabel("rib nr"))
         self.up_att_lay.setWidget(1, input_field, self.up_att_rib)
         self.up_att_rib.valueChanged.connect(self.update_up_att_rib)
@@ -308,11 +308,11 @@ class LineTool(BaseTool):
                 pos_3D[-1] = 0.
                 if event.wasCtrlDown():
                     node = LowerNode2D(pos_3D[:-1], [0, 0, 0])
-                    point = Lower_Att_Marker(node, self.ParametricGlider)
+                    point = Lower_Att_Marker(node, self.parametric_glider)
                     point.layer = self.layer_combobox.currentText()
                 else:
                     node = BatchNode2D(pos_3D[:-1])
-                    point = NodeMarker(node, self.ParametricGlider)
+                    point = NodeMarker(node, self.parametric_glider)
                     point.layer = self.layer_combobox.currentText()
                 self.shape += point
                 return point
@@ -322,8 +322,8 @@ class LineTool(BaseTool):
         rib_nr = self.xpos.index(x)
         pos = float(self.Qhl_pos.value())
         node = UpperNode2D(rib_nr, pos / 100)
-        node_pos = node.get_2D(self.ParametricGlider.shape)
-        ap = Upper_Att_Marker(node, self.ParametricGlider)
+        node_pos = node.get_2D(self.parametric_glider.shape)
+        ap = Upper_Att_Marker(node, self.parametric_glider)
         ap.layer = self.layer_combobox.currentText()
         self.shape += ap
 
@@ -431,28 +431,28 @@ class LineTool(BaseTool):
         self.shape += (Line(vector3D(self.front)),
                         Line(vector3D(self.back)),
                         list(map(Line, vector3D(self.ribs))))
-        shape = self.ParametricGlider.shape
+        shape = self.parametric_glider.shape
         # make own seperator for shape
         nodes = {}
-        for node in self.ParametricGlider.lineset.nodes:
+        for node in self.parametric_glider.lineset.nodes:
             if isinstance(node, UpperNode2D):
-                # coord = self.ParametricGlider.shape_point(node.rib_no, node.position/100)
-                pos = node.get_2D(self.ParametricGlider.shape)
-                obj = Upper_Att_Marker(node, self.ParametricGlider)
+                # coord = self.parametric_glider.shape_point(node.rib_no, node.position/100)
+                pos = node.get_2D(self.parametric_glider.shape)
+                obj = Upper_Att_Marker(node, self.parametric_glider)
                 obj.force = node.force
                 self.shape += obj
             elif isinstance(node, BatchNode2D):
-                obj = NodeMarker(node, self.ParametricGlider)
+                obj = NodeMarker(node, self.parametric_glider)
                 self.shape += obj
             elif isinstance(node, LowerNode2D):
-                obj = Lower_Att_Marker(node, self.ParametricGlider)
+                obj = Lower_Att_Marker(node, self.parametric_glider)
                 obj.pos_3D = node.pos_3D
                 obj._node = node
                 self.shape += obj
             nodes[node] = obj
             self.layer_combobox.addItem(node.layer)
 
-        for line in self.ParametricGlider.lineset.lines:
+        for line in self.parametric_glider.lineset.lines:
             m1 = nodes[line.lower_node]
             m2 = nodes[line.upper_node]
             target_length = line.target_length
@@ -480,24 +480,24 @@ class LineTool(BaseTool):
                 l.layer = obj.layer
                 lines.append(l)
 
-        lineset = self.ParametricGlider.lineset
+        lineset = self.parametric_glider.lineset
         try:
             new_lines = LineSet2D(lines)
-            self.ParametricGlider.lineset = new_lines
-            self.ParametricGlider.get_glider_3d(self.obj.GliderInstance)
+            self.parametric_glider.lineset = new_lines
+            self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
         except Exception as e:
             App.Console.PrintError(traceback.format_exc())
-            self.ParametricGlider.lineset = lineset
-            self.ParametricGlider.get_glider_3d(self.obj.GliderInstance)
+            self.parametric_glider.lineset = lineset
+            self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
             return
 
-        for node in self.ParametricGlider.lineset.nodes:
+        for node in self.parametric_glider.lineset.nodes:
             if isinstance(node, UpperNode2D):
                 node.name = node.layer + str(node.rib_no)
 
         self.shape.unregister()
         self.remove_all_callbacks()
-        self.obj.ParametricGlider = self.ParametricGlider
+        self.obj.ParametricGlider = self.parametric_glider
         super(LineTool, self).accept()
         self.obj.ViewObject.Proxy.updateData()
         
@@ -527,7 +527,7 @@ class NodeMarker(Marker):
 
     @property
     def pos(self):
-        return self.points[0]
+        return list(self.points[0])
 
     @pos.setter
     def pos(self, pos):
@@ -599,7 +599,7 @@ class Lower_Att_Marker(NodeMarker):
 
     @property
     def pos(self):
-        return self.points[0]
+        return list(self.points[0])
 
     @pos.setter
     def pos(self, pos):

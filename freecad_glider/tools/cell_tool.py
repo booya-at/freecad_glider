@@ -17,13 +17,13 @@ class CellTool(BaseTool):
     def __init__(self, obj):
         super(CellTool, self).__init__(obj)
         self.diagonals_table = diagonals_table()
-        self.diagonals_table.get_from_ParametricGlider(self.ParametricGlider)
+        self.diagonals_table.get_from_ParametricGlider(self.parametric_glider)
         self.diagonals_button = QtGui.QPushButton("diagonals")
         self.diagonals_button.clicked.connect(self.diagonals_table.show)
         self.layout.setWidget(0, input_field, self.diagonals_button)
 
         self.vector_table = vector_table()
-        self.vector_table.get_from_ParametricGlider(self.ParametricGlider)
+        self.vector_table.get_from_ParametricGlider(self.parametric_glider)
         self.vector_button = QtGui.QPushButton("vector strap")
         self.vector_button.clicked.connect(self.vector_table.show)
         self.layout.setWidget(1, input_field, self.vector_button)
@@ -31,16 +31,16 @@ class CellTool(BaseTool):
         self.update_button = QtGui.QPushButton("update glider")
         self.update_button.clicked.connect(self.update_glider)
         self.layout.setWidget(2, input_field, self.update_button)
-        draw_glider(self.ParametricGlider.get_glider_3d(), self.task_separator, hull=False, ribs=True)
+        draw_glider(self.parametric_glider.get_glider_3d(), self.task_separator, hull=False, ribs=True)
 
     def update_glider(self):
         self.task_separator.removeAllChildren()
         self.apply_elements()
-        draw_glider(self.ParametricGlider.get_glider_3d(), self.task_separator, hull=False, ribs=True)
+        draw_glider(self.parametric_glider.get_glider_3d(), self.task_separator, hull=False, ribs=True)
 
     def apply_elements(self):
-        self.diagonals_table.apply_to_glider(self.ParametricGlider)
-        self.vector_table.apply_to_glider(self.ParametricGlider)
+        self.diagonals_table.apply_to_glider(self.parametric_glider)
+        self.vector_table.apply_to_glider(self.parametric_glider)
 
     def accept(self):
         super(CellTool, self).accept()

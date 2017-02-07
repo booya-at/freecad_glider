@@ -53,7 +53,7 @@ class polars():
 
     def __init__(self, obj):
         self.obj = obj
-        self.ParametricGlider = deepcopy(self.obj.ParametricGlider)
+        self.parametric_glider = deepcopy(self.obj.ParametricGlider)
         self.create_potential_table()
         self.solve_const_vert_Force()
 
@@ -64,7 +64,7 @@ class polars():
             self.layout.addWidget(self.QWarning)
         else:
             self._vertices, self._panels, self._trailing_edges = paraBEM_Panels(
-                self.ParametricGlider.get_glider_3d(),
+                self.parametric_glider.get_glider_3d(),
                 midribs=0,
                 profile_numpoints=50,
                 num_average=4,
@@ -72,9 +72,9 @@ class polars():
                 symmetric=True
                 )
             case = self.pan3d.DirichletDoublet0Source0Case3(self._panels, self._trailing_edges)
-            case.A_ref = self.ParametricGlider.shape.area
+            case.A_ref = self.parametric_glider.shape.area
             case.mom_ref_point = self.paraBEM.Vector3(1.25, 0, -6)
-            case.v_inf = self.paraBEM.Vector(self.ParametricGlider.v_inf)
+            case.v_inf = self.paraBEM.Vector(self.parametric_glider.v_inf)
             case.drag_calc = "trefftz"
             case.farfield = 5
             case.create_wake(10000000, 20)
@@ -113,7 +113,7 @@ class polars():
         rho = 1.2
         mass = 90
         g = 9.81
-        area = self.ParametricGlider.shape.area
+        area = self.parametric_glider.shape.area
         cDl = self.obj.GliderInstance.lineset.get_normalized_drag() / area * 2
         print(cDl)
         alpha = self.alpha
@@ -300,7 +300,7 @@ class PanelTool(BaseTool):
 
     def create_panels(self, midribs=0, profile_numpoints=10, mean=False, symmetric=True):
         self._vertices, self._panels, self._trailing_edges = paraBEM_Panels(
-            self.ParametricGlider.get_glider_3d(),
+            self.parametric_glider.get_glider_3d(),
             midribs=midribs,
             profile_numpoints=profile_numpoints,
             num_average=mean*5,
@@ -313,7 +313,7 @@ class PanelTool(BaseTool):
                            self.Qmean_profile.isChecked(), self.Qsymmetric.isChecked())
         del self.case
         self.case = self.pan3d.DirichletDoublet0Source0Case3(self._panels, self._trailing_edges)
-        self.case.v_inf = self.paraBEM.Vector(self.ParametricGlider.v_inf)
+        self.case.v_inf = self.paraBEM.Vector(self.parametric_glider.v_inf)
         self.case.farfield = 5
         self.case.create_wake(9999, 10)
         self.case.run()

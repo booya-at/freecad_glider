@@ -48,7 +48,7 @@ class BallooningTool(BaseTool):
 
         # selection widget
         self.layout.addWidget(self.QList_View)
-        for ballooning in self.ParametricGlider.balloonings:
+        for ballooning in self.parametric_glider.balloonings:
             self.QList_View.addItem(QBalooning(ballooning))
         self.QList_View.setMaximumHeight(100)
         self.QList_View.setCurrentRow(0)
@@ -248,7 +248,7 @@ class BallooningTool(BaseTool):
             ballooning = self.QList_View.item(index)
             ballooning.apply_splines()
             balloonings.append(ballooning.ballooning)
-        self.ParametricGlider.balloonings = balloonings
+        self.parametric_glider.balloonings = balloonings
         self.update_view_glider()
         super(BallooningTool, self).accept()
 

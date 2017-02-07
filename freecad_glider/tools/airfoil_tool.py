@@ -69,7 +69,7 @@ class AirfoilTool(BaseTool):
 
         # selection widget
         self.layout.addWidget(self.QList_View)
-        for profile in self.ParametricGlider.profiles:
+        for profile in self.parametric_glider.profiles:
             self.QList_View.addItem(QAirfoil_item(profile))
         self.QList_View.setMaximumHeight(100)
         self.QList_View.setCurrentRow(0)
@@ -278,7 +278,7 @@ class AirfoilTool(BaseTool):
             airfoil.apply_splines()
             profiles.append(airfoil)
         super(AirfoilTool, self).accept()
-        self.ParametricGlider.profiles = profiles
+        self.parametric_glider.profiles = profiles
         self.update_view_glider()
 
     def reject(self):

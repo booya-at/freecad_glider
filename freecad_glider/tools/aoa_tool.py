@@ -26,10 +26,10 @@ class ZrotTool(BaseTool):
         self.coords = coin.SoSeparator()
         self.grid = coin.SoSeparator()
         self.aoa_spline = Line([], color="red", width=2)
-        self.ribs = self.ParametricGlider.shape.ribs
+        self.ribs = self.parametric_glider.shape.ribs
         self.front = [rib[0] for rib in self.ribs]
         self.back = [rib[1] for rib in self.ribs]
-        self.text_scale = self.ParametricGlider.shape.span / len(self.front) / 15
+        self.text_scale = self.parametric_glider.shape.span / len(self.front) / 15
         self.x_grid = [i[0] for i in self.front]
 
         self.Qnum_aoa = QtGui.QSpinBox(self.base_widget)
@@ -41,7 +41,7 @@ class ZrotTool(BaseTool):
 
     @property
     def spline(self):
-        return self.ParametricGlider.zrot
+        return self.parametric_glider.zrot
 
     @property
     def scale(self):
@@ -50,7 +50,7 @@ class ZrotTool(BaseTool):
 
     def setup_pivy(self):
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
-            self.ParametricGlider.shape.span, pos[1], pos[2]]
+            self.parametric_glider.shape.span, pos[1], pos[2]]
         childs = (self.aoa_cpc, self.shape, self.aoa_spline.object, 
                   self.coords, self.grid)
         self.task_separator += childs
@@ -88,7 +88,7 @@ class ZrotTool(BaseTool):
     def update_spline_type(self):
         self.aoa_cpc.control_pos = numpy.array(self.spline.controlpoints) * self.scale
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
-            self.ParametricGlider.shape.span, pos[1], pos[2]]
+            self.parametric_glider.shape.span, pos[1], pos[2]]
         self.update_aoa()
 
     def update_grid(self):
@@ -117,8 +117,8 @@ class ZrotTool(BaseTool):
 
     def accept(self):
         self.aoa_cpc.remove_callbacks()
-        self.obj.ParametricGlider = self.ParametricGlider
-        self.ParametricGlider.get_glider_3d(self.obj.GliderInstance)
+        self.obj.ParametricGlider = self.parametric_glider
+        self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
         super(ZrotTool, self).accept()
         self.update_view_glider()
 
@@ -166,14 +166,14 @@ class ZrotTool(BaseTool):
         self.spline.numpoints = self.Qnum_aoa.value()
         self.aoa_cpc.control_pos = numpy.array(self.spline.controlpoints) * self.scale
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
-            self.ParametricGlider.shape.span, pos[1], pos[2]]
+            self.parametric_glider.shape.span, pos[1], pos[2]]
         self.update_aoa()
 
 
 class AoaTool(ZrotTool):
     @property
     def spline(self):
-        return self.ParametricGlider.aoa
+        return self.parametric_glider.aoa
 
     @property
     def scale(self):
@@ -182,10 +182,10 @@ class AoaTool(ZrotTool):
     def setup_widget(self):
         super(AoaTool, self).setup_widget()
         self.QGlide = QtGui.QDoubleSpinBox(self.base_widget)
-        self.QGlide.setValue(self.ParametricGlider.glide)
+        self.QGlide.setValue(self.parametric_glider.glide)
         self.layout.setWidget(3, text_field, QtGui.QLabel("glidenumber"))
         self.layout.setWidget(3, input_field, self.QGlide)
 
     def accept(self):
-        self.ParametricGlider.glide = self.QGlide.value()
+        self.parametric_glider.glide = self.QGlide.value()
         super(AoaTool, self).accept()

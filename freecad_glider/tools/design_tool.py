@@ -35,12 +35,12 @@ class DesignTool(BaseTool):
         self.side = "upper"
 
         # get 2d shape properties
-        _shape = self.ParametricGlider.shape.get_shape()
+        _shape = self.parametric_glider.shape.get_shape()
         self.front = list(map(vector3D, _shape.front))
         self.back = list(map(vector3D, _shape.back))
         self.ribs = zip(self.front, self.back)
-        self.x_values = self.ParametricGlider.shape.rib_x_values
-        CutLine.cuts_to_lines(self.ParametricGlider)
+        self.x_values = self.parametric_glider.shape.rib_x_values
+        CutLine.cuts_to_lines(self.parametric_glider)
 
         self._add_mode = False
         # setup the GUI
@@ -149,9 +149,9 @@ class DesignTool(BaseTool):
         self.event_separator.unregister()
         self.view.removeEventCallbackPivy(
             coin.SoKeyboardEvent.getClassTypeId(), self.add_cb)
-        self.ParametricGlider.elements["cuts"] = CutLine.get_cut_dict()
-        self.ParametricGlider.get_glider_3d(self.obj.GliderInstance)
-        self.obj.ParametricGlider = self.ParametricGlider
+        self.parametric_glider.elements["cuts"] = CutLine.get_cut_dict()
+        self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
+        self.obj.ParametricGlider = self.parametric_glider
         super(DesignTool, self).accept()
         self.obj.ViewObject.Proxy.updateData()
 
@@ -247,7 +247,7 @@ class DesignTool(BaseTool):
                     assert(isinstance(self.add_separator.static_objects[1], Line))
                     marker = self.add_separator.static_objects[0]
                     line = self.add_separator.static_objects[1]
-                    cut_point_1 = CutPoint.from_position_and_rib(marker.rib_nr, marker.points[0][1], self.side == "upper", self.ParametricGlider)
+                    cut_point_1 = CutPoint.from_position_and_rib(marker.rib_nr, marker.points[0][1], self.side == "upper", self.parametric_glider)
                     cut_point_2 = line.active_point
                     cut_line = CutLine(cut_point_1, cut_point_2, "folded")
                     cut_line.replace_points_by_set()
@@ -260,7 +260,7 @@ class DesignTool(BaseTool):
                     assert(len(self.add_separator.static_objects) == 1)
                     assert(isinstance(self.add_separator.static_objects[0], Marker))
                     marker = self.add_separator.static_objects[0]
-                    cut_point = CutPoint.from_position_and_rib(marker.rib_nr, marker.points[0][1], self.side == "upper", self.ParametricGlider)
+                    cut_point = CutPoint.from_position_and_rib(marker.rib_nr, marker.points[0][1], self.side == "upper", self.parametric_glider)
                     self.event_separator += cut_point
                     self.event_separator.Select(cut_point)
 
@@ -288,8 +288,8 @@ class DesignTool(BaseTool):
             if (not smallest_diff[0]) or smallest_diff[0] > diff:
                 smallest_diff = diff, index
         index = smallest_diff[1]
-        x, min_y = self.ParametricGlider.shape[index, 1.]
-        _, max_y = self.ParametricGlider.shape[index, 0.]
+        x, min_y = self.parametric_glider.shape[index, 1.]
+        _, max_y = self.parametric_glider.shape[index, 0.]
         pos[0] = x
         if pos[1] > min_y and pos[1] < max_y:
             if len(self.add_separator.static_objects) == 0:
@@ -310,13 +310,13 @@ class DesignTool(BaseTool):
         select_obj = self.event_separator.select_object[0]
         rib_nr = select_obj.rib_nr
         try:
-            min1 = self.ParametricGlider.shape[rib_nr - 1, 1.][1]
-            x1, max1 = self.ParametricGlider.shape[rib_nr - 1, 0.]
+            min1 = self.parametric_glider.shape[rib_nr - 1, 1.][1]
+            x1, max1 = self.parametric_glider.shape[rib_nr - 1, 0.]
         except IndexError:
             min1, x1, max1 = None, None, None
         try:
-            min2 = self.ParametricGlider.shape[rib_nr + 1, 1.][1]
-            x2, max2 = self.ParametricGlider.shape[rib_nr + 1, 0.]
+            min2 = self.parametric_glider.shape[rib_nr + 1, 1.][1]
+            x2, max2 = self.parametric_glider.shape[rib_nr + 1, 0.]
         except IndexError:
             min2, x2, max2 = None, None, None
         show_point = False
@@ -354,17 +354,17 @@ class DesignTool(BaseTool):
             self.add_separator.removeAllChildren()
 
 class CutPoint(Marker):
-    def __init__(self, rib_nr, rib_pos, ParametricGlider=None):
+    def __init__(self, rib_nr, rib_pos, parametric_glider=None):
         super(CutPoint, self).__init__([[0, 0, 0]], True)
         self.marker.markerIndex = coin.SoMarkerSet.CROSS_7_7
-        self.ParametricGlider = ParametricGlider
-        self.rib_nr = rib_nr - ParametricGlider.shape.has_center_cell
+        self.parametric_glider = parametric_glider
+        self.rib_nr = rib_nr - parametric_glider.shape.has_center_cell
         self.rib_pos = rib_pos
         self.lines = []
         point = self.get_2D()
         self.x_value = point[0]
-        self.max= self.ParametricGlider.shape[self.rib_nr, 1.][1]
-        self.min= self.ParametricGlider.shape[self.rib_nr, 0.][1]
+        self.max= self.parametric_glider.shape[self.rib_nr, 1.][1]
+        self.min= self.parametric_glider.shape[self.rib_nr, 0.][1]
         self.points = [point]
 
     def update_position(self):
@@ -372,14 +372,14 @@ class CutPoint(Marker):
 
     def get_2D(self):
         try:
-            return list(self.ParametricGlider.shape[self.rib_nr, abs(self.rib_pos)] + [0])
+            return list(self.parametric_glider.shape[self.rib_nr, abs(self.rib_pos)] + [0])
         except IndexError:
             raise "index " + self.rib_nr + " out of range"
 
     def get_rib_pos(self):
         # we have to do this 
-        le = self.ParametricGlider.shape[self.rib_nr, 0][1]
-        te = self.ParametricGlider.shape[self.rib_nr, 1][1]
+        le = self.parametric_glider.shape[self.rib_nr, 0][1]
+        te = self.parametric_glider.shape[self.rib_nr, 1][1]
         chord = le - te
         sign = ((self.rib_pos >= 0) * 2 - 1)
         return round(sign * (abs(le - self.pos[1])) / chord, 3)
@@ -426,12 +426,12 @@ class CutPoint(Marker):
                 i()
 
     @classmethod
-    def from_position_and_rib(cls, rib_nr, y_pos, upper, ParametricGlider):
+    def from_position_and_rib(cls, rib_nr, y_pos, upper, parametric_glider):
         i = 0
-        max_val = ParametricGlider.shape[rib_nr, 1.][1]
-        min_val = ParametricGlider.shape[rib_nr, 0.][1]
+        max_val = parametric_glider.shape[rib_nr, 1.][1]
+        min_val = parametric_glider.shape[rib_nr, 0.][1]
         rib_pos = -(upper * 2. - 1.) * abs(y_pos - min_val) / abs(max_val - min_val) 
-        return cls(rib_nr + ParametricGlider.shape.has_center_cell, rib_pos, ParametricGlider)
+        return cls(rib_nr + parametric_glider.shape.has_center_cell, rib_pos, parametric_glider)
 
 
 class CutLine(Line):
@@ -443,7 +443,7 @@ class CutLine(Line):
         super(CutLine, self).__init__([point1.get_2D(), point2.get_2D()], dynamic=True)
         self.point1 = point1
         self.point2 = point2
-        self.ParametricGlider = self.point1.ParametricGlider
+        self.parametric_glider = self.point1.parametric_glider
         self.cut_type = cut_type
         if self.is_upper:
             CutLine.upper_point_set.add(point1)
@@ -495,15 +495,15 @@ class CutLine(Line):
         self.data.point.setValues(0, len(p), p)
 
     @classmethod
-    def cuts_to_lines(cls, ParametricGlider):
+    def cuts_to_lines(cls, parametric_glider):
         CutLine.upper_point_set = set()
         CutLine.lower_point_set = set()
         CutLine.upper_line_list = []
         CutLine.lower_line_list = []
-        for cut in ParametricGlider.elements["cuts"]:
+        for cut in parametric_glider.elements["cuts"]:
             for cell_nr in cut["cells"]:
-                CutLine(CutPoint(cell_nr, cut["left"], ParametricGlider), 
-                        CutPoint(cell_nr + 1, cut["right"], ParametricGlider),
+                CutLine(CutPoint(cell_nr, cut["left"], parametric_glider), 
+                        CutPoint(cell_nr + 1, cut["right"], parametric_glider),
                         cut["type"])
         for l in cls.upper_line_list:
             l.replace_points_by_set()
@@ -514,7 +514,7 @@ class CutLine(Line):
 
     @property
     def cell_nr(self):
-        return self.get_point(inner=True).rib_nr + self.point1.ParametricGlider.shape.has_center_cell
+        return self.get_point(inner=True).rib_nr + self.point1.parametric_glider.shape.has_center_cell
 
     def get_point(self, inner=True):
         if (self.point1.rib_nr < self.point2.rib_nr) == inner:

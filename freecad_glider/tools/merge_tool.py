@@ -24,7 +24,7 @@ class BaseMergeTool(BaseTool):
         self.coords = coin.SoSeparator()
         self.expl_curve = Line([])
 
-        _shape = self.ParametricGlider.shape.get_half_shape()
+        _shape = self.parametric_glider.shape.get_half_shape()
         self.ribs = _shape.ribs
         self.front = _shape.front
         self.back = _shape.back
@@ -52,7 +52,7 @@ class BaseMergeTool(BaseTool):
 
     def update_num_control_points(self, numpoints):
         self.bezier_curve.numpoints = numpoints
-        self.bezier_cpc.control_points[-1].constraint = lambda pos: [self.ParametricGlider.shape.span, pos[1], pos[2]]
+        self.bezier_cpc.control_points[-1].constraint = lambda pos: [self.parametric_glider.shape.span, pos[1], pos[2]]
 
     def update_spline(self):
         pass
@@ -87,14 +87,14 @@ class AirfoilMergeTool(BaseMergeTool):
         self.scal = numpy.array([1, 0.2])
         self.x_grid = [i[0] for i in self.front if i[0] >= 0]
         self.set_end_points()
-        self.bezier_curve = self.ParametricGlider.profile_merge_curve
+        self.bezier_curve = self.parametric_glider.profile_merge_curve
         self.bezier_curve = Bezier([self.scal * i for i in self.bezier_curve.controlpoints])
         self.bezier_cpc.control_pos = vector3D(self.bezier_curve.controlpoints)
         self.fix_end_points()
 
     def set_end_points(self):
-        self.ParametricGlider.profile_merge_curve.controlpoints[0][0] = 0
-        self.ParametricGlider.profile_merge_curve.controlpoints[-1][0] = self.ParametricGlider.shape.span
+        self.parametric_glider.profile_merge_curve.controlpoints[0][0] = 0
+        self.parametric_glider.profile_merge_curve.controlpoints[-1][0] = self.parametric_glider.shape.span
 
     def update_spline(self):
         self.bezier_curve.controlpoints = [point[:2] for point in self.bezier_cpc.control_pos]
@@ -113,7 +113,7 @@ class AirfoilMergeTool(BaseMergeTool):
 
         def c2(pos):
             pos = y_constraint(pos)
-            return [self.ParametricGlider.shape.span, pos[1], pos[2]]
+            return [self.parametric_glider.shape.span, pos[1], pos[2]]
 
         for i, cp in enumerate(self.bezier_cpc.control_points):
             if i == 0:
@@ -125,7 +125,7 @@ class AirfoilMergeTool(BaseMergeTool):
         self.update_spline()
 
     def accept(self):
-        self.ParametricGlider.profile_merge_curve.controlpoints = [cp / self.scal for cp in self.bezier_curve.controlpoints]
+        self.parametric_glider.profile_merge_curve.controlpoints = [cp / self.scal for cp in self.bezier_curve.controlpoints]
         super(AirfoilMergeTool, self).accept()
 
 
@@ -135,14 +135,14 @@ class BallooningMergeTool(BaseMergeTool):
         self.scal = numpy.array([1, 0.2])
         self.x_grid = [i[0] for i in self.front if i[0] >= 0]
         self.set_end_points()
-        self.bezier_curve = self.ParametricGlider.ballooning_merge_curve
+        self.bezier_curve = self.parametric_glider.ballooning_merge_curve
         self.bezier_curve = Bezier([self.scal * i for i in self.bezier_curve.controlpoints])
         self.bezier_cpc.control_pos = vector3D(self.bezier_curve.controlpoints)
         self.fix_end_points()
 
     def set_end_points(self):
-        self.ParametricGlider.ballooning_merge_curve.controlpoints[0][0] = 0
-        self.ParametricGlider.ballooning_merge_curve.controlpoints[-1][0] = self.ParametricGlider.shape.span
+        self.parametric_glider.ballooning_merge_curve.controlpoints[0][0] = 0
+        self.parametric_glider.ballooning_merge_curve.controlpoints[-1][0] = self.parametric_glider.shape.span
 
     def update_spline(self):
         self.bezier_curve.controlpoints = [point[:2] for point in self.bezier_cpc.control_pos]
@@ -161,7 +161,7 @@ class BallooningMergeTool(BaseMergeTool):
 
         def c2(pos):
             pos = y_constraint(pos)
-            return [self.ParametricGlider.shape.span, pos[1], pos[2]]
+            return [self.parametric_glider.shape.span, pos[1], pos[2]]
 
         for i, cp in enumerate(self.bezier_cpc.control_points):
             if i == 0:
@@ -173,5 +173,5 @@ class BallooningMergeTool(BaseMergeTool):
         self.update_spline()
 
     def accept(self):
-        self.ParametricGlider.ballooning_merge_curve.controlpoints = [cp / self.scal for cp in self.bezier_curve.controlpoints]
+        self.parametric_glider.ballooning_merge_curve.controlpoints = [cp / self.scal for cp in self.bezier_curve.controlpoints]
         super(BallooningMergeTool, self).accept()

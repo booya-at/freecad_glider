@@ -120,7 +120,7 @@ class BaseTool(object):
 
     def __init__(self, obj):
         self.obj = obj
-        self.ParametricGlider = deepcopy(self.obj.ParametricGlider)
+        self.parametric_glider = deepcopy(self.obj.ParametricGlider)
         self.obj.ViewObject.Visibility = not self.hide
         self.view = Gui.ActiveDocument.ActiveView
         Gui.Selection.clearSelection()
@@ -145,8 +145,8 @@ class BaseTool(object):
         self.scene.addChild(self.task_separator)
 
     def update_view_glider(self):  # rename
-        self.obj.ParametricGlider = self.ParametricGlider
-        self.ParametricGlider.get_glider_3d(self.obj.GliderInstance)
+        self.obj.ParametricGlider = self.parametric_glider
+        self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
         self.obj.ViewObject.Proxy.updateData()
 
     def accept(self):

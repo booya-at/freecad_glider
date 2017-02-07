@@ -1,19 +1,19 @@
 from pivy import coin
 import FreeCAD as App
-import numpy
+import numpy as np
 
 def depth(l):
-    return isinstance(l, list) and max(map(depth, l))+1
+    return isinstance(l, (list, tuple, np.ndarray)) and max(map(depth, l)) + 1
 
 
 def vector3D(vec):
     if len(vec) == 0:
         return(vec)
-    elif not isinstance(vec[0], (list, tuple, numpy.ndarray, App.Vector)):
+    elif not isinstance(vec[0], (list, tuple, np.ndarray, App.Vector)):
         if len(vec) == 3:
             return vec
         elif len(vec) == 2:
-            return numpy.array(vec).tolist() + [0.]
+            return np.array(vec).tolist() + [0.]
         else:
             print("something wrong with this list: ", vec)
     else:
