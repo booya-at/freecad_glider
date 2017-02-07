@@ -305,7 +305,7 @@ class CutCommand(BaseCommand):
 
 class ColorCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'design_command.svg', 'MenuText': 'Design', 'ToolTip': 'Colors'}
+        return {'Pixmap': 'color_selector.svg', 'MenuText': 'Design', 'ToolTip': 'Colors'}
 
     def tool(self, obj):
         return color_tool.ColorTool(obj)
