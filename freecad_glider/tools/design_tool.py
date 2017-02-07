@@ -111,7 +111,7 @@ class DesignTool(BaseTool):
             self.set_cut_type(lines[0].cut_type)
         if points:
             self.QPointPos.blockSignals(True)
-            self.QPointPos.setValue(list(points)[0].rib_pos)  # maybe summing over all points?
+            self.QPointPos.setValue(abs(list(points)[0].rib_pos))  # maybe summing over all points?
             self.QPointPos.blockSignals(False)
 
     def set_cut_type(self, text):
@@ -128,6 +128,7 @@ class DesignTool(BaseTool):
     def point_pos_changed(self):
         points = set()
         lines = set()
+        sign = 2. * (self.side != "upper") - 1.
         for element in self.event_separator.select_object:
             if isinstance(element, CutPoint):
                 points.add(element)
@@ -136,7 +137,7 @@ class DesignTool(BaseTool):
                 points.add(element.point1)
                 points.add(element.point2)
         for point in points:
-            point.rib_pos = self.QPointPos.value()
+            point.rib_pos = self.QPointPos.value() * sign
             point.update_position()
             for line in point.lines:
                 lines.add(line)
@@ -146,6 +147,8 @@ class DesignTool(BaseTool):
 
     def accept(self):
         self.event_separator.unregister()
+        self.view.removeEventCallbackPivy(
+            coin.SoLocation2Event.getClassTypeId(), self.add_cb)
         self.ParametricGlider.elements["cuts"] = CutLine.get_cut_dict()
         self.ParametricGlider.get_glider_3d(self.obj.GliderInstance)
         self.obj.ParametricGlider = self.ParametricGlider
@@ -154,8 +157,10 @@ class DesignTool(BaseTool):
 
 
     def reject(self):
-        super(DesignTool, self).reject()
         self.event_separator.unregister()
+        self.view.removeEventCallbackPivy(
+            coin.SoLocation2Event.getClassTypeId(), self.add_cb)
+        super(DesignTool, self).reject()
 
     def draw_shape(self):
         """ draws the shape of the glider"""

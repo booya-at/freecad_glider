@@ -295,9 +295,16 @@ class PolarsCommand(BaseCommand):
         return pm.polars(obj)
 
 
-class DesignCommand(BaseCommand):
+class CutCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'design_command.svg', 'MenuText': 'Design', 'ToolTip': 'Design'}
+        return {'Pixmap': 'cut_command.svg', 'MenuText': 'Design', 'ToolTip': 'Design'}
+
+    def tool(self, obj):
+        return design_tool.DesignTool(obj)
+
+class ColorCommand(BaseCommand):
+    def GetResources(self):
+        return {'Pixmap': 'design_command.svg', 'MenuText': 'Design', 'ToolTip': 'Colors'}
 
     def tool(self, obj):
         return design_tool.DesignTool(obj)

@@ -49,7 +49,8 @@ class gliderWorkbench(Gui.Workbench):
         "BallooningMergeCommand",
         "CellCommand",
         "LineCommand",
-        "DesignCommand",
+        "CutCommand",
+        "ColorCommand",
         "Gl2dExport"]
 
     productionBox = [
@@ -84,7 +85,8 @@ class gliderWorkbench(Gui.Workbench):
         Gui.addCommand("BallooningMergeCommand", tools.BallooningMergCommand())
         Gui.addCommand("CellCommand", tools.CellCommand())
         Gui.addCommand("ZrotCommand", tools.ZrotCommand())
-        Gui.addCommand("DesignCommand", tools.DesignCommand())
+        Gui.addCommand("CutCommand", tools.CutCommand())
+        Gui.addCommand("ColorCommand", tools.ColorCommand())
 
         Gui.addCommand("PatternCommand", tools.PatternCommand())
         Gui.addCommand("PanelCommand", tools.PanelCommand())
