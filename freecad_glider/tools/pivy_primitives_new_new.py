@@ -37,7 +37,7 @@ class Object3D(coin.SoSeparator):
     sel_col = "yellow"
     disabled_col = "grey"
 
-    def __init__(self, dynamic=False):
+    def __init__(self, points, dynamic=False):
         super(Object3D, self).__init__()
         self._sel_color = COLORS[self.sel_col]
         self._ovr_color = COLORS[self.ovr_col]
@@ -55,6 +55,9 @@ class Object3D(coin.SoSeparator):
         self._delete = False
         self._tmp_points = None
         self.enabled = True
+        if depth(points) != 2:
+            raise AttributeError("depth of list should be 2")
+        self.points = points
 
     def set_disabled(self):
         self.color.diffuseColor = COLORS[self.disabled_col]
@@ -132,23 +135,25 @@ class Object3D(coin.SoSeparator):
 
 class Marker(Object3D):
     def __init__(self, points, dynamic=False):
-        super(Marker, self).__init__(dynamic)
+        super(Marker, self).__init__(points, dynamic)
         self.marker = coin.SoMarkerSet()
         self.marker.markerIndex = coin.SoMarkerSet.CIRCLE_FILLED_9_9
-        if depth(points) != 2:
-            raise AttributeError("depth of list should be 2")
-        self.points = points
         self.addChild(self.marker)
 
 
 class Line(Object3D):
     def __init__(self, points, dynamic=False):
-        super(Line, self).__init__(dynamic)
+        super(Line, self).__init__(points, dynamic)
         self.drawstyle = coin.SoDrawStyle()
         self.line = coin.SoLineSet()
-        self.points = points
         self.addChild(self.drawstyle)
         self.addChild(self.line)
+
+class Polygon(Object3D):
+    def __init__(self, points, dynamic=False):
+        super(Polygon, self).__init__(points, dynamic)
+        self.polygon = coin.SoFaceSet()
+        self.addChild(self.polygon)
 
 
 class Container(coin.SoSeparator):

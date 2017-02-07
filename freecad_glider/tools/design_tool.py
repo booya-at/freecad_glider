@@ -57,7 +57,7 @@ class DesignTool(BaseTool):
         self.tool_layout = QtGui.QFormLayout(self.tool_widget)
         self.form.append(self.tool_widget)
 
-        self.Qcut_type = QtGui.QComboBox()
+        self.Qcut_type = QtGui.QComboBox(self.tool_widget)
         self.Qcut_type.addItem("folded")
         self.Qcut_type.addItem("orthogonal")
         self.Qcut_type.setEnabled(False)
@@ -148,7 +148,7 @@ class DesignTool(BaseTool):
     def accept(self):
         self.event_separator.unregister()
         self.view.removeEventCallbackPivy(
-            coin.SoLocation2Event.getClassTypeId(), self.add_cb)
+            coin.SoKeyboardEvent.getClassTypeId(), self.add_cb)
         self.ParametricGlider.elements["cuts"] = CutLine.get_cut_dict()
         self.ParametricGlider.get_glider_3d(self.obj.GliderInstance)
         self.obj.ParametricGlider = self.ParametricGlider
@@ -159,7 +159,7 @@ class DesignTool(BaseTool):
     def reject(self):
         self.event_separator.unregister()
         self.view.removeEventCallbackPivy(
-            coin.SoLocation2Event.getClassTypeId(), self.add_cb)
+            coin.SoKeyboardEvent.getClassTypeId(), self.add_cb)
         super(DesignTool, self).reject()
 
     def draw_shape(self):
@@ -195,7 +195,6 @@ class DesignTool(BaseTool):
            press v to start the mode. if a point is selected, the left and right rib will offer the possebility to add
            a point + line, if no point is selected, it's possible to add a point to any rib'''
 
-        # self.add_separator.register(self.view)
         event = event_callback.getEvent()
         if (event.getKey() == ord("v") and event.getState() == 1):
             if self._add_mode: return
@@ -231,7 +230,10 @@ class DesignTool(BaseTool):
                     self.event_separator += cut_line
 
 
-            def remove_cb(*arg):
+            def remove_cb(event_callback=None):
+                event = event_callback.getEvent()
+                if not event.getButton() == coin.SoMouseButtonEvent.BUTTON1:
+                    return
                 if add_event:
                     self.view.removeEventCallbackPivy(
                         coin.SoLocation2Event.getClassTypeId(), add_event)
@@ -289,12 +291,18 @@ class DesignTool(BaseTool):
         x, min_y = self.ParametricGlider.shape[index, 1.]
         _, max_y = self.ParametricGlider.shape[index, 0.]
         pos[0] = x
-        self.add_separator.removeAllChildren()
-        print(index)
         if pos[1] > min_y and pos[1] < max_y:
-            marker = Marker([pos])
-            marker.rib_nr = index
-            self.add_separator += marker
+            if len(self.add_separator.static_objects) == 0:
+                self.add_separator.removeAllChildren()
+                marker = Marker([pos])
+                marker.rib_nr = index
+                self.add_separator += marker
+            else:
+                marker = self.add_separator.static_objects[0]
+                marker.points = [pos]
+                marker.rib_nr = index
+        else:
+            self.add_separator.removeAllChildren()
 
 
     def add_neighbour(self, event_callback=None):
@@ -327,15 +335,23 @@ class DesignTool(BaseTool):
                 show_point = True
         else:
             return
-        self.add_separator.removeAllChildren()
         if show_point:
-            marker = Marker([pos])
-            marker.rib_nr = new_rib_nr
-            line = Line([list(select_obj.points[0]), pos])
-            line.active_point = select_obj
-            self.add_separator += marker
-            self.add_separator += line
-
+            if not self.add_separator.static_objects:
+                self.add_separator.removeAllChildren()
+                marker = Marker([pos])
+                marker.rib_nr = new_rib_nr
+                line = Line([list(select_obj.points[0]), pos])
+                line.active_point = select_obj
+                self.add_separator += marker
+                self.add_separator += line
+            else:
+                marker = self.add_separator.static_objects[0]
+                line = self.add_separator.static_objects[1]
+                marker.points = [pos]
+                marker.rib_nr = new_rib_nr
+                line.points = [list(select_obj.points[0]), pos]
+        else:
+            self.add_separator.removeAllChildren()
 
 class CutPoint(Marker):
     def __init__(self, rib_nr, rib_pos, ParametricGlider=None):
