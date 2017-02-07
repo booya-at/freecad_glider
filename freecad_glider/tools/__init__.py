@@ -22,6 +22,7 @@ from . import merge_tool as merge_tool
 from . import panel_method as pm
 from . import cell_tool as cell_tool
 from . import design_tool as design_tool
+from . import color_tool as color_tool
 import openglider
 
 
@@ -307,7 +308,7 @@ class ColorCommand(BaseCommand):
         return {'Pixmap': 'design_command.svg', 'MenuText': 'Design', 'ToolTip': 'Colors'}
 
     def tool(self, obj):
-        return design_tool.DesignTool(obj)
+        return color_tool.ColorTool(obj)
 
 
 class RefreshCommand():
@@ -320,6 +321,7 @@ class RefreshCommand():
     def Activated(self):
         mods = [glider, tools, airfoil_tool, shape_tool, arc_tool, aoa_tool]
         mods += [ballooning_tool, line_tool, merge_tool, pm, cell_tool, design_tool]
+        mods += [color_tool]
         for mod in mods:
             reload(mod)
             try:

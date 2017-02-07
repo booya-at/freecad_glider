@@ -32,7 +32,7 @@ class DesignTool(BaseTool):
     widget_name = "Design Tool"
     def __init__(self, obj):
         super(DesignTool, self).__init__(obj)
-        self.side = "upper"
+        self.side = "lower"
 
         # get 2d shape properties
         _shape = self.parametric_glider.shape.get_shape()
@@ -143,24 +143,6 @@ class DesignTool(BaseTool):
                 lines.add(line)
         for line in lines:
             line.update_Line()
-
-
-    def accept(self):
-        self.event_separator.unregister()
-        self.view.removeEventCallbackPivy(
-            coin.SoKeyboardEvent.getClassTypeId(), self.add_cb)
-        self.parametric_glider.elements["cuts"] = CutLine.get_cut_dict()
-        self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
-        self.obj.ParametricGlider = self.parametric_glider
-        super(DesignTool, self).accept()
-        self.obj.ViewObject.Proxy.updateData()
-
-
-    def reject(self):
-        self.event_separator.unregister()
-        self.view.removeEventCallbackPivy(
-            coin.SoKeyboardEvent.getClassTypeId(), self.add_cb)
-        super(DesignTool, self).reject()
 
     def draw_shape(self):
         """ draws the shape of the glider"""
@@ -352,6 +334,24 @@ class DesignTool(BaseTool):
                 line.points = [list(select_obj.points[0]), pos]
         else:
             self.add_separator.removeAllChildren()
+
+    def accept(self):
+        self.event_separator.unregister()
+        self.view.removeEventCallbackPivy(
+            coin.SoKeyboardEvent.getClassTypeId(), self.add_cb)
+        self.parametric_glider.elements["cuts"] = CutLine.get_cut_dict()
+        self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
+        self.obj.ParametricGlider = self.parametric_glider
+        super(DesignTool, self).accept()
+        self.obj.ViewObject.Proxy.updateData()
+
+    def reject(self):
+        self.event_separator.unregister()
+        self.view.removeEventCallbackPivy(
+            coin.SoKeyboardEvent.getClassTypeId(), self.add_cb)
+        super(DesignTool, self).reject()
+
+
 
 class CutPoint(Marker):
     def __init__(self, rib_nr, rib_pos, parametric_glider=None):

@@ -69,8 +69,13 @@ class Object3D(coin.SoSeparator):
 
     def set_color(self, col):
         self.std_col = col
-        self._std_color = COLORS[self.std_col]
-        self.color.diffuseColor = self._std_color
+        try:
+            self._std_color = COLORS[self.std_col]
+            self.color.diffuseColor = self._std_color
+        except KeyError:
+            self._std_color = self.std_col
+            self.color.diffuseColor = self._std_color
+
 
     @property
     def points(self):

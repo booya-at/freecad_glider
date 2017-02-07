@@ -2,12 +2,12 @@ from __future__ import division
 import os
 import numpy as np
 
-from pivy import coin
 import FreeCAD as App
 
 from openglider import jsonify
 from openglider import mesh
 from . import pivy_primitives_new_new as prim
+from _tools import coin, hex_to_rgb
 
 importpath = os.path.join(os.path.dirname(__file__), '..', 'demokite.ods')
 
@@ -266,15 +266,6 @@ class OGGliderVP(OGBaseVP):
     def __setstate__(self, state):
         # self.updateData()
         return None
-
-
-def hex_to_rgb(hex_string):
-    try:
-        value = hex_string.split('#')[1]
-        lv = len(value)
-        return tuple(int(value[i:i + lv // 3], 16) / 256. for i in range(0, lv, lv // 3))
-    except IndexError:
-        return (.7, .7, .7)
 
 
 def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,

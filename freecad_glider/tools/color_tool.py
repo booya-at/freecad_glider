@@ -1,0 +1,118 @@
+from __future__ import division
+
+from PySide import QtGui, QtCore
+import numpy as np
+import FreeCAD as App
+
+from ._tools import BaseTool, input_field, text_field, coin, hex_to_rgb, rgb_to_hex
+from .pivy_primitives_new_new import Polygon, Container, vector3D
+
+
+def refresh():
+    pass
+
+
+# idea: choose color of selected panels
+# fullshape is drawn, select panels and press button to choose color
+
+# TODO
+# dynamic polygon-container wo drag + deleting:   x
+# draw upper and lower shape:                       
+# qt color to coin
+# colorDialog button c
+
+
+
+
+class ColorTool(BaseTool):
+    widget_name = "Color Tool"
+    def __init__(self, obj):
+        super(ColorTool, self).__init__(obj)
+
+        self.panels = self.parametric_glider.get_panels()
+
+        # panel.materialcode
+        # panel.cut_back
+        # panel.cut_front
+        # cut_front["left"]
+
+
+        # setup the GUI
+        self.setup_widget()
+        self.setup_pivy()
+
+    def setup_widget(self):
+        self.Qcolore_select = QtGui.QPushButton("select color")
+        self.layout.setWidget(0, input_field, self.Qcolore_select)
+        self.color_dialog = QtGui.QColorDialog()
+        self.Qcolore_select.clicked.connect(self.color_dialog.open)
+        self.color_dialog.accepted.connect(self.set_color)
+
+    def setup_pivy(self):
+        # get 2d shape properties
+
+        self.selector = Container()
+        self.task_separator += self.selector
+        x_values = self.parametric_glider.shape.rib_x_values
+        for i, cell in enumerate(self.panels):
+            for j, panel in enumerate(cell):
+                p1 = [x_values[i], panel.cut_front["left"], 0.]
+                p2 = [x_values[i], panel.cut_back["left"], 0.]
+                p3 = [x_values[i + 1], panel.cut_back["right"], 0.]
+                p4 = [x_values[i + 1], panel.cut_front["right"], 0.]
+                vis_panel = Polygon([p1, p2, p3, p4][::-1], True)
+                panel.vis_panel = vis_panel
+                if panel.material_code:
+                    vis_panel.set_color(hex_to_rgb(panel.material_code))
+                self.selector += vis_panel
+
+        self.selector.register(self.view)
+
+    def set_color(self):
+        color = self.color_dialog.currentColor().getRgbF()[:-1]
+        for panel in self.selector.select_object:
+            panel.set_color(color)
+
+    def accept(self):
+        # self.event_separator.unregister()
+        # self.view.removeEventCallbackPivy(
+        #     coin.SoKeyboardEvent.getClassTypeId(), self.add_cb)
+        # self.parametric_glider.elements["cuts"] = CutLine.get_cut_dict()
+        colors = []
+        for cell in self.panels:
+            cell_colors = []
+            for panel in cell:
+                cell_colors.append(rgb_to_hex(panel.vis_panel._std_color))
+            colors.append(cell_colors)
+
+        self.parametric_glider.elements["materials"] = colors
+        self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
+        self.obj.ParametricGlider = self.parametric_glider
+        super(ColorTool, self).accept()
+        self.obj.ViewObject.Proxy.updateData()
+
+
+    def reject(self):
+        # self.event_separator.unregister()
+        # self.view.removeEventCallbackPivy(
+        #     coin.SoKeyboardEvent.getClassTypeId(), self.add_cb)
+        super(ColorTool, self).reject()
+
+
+class ColorContainer(Container):
+    def register(self, view):
+        self.view = view
+        self.mouse_over = self.view.addEventCallbackPivy(
+            coin.SoLocation2Event.getClassTypeId(), self.mouse_over_cb)
+        self.select = self.view.addEventCallbackPivy(
+            coin.SoMouseButtonEvent.getClassTypeId(), self.select_cb)
+        self.select_all = self.view.addEventCallbackPivy(
+            coin.SoKeyboardEvent.getClassTypeId(), self.select_all_cb)
+
+    def unregister(self):
+        self.view.removeEventCallbackPivy(
+            coin.SoLocation2Event.getClassTypeId(), self.mouse_over)
+        self.view.removeEventCallbackPivy(
+            coin.SoMouseButtonEvent.getClassTypeId(), self.select)
+        self.view.removeEventCallbackPivy(
+            coin.SoKeyboardEvent.getClassTypeId(), self.select_all)
