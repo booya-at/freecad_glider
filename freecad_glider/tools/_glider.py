@@ -320,8 +320,8 @@ def draw_glider(glider, vis_glider, midribs=0, profile_numpoints=20,
             for strap in cell.straps:
                 msh += mesh.Mesh.from_diagonal(strap, cell, insert_points=4)
 
-            if msh.vertices is not None:
-                vis_glider += mesh_sep(msh, (.3, .3, .3), draw_mesh)
+        if msh.vertices is not None:
+            vis_glider += mesh_sep(msh, (.3, .3, .3), draw_mesh)
 
         _strap_verts = []
         _strap_lines = []
