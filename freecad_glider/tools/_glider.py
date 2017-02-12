@@ -7,7 +7,7 @@ import FreeCAD as App
 from openglider import jsonify
 from openglider import mesh
 from . import pivy_primitives_new_new as prim
-from _tools import coin, hex_to_rgb
+from ._tools import coin, hex_to_rgb
 
 importpath = os.path.join(os.path.dirname(__file__), '..', 'demokite.ods')
 

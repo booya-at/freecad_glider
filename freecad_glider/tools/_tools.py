@@ -36,7 +36,7 @@ def hex_to_rgb(hex_string):
 
 def rgb_to_hex(color_tuple):
     assert(all(0 <= i <= 1 for i in color_tuple))
-    c = tuple(i * 255. for i in color_tuple)
+    c = tuple(int(i * 255) for i in color_tuple)
     return '#%02x%02x%02x' % c
 
 
