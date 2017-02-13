@@ -13,16 +13,18 @@ try:
     sep2 = coin.SoSeparator()
     sep1 += sep2
 except TypeError:
+    sep = [coin.SoSeparator]
+
     class newSeparator(coin.SoSeparator):
         def __iadd__(self, other):
-            #if isinstance(other, coin.SoSeparator):
-            #    self.addChild(other)
-            #else:
-
-            for child in other:
-                self.addChild(child)
+            if False and isinstance(other, sep):
+                self.addChild(other)
+            else:
+                for child in other:
+                    self.addChild(child)
             return self
 
+    sep.append(newSeparator)
     coin.SoSeparator = newSeparator
 
 import glider_metadata

@@ -2,8 +2,10 @@ from __future__ import division
 import os
 import numpy as np
 
+import openglider.glider
 from pivy import coin
 import FreeCAD as App
+import FreeCAD
 
 from openglider import jsonify
 from openglider import mesh
@@ -105,7 +107,8 @@ class OGBaseVP(object):
 
 
 class OGGlider(OGBaseObject):
-    def __init__(self, obj, parametric_glider=None, import_path=None):
+    def __init__(self, parametric_glider):
+        obj = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "Glider")
         self.obj = obj
         obj.addProperty("App::PropertyPythonObject",
                         "GliderInstance", "object",
@@ -113,15 +116,23 @@ class OGGlider(OGBaseObject):
         obj.addProperty("App::PropertyPythonObject",
                         "ParametricGlider", "object",
                         "ParametricGlider", 2)
-        if parametric_glider:
-            obj.ParametricGlider = parametric_glider
-        else:
-            import_path = import_path or os.path.dirname(__file__) + "/../glider2d.json"
-            with open(import_path, "r") as importfile:
-                obj.ParametricGlider = jsonify.load(importfile)["data"]
-        obj.GliderInstance = obj.ParametricGlider.get_glider_3d()
+
+        obj.ParametricGlider = parametric_glider
+        #obj.GliderInstance = obj.ParametricGlider.get_glider_3d()
         obj.Proxy = self
         super(OGGlider, self).__init__(obj)
+
+    @classmethod
+    def load(cls, import_path):
+        if import_path.endswith(".json"):
+            with open(import_path, "r") as importfile:
+                glider = jsonify.load(importfile)["data"]
+        elif import_path.endswith(".ods"):
+            glider = openglider.glider.ParametricGlider.import_ods(import_path)
+        else:
+            raise ValueError()
+
+        return cls(glider)
 
     def __getstate__(self):
         out = {
@@ -138,7 +149,7 @@ class OGGlider(OGBaseObject):
                              "ParametricGlider", "object",
                              "parametric glider", 2)
         self.obj.ParametricGlider = jsonify.loads(state["ParametricGlider"])["data"]
-        self.obj.GliderInstance = self.obj.ParametricGlider.get_glider_3d()
+        #self.obj.GliderInstance = self.obj.ParametricGlider.get_glider_3d()
         return None
 
 
@@ -171,6 +182,11 @@ class OGGliderVP(OGBaseVP):
         view_obj.addProperty("App::PropertyInteger",
                              "hole_num", "visuals",
                              "number of hole vertices")
+
+        self.set_defaults(view_obj)
+        super(OGGliderVP, self).__init__(view_obj)
+
+    def set_defaults(self, view_obj):
         view_obj.num_ribs = get_parameter("default_num_cell_points")
         view_obj.profile_num = get_parameter("default_num_prof_points")
         view_obj.line_num = get_parameter("default_num_line_points")
@@ -180,82 +196,132 @@ class OGGliderVP(OGBaseVP):
         view_obj.panels = get_parameter("default_show_panels")
         view_obj.draw_mesh = False
         view_obj.hole_num = get_parameter("default_num_hole_points")
-        super(OGGliderVP, self).__init__(view_obj)
 
     def attach(self, view_obj):
-        self.vis_glider = coin.SoSeparator()
         self.vis_lines = coin.SoSeparator()
+        self.vis_panels = coin.SoSeparator()
+        self.vis_ribs = coin.SoSeparator()
         self.material = coin.SoMaterial()
         self.seperator = coin.SoSeparator()
         self.view_obj = view_obj
-        self.GliderInstance = view_obj.Object.GliderInstance
+        self.update_glider(view_obj)
         self.material.diffuseColor = (.7, .7, .7)
-        self.seperator += (self.vis_glider, self.vis_lines)
-        view_obj.addDisplayMode(self.seperator, 'out')
+        self.seperator.addChild(self.vis_lines)
+        self.seperator.addChild(self.vis_panels)
+        self.seperator.addChild(self.vis_ribs)
 
-    def updateData(self, prop="all", *args):
-        self._updateData(self.view_obj, prop)
-
-
-    def _updateData(self, fp, prop="all"):
-        if not hasattr(fp, "half_glider"):
-            print(prop)
-            return  # the vieprovider isn't set up at this moment
-                    # but calls already the update function
-        if not hasattr(self, "glider"):
-            if not fp.half_glider:
-                self.glider = self.GliderInstance.copy_complete()
-            else:
-                self.glider = self.GliderInstance.copy()
-        if hasattr(fp, "ribs"):      # check for last attribute to be restored
-            if prop in ["num_ribs", "profile_num", "hull", "panels",
-                        "half_glider", "ribs", "draw_mesh", "hole_num",
-                        "all"]:
-                numpoints = fp.profile_num
-                numpoints = max(numpoints, 5)
-                glider_changed = ("half_glider" in prop or
-                                  "profile_num" in prop or
-                                  "all" in prop)
-                if glider_changed:
-                    if not fp.half_glider:
-                        self.glider = self.GliderInstance.copy_complete()
-                    else:
-                        self.glider = self.GliderInstance.copy()
-
-                self.update_glider(midribs=fp.num_ribs,
-                                   profile_numpoints=numpoints,
-                                   hull=fp.hull,
-                                   panels=fp.panels,
-                                   ribs=fp.ribs,
-                                   draw_mesh=fp.draw_mesh,
-                                   hole_num=fp.hole_num,
-                                   glider_changed=glider_changed)
-        if hasattr(fp, "line_num"):
-            if prop in ["line_num", "half_glider", "all"]:
-                self.update_lines(fp.line_num)
-
-    def update_glider(self, midribs=0, profile_numpoints=20,
-                      hull=True, panels=False, ribs=False,
-                      draw_mesh=False, hole_num=10, glider_changed=True):
-        self.vis_glider.removeAllChildren()
         pick_style = coin.SoPickStyle()
         pick_style.style.setValue(coin.SoPickStyle.BOUNDING_BOX)
-        self.vis_glider += pick_style
-        draw_glider(self.glider, self.vis_glider, midribs, profile_numpoints,
-                    hull, panels, ribs, draw_mesh, hole_num)
+        self.seperator.addChild(pick_style)
+
+        view_obj.addDisplayMode(self.seperator, 'out')
+
+    def update_glider(self, view_obj):
+        view_obj.Object.ParametricGlider.num_profile = view_obj.profile_num
+        glider = view_obj.Object.ParametricGlider.get_glider_3d()
+        if not view_obj.half_glider:
+            self.glider = glider.copy_complete()
+        else:
+            self.glider = glider.copy()
+
+    def updateData(self, prop="all", *args):
+        self.onChanged(self.view_obj, prop)
+
+    def onChanged(self, view_obj, prop):
+        if not hasattr(view_obj, "half_glider") or not hasattr(view_obj, "ribs"):
+            print(prop)
+            return  # the viewprovider isn't set up at this moment
+                    # but calls already the update function
+
+        if not hasattr(self, "glider"):
+            self.update_glider(self.view_obj)
+
+        #self.seperator.removeAllChildren()
+        # pick_style = coin.SoPickStyle()
+        # pick_style.style.setValue(coin.SoPickStyle.BOUNDING_BOX)
+        # self.seperator.addChild(pick_style)
+
+        if prop in ["profile_num", "half_glider", "all"]:
+            self.update_all(view_obj)
+
+        elif prop == "num_ribs":
+            self.vis_panels.removeAllChildren()
+
+        elif prop == "hole_num":
+            self.vis_ribs.removeAllChildren()
+
+        # show ribs
+        if view_obj.ribs:
+            if len(self.vis_ribs) == 0:
+                self.update_ribs()
+            if self.vis_ribs not in self.seperator:
+                self.seperator.addChild(self.vis_ribs)
+        else:
+            self.seperator.removeChild(self.vis_ribs)
+
+        # show panels
+        if view_obj.panels:
+            if len(self.vis_panels) == 0:
+                self.update_panels(view_obj.num_ribs)
+            if self.vis_panels not in self.seperator:
+                self.seperator.addChild(self.vis_panels)
+        else:
+            self.seperator.removeChild(self.vis_panels)
+
+        if prop in ["line_num", "all"]:
+            self.update_lines(view_obj.line_num)
+            #self.seperator.addChild(self.vis_lines)
+
+    def update_all(self, view_obj):
+        print("jojo, update all", view_obj.line_num)
+        self.update_glider(view_obj)
+        self.update_panels(view_obj.num_ribs)
+        self.update_ribs()
+        self.update_diagonals()
+        self.update_lines(view_obj.line_num)
+
+    def update_panels(self, midribs=0, draw_mesh=False):
+        self.vis_panels.removeAllChildren()
+        for cell in self.glider.cells:
+            for panel in cell.panels:
+                m = panel.get_mesh(cell, midribs, with_numpy=True)
+                color = (.3, .3, .3)
+                if panel.material_code:
+                    color = hex_to_rgb(panel.material_code)
+                self.vis_panels.addChild(mesh_sep(m,  color, draw_mesh))
+
+    def update_ribs(self):
+        self.vis_ribs.removeAllChildren()
+        msh = mesh.Mesh()
+        for rib in self.glider.ribs:
+            if not rib.profile_2d.has_zero_thickness:
+                msh += mesh.Mesh.from_rib(rib, self.view_obj.hole_num, mesh_option="QYqazip")
+        if msh.vertices is not None:
+            self.vis_ribs.addChild(mesh_sep(msh, (.3, .3, .3), self.view_obj.draw_mesh))
+
+    def update_diagonals(self):
+        msh = mesh.Mesh()
+        for cell in self.glider.cells:
+            for diagonal in cell.diagonals:
+                msh += mesh.Mesh.from_diagonal(diagonal, cell, insert_points=4)
+
+            for strap in cell.straps:
+                msh += mesh.Mesh.from_diagonal(strap, cell, insert_points=4)
+
+            if msh.vertices is not None:
+                self.vis_ribs.addChild(mesh_sep(msh, (.3, .3, .3), self.view_obj.draw_mesh))
 
     def update_lines(self, num=3):
         self.vis_lines.removeAllChildren()
         pick_style = coin.SoPickStyle()
         pick_style.style.setValue(coin.SoPickStyle.BOUNDING_BOX)
-        self.vis_lines += pick_style
+        self.vis_lines.addChild(pick_style)
         self.glider.lineset.recalc()
         for line in self.glider.lineset.lines:
             points = line.get_line_points(numpoints=num)
             self.vis_lines += (prim.Line(points, dynamic=False))
-
-    def onChanged(self, vp, prop):
-        self._updateData(vp, prop)
+        print(len(self.vis_lines))
+        #self.seperator.addChild(self.vis_lines)
 
     def getIcon(self):
         return "new_glider.svg"

@@ -27,19 +27,20 @@ class base_table_widget(QtGui.QWidget):
     """a table which is shown infront of the mainwindow"""
     instances = []
     _last_pos = None
+    name = "test"
 
     @classmethod
     def hide_all(cls):
         for obj in cls.instances:
             obj.hide()
 
-    def __init__(self, parent=None, name="test"):
+    def __init__(self, parent=None):
         base_table_widget.instances.append(self)
         super(base_table_widget, self).__init__(parent)
         self.layout = QtGui.QVBoxLayout()
         self.table = base_table(self)
         self.setLayout(self.layout)
-        label = QtGui.QLabel(name)
+        label = QtGui.QLabel(self.name)
         label.setFont(QtGui.QFont("Arial", 20))
         label.setAlignment(QtCore.Qt.AlignCenter)
         self.layout.addWidget(label)

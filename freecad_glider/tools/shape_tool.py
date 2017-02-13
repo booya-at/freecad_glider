@@ -158,6 +158,7 @@ class ShapeTool(BaseTool):
         # setting on drag behavior
         self.front_cpc.on_drag.append(self.update_data_back)
         self.back_cpc.on_drag.append(self.update_data_front)
+
         def update_shape_preview(*arg):
             self.update_shape(True)
         self.cell_dist_cpc.on_drag.append(update_shape_preview)
@@ -167,7 +168,6 @@ class ShapeTool(BaseTool):
         self.task_separator.addChild(self.front_cpc)
         self.task_separator.addChild(self.back_cpc)
         self.task_separator.addChild(self.cell_dist_cpc)
-        self.update_shape()
 
         # set drag_release callbacks
         self.front_cpc.drag_release.append(self.update_shape)
@@ -178,6 +178,8 @@ class ShapeTool(BaseTool):
         self.front_cpc.drag_release.append(self.auto_update_const_dist)
         self.back_cpc.drag_release.append(self.auto_update_const_dist)
         self.cell_dist_cpc.drag_release.append(self.update_shape)
+
+        self.update_shape()
 
     def line_edit(self):
         self.front_cpc.set_edit_mode(self.view)
