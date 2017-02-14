@@ -41,6 +41,8 @@ class ColorTool(BaseTool):
         self.selector = Container()
         self.task_separator += self.selector
         x_values = self.parametric_glider.shape.rib_x_values
+        if self.parametric_glider.shape.has_center_cell:
+            x_values = [-x_values[0]] + x_values
         for i, cell in enumerate(self.panels):
             for j, panel in enumerate(cell):
                 p1 = [x_values[i], panel.cut_front["left"], 0.]

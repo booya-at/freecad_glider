@@ -176,10 +176,10 @@ class DesignTool(BaseTool):
         '''this function provides some interaction functionality to create points and lines
            press v to start the mode. if a point is selected, the left and right rib will offer the possebility to add
            a point + line, if no point is selected, it's possible to add a point to any rib'''
-
         event = event_callback.getEvent()
-        if (event.getKey() == ord("v") and event.getState() == 1):
+        if (event.getKey() == ord("i") and event.getState() == 0):
             if self._add_mode: return
+            print(1)
             self._add_mode = True
             # first we check if nothing is selected:
             select_obj = self.event_separator.select_object
@@ -192,6 +192,7 @@ class DesignTool(BaseTool):
             if num_of_obj == 0:
                 add_event = self.view.addEventCallbackPivy(coin.SoLocation2Event.getClassTypeId(), self.add_point)
                 action = self.add_point
+                print(2)
 
             # insert a line + point
             elif num_of_obj == 1 and isinstance(select_obj[0], CutPoint):
@@ -210,12 +211,13 @@ class DesignTool(BaseTool):
                     cut_line.update_Line()
                     cut_line.setup_visuals()
                     self.event_separator += cut_line
-
+ 
 
             def remove_cb(event_callback=None):
-                event = event_callback.getEvent()
-                if not event.getButton() == coin.SoMouseButtonEvent.BUTTON1:
-                    return
+                if event_callback:
+                    event = event_callback.getEvent()
+                    if not event.getButton() == coin.SoMouseButtonEvent.BUTTON1:
+                        return
                 if add_event:
                     self.view.removeEventCallbackPivy(
                         coin.SoLocation2Event.getClassTypeId(), add_event)

@@ -298,7 +298,7 @@ class LineTool(BaseTool):
 
     def add_node(self, event_callback, force=False):
         event = event_callback.getEvent()
-        if ((event.getKey() == ord("v") or force) and
+        if ((event.getKey() == ord("i") or force) and
             (event.getState() == 1)):
             if self.upper_preview_node:
                 self.add_attachment_point(self.upper_preview_node[0])
