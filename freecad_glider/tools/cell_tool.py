@@ -31,12 +31,12 @@ class CellTool(BaseTool):
         self.update_button = QtGui.QPushButton("update glider")
         self.update_button.clicked.connect(self.update_glider)
         self.layout.setWidget(2, input_field, self.update_button)
-        draw_glider(self.parametric_glider.get_glider_3d(), self.task_separator, hull=False, ribs=True)
+        draw_glider(self.parametric_glider.get_glider_3d(), self.task_separator, hull=None, ribs=True)
 
     def update_glider(self):
         self.task_separator.removeAllChildren()
         self.apply_elements()
-        draw_glider(self.parametric_glider.get_glider_3d(), self.task_separator, hull=False, ribs=True)
+        draw_glider(self.parametric_glider.get_glider_3d(), self.task_separator, hull=None, ribs=True)
 
     def apply_elements(self):
         self.diagonals_table.apply_to_glider(self.parametric_glider)
