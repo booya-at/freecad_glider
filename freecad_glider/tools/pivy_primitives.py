@@ -87,7 +87,7 @@ class ControlPointContainer(coin.SoSeparator):
             for point in points:
                 cp = ControlPoint(*point)
                 self.control_points.append(cp)
-                self += cp
+                self += [cp]
         self.view = view
         self._current_point = None
         self.drag = None
@@ -197,7 +197,7 @@ class Line(object):
         self.color.diffuseColor = COLORS[color]
         self.drawstyle.lineWidth = width
         self.update()
-        self.object += self.color, self.drawstyle, self.data, self.ls
+        self.object += [self.color, self.drawstyle, self.data, self.ls]
 
     def update(self, points=None):
         if points is not None:
@@ -213,7 +213,7 @@ class Line1(coin.SoSeparator):
         self.points = list(map(vector3D, points))
         self.color.diffuseColor = COLORS[color]
         self.update()
-        self += self.color, self.data, self.ls
+        self += [self.color, self.data, self.ls]
 
     def update(self, points=None):
         if points is not None:
@@ -234,7 +234,7 @@ class Marker(coin.SoSeparator):
         self.color = coin.SoMaterial()
         self.color.diffuseColor = COLORS[color]
         self.update(points)
-        self += self.color, self.data, self.marker
+        self += [self.color, self.data, self.marker]
 
     def update(self, points=None):
         if points is not None:

@@ -13,7 +13,7 @@ from ._tools import coin, hex_to_rgb
 def coin_SoSwitch(parent, name):
     switch = coin.SoSwitch()
     switch.setName(name)
-    parent += switch
+    parent += [switch]
     return switch
 
 importpath = os.path.join(os.path.dirname(__file__), '..', 'demokite.ods')
@@ -68,14 +68,14 @@ def mesh_sep(mesh, color, draw_lines=False):
     vertex_property.vertex.setValues(0, len(_vertices), _vertices)
     face_set.coordIndex.setValues(0, len(_polygons), list(_polygons))
     vertex_property.materialBinding = coin.SoMaterialBinding.PER_VERTEX_INDEXED
-    sep += shape_hint, vertex_property, face_mat, face_set
+    sep += [shape_hint, vertex_property, face_mat, face_set]
 
     if draw_lines:
         line_set = coin.SoIndexedLineSet()
         line_set.coordIndex.setValues(0, len(_lines), list(_lines))
         line_mat = coin.SoMaterial()
         line_mat.diffuseColor = (.0, .0, .0)
-        sep += line_mat, line_set
+        sep += [line_mat, line_set]
     return sep
 
 
@@ -189,11 +189,11 @@ class OGGliderVP(OGBaseVP):
         self.view_obj = view_obj
         self.GliderInstance = view_obj.Object.GliderInstance
         self.material.diffuseColor = (.7, .7, .7)
-        self.seperator += (self.vis_glider, self.vis_lines)
+        self.seperator += [self.vis_glider, self.vis_lines]
         pick_style = coin.SoPickStyle()
         pick_style.style.setValue(coin.SoPickStyle.BOUNDING_BOX)
-        self.vis_glider += pick_style
-        self.vis_lines += pick_style
+        self.vis_glider += [pick_style]
+        self.vis_lines += [pick_style]
         view_obj.addDisplayMode(self.seperator, 'out')
 
     def updateData(self, prop="all", *args):
@@ -251,7 +251,7 @@ class OGGliderVP(OGBaseVP):
         self.glider.lineset.recalc()
         for line in self.glider.lineset.lines:
             points = line.get_line_points(numpoints=num)
-            self.vis_lines += (prim.Line(points, dynamic=False))
+            self.vis_lines += [prim.Line(points, dynamic=False)]
 
     def onChanged(self, vp, prop):
         self._updateData(vp, prop)
@@ -280,7 +280,7 @@ def draw_glider_deprecrated(glider, vis_glider, midribs=0, hole_num=10, profile_
                 color = (.3, .3, .3)
                 if panel.material_code:
                     color = hex_to_rgb(panel.material_code)
-                vis_glider += mesh_sep(m,  color, draw_mesh)
+                vis_glider += [mesh_sep(m,  color, draw_mesh)]
 
     elif hull == "smooth":
         vertexproperty = coin.SoVertexProperty()
@@ -291,7 +291,7 @@ def draw_glider_deprecrated(glider, vis_glider, midribs=0, hole_num=10, profile_
         msh.verticesPerRow = len(_ribs[0].profile_3d.data)
         msh.verticesPerColumn = len(_ribs)
         msh.vertexProperty = vertexproperty
-        vis_glider += msh, vertexproperty
+        vis_glider += [msh, vertexproperty]
 
     elif hull == "simple":
         for cell in glider.cells:
@@ -300,7 +300,7 @@ def draw_glider_deprecrated(glider, vis_glider, midribs=0, hole_num=10, profile_
             msh = coin.SoQuadMesh()
             m = cell.get_mesh(midribs, with_numpy=True)
             color = (.8, .8, .8)
-            vis_glider += mesh_sep(m,  color, draw_mesh)
+            vis_glider += [mesh_sep(m,  color, draw_mesh)]
 
     if ribs:  # show ribs
         msh = mesh.Mesh()
@@ -308,7 +308,7 @@ def draw_glider_deprecrated(glider, vis_glider, midribs=0, hole_num=10, profile_
             if not rib.profile_2d.has_zero_thickness:
                 msh += mesh.Mesh.from_rib(rib, hole_num, mesh_option="QYqazip")
         if msh.vertices is not None:
-            vis_glider += mesh_sep(msh, (.3, .3, .3), draw_mesh)
+            vis_glider += [mesh_sep(msh, (.3, .3, .3), draw_mesh)]
 
 
         msh = mesh.Mesh()
@@ -320,7 +320,7 @@ def draw_glider_deprecrated(glider, vis_glider, midribs=0, hole_num=10, profile_
                 msh += mesh.Mesh.from_diagonal(strap, cell, insert_points=4)
 
         if msh.vertices is not None:
-            vis_glider += mesh_sep(msh, (.3, .3, .3), draw_mesh)
+            vis_glider += [mesh_sep(msh, (.3, .3, .3), draw_mesh)]
 
         _strap_verts = []
         _strap_lines = []
@@ -374,8 +374,8 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
                     m = panel.get_mesh(cell, midribs, with_numpy=True)
                     if panel.material_code:
                         color = hex_to_rgb(panel.material_code)
-                    hull_panels_sep += mesh_sep(m,  color)
-        hull_sep += hull_panels_sep
+                    hull_panels_sep += [mesh_sep(m,  color)]
+        hull_sep += [hull_panels_sep]
         hull_sep.whichChild = len(hull_sep) - 1
 
     elif hull == "smooth" and draw_smooth:
@@ -389,8 +389,8 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
         msh.verticesPerRow = len(_ribs[0].profile_3d.data)
         msh.verticesPerColumn = len(_ribs)
         msh.vertexProperty = vertexproperty
-        hull_smooth_sep += msh, vertexproperty
-        hull_sep += hull_smooth_sep
+        hull_smooth_sep += [msh, vertexproperty]
+        hull_sep += [hull_smooth_sep]
         hull_sep.whichChild = len(hull_sep) - 1
 
     elif hull == "simple" and draw_simple:
@@ -399,8 +399,8 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
         for cell in glider.cells:
             m = cell.get_mesh(midribs, with_numpy=True)
             color = (.8, .8, .8)
-            hull_simple_sep += mesh_sep(m,  color)
-        hull_sep += hull_simple_sep
+            hull_simple_sep += [mesh_sep(m,  color)]
+        hull_sep += [hull_simple_sep]
         hull_sep.whichChild = len(hull_sep) - 1
     else:
         setHullType(hull)
@@ -413,7 +413,7 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
             if not rib.profile_2d.has_zero_thickness:
                 msh += mesh.Mesh.from_rib(rib, hole_num, mesh_option="QYqazip")
         if msh.vertices is not None:
-            rib_sep += mesh_sep(msh, (.3, .3, .3))
+            rib_sep += [mesh_sep(msh, (.3, .3, .3))]
 
         msh = mesh.Mesh()
         for cell in glider.cells:
@@ -424,9 +424,9 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
                 msh += mesh.Mesh.from_diagonal(strap, cell, insert_points=4)
 
         if msh.vertices is not None:
-            rib_sep += mesh_sep(msh, (.3, .3, .3))
+            rib_sep += [mesh_sep(msh, (.3, .3, .3))]
 
-        vis_glider += rib_sep
+        vis_glider += [rib_sep]
 
 
     # for cell in glider.cells:

@@ -39,7 +39,7 @@ class ColorTool(BaseTool):
         # get 2d shape properties
 
         self.selector = Container()
-        self.task_separator += self.selector
+        self.task_separator += [self.selector]
         x_values = self.parametric_glider.shape.rib_x_values
         if self.parametric_glider.shape.has_center_cell:
             x_values = [-x_values[0]] + x_values
@@ -53,7 +53,7 @@ class ColorTool(BaseTool):
                 panel.vis_panel = vis_panel
                 if panel.material_code:
                     vis_panel.set_color(hex_to_rgb(panel.material_code))
-                self.selector += vis_panel
+                self.selector += [vis_panel]
 
         self.selector.register(self.view)
 

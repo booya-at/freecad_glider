@@ -254,7 +254,7 @@ class LineTool(BaseTool):
         self.helper_line.removeAllChildren()
         l = Line(vector3D(self.help_line(pos / 100)), dynamic=False)
         l.set_color("red")
-        self.helper_line += l
+        self.helper_line += [l]
 
     def help_line(self, pos=0.5):
         return [fr + pos * (ba - fr) for fr, ba in np.array(self.ribs)]
@@ -272,7 +272,7 @@ class LineTool(BaseTool):
                     self.upper_preview_node = (point, i)
                     m = Marker(vector3D([point]), dynamic=False)
                     m.set_color("blue")
-                    self.temp_point += m
+                    self.temp_point += [m]
                     break
 
     def add_line(self, event_callback):
@@ -285,13 +285,13 @@ class LineTool(BaseTool):
                     isinstance(objs[1], NodeMarker)):
                     line = ConnectionLine(objs[0], objs[1])
                     line.layer = self.layer_combobox.currentText()
-                    self.shape += line
+                    self.shape += [line]
             elif len(objs) == 1:
                 if (isinstance(objs[0], NodeMarker)):
                     marker2 = self.node_cb(event_callback, force=True)
                     if marker2:
                         line = ConnectionLine(objs[0], marker2)
-                        self.shape += line
+                        self.shape += [line]
                         self.shape.Select(marker2)
                         self.shape.selection_changed()
                         line.layer = self.layer_combobox.currentText()
@@ -314,7 +314,7 @@ class LineTool(BaseTool):
                     node = BatchNode2D(pos_3D[:-1])
                     point = NodeMarker(node, self.parametric_glider)
                     point.layer = self.layer_combobox.currentText()
-                self.shape += point
+                self.shape += [point]
                 return point
 
     def add_attachment_point(self, pos):
@@ -325,7 +325,7 @@ class LineTool(BaseTool):
         node_pos = node.get_2D(self.parametric_glider.shape)
         ap = Upper_Att_Marker(node, self.parametric_glider)
         ap.layer = self.layer_combobox.currentText()
-        self.shape += ap
+        self.shape += [ap]
 
     def selection_changed(self):
         # je nach dem welches widget grad selektiert ist
@@ -428,9 +428,8 @@ class LineTool(BaseTool):
 
     def draw_shape(self):
         self.shape.removeAllChildren()
-        self.shape += (Line(vector3D(self.front)),
-                        Line(vector3D(self.back)),
-                        list(map(Line, vector3D(self.ribs))))
+        self.shape += [Line(vector3D(self.front)), Line(vector3D(self.back))]
+        self.shape += list(map(Line, vector3D(self.ribs)))
         shape = self.parametric_glider.shape
         # make own seperator for shape
         nodes = {}
@@ -440,15 +439,15 @@ class LineTool(BaseTool):
                 pos = node.get_2D(self.parametric_glider.shape)
                 obj = Upper_Att_Marker(node, self.parametric_glider)
                 obj.force = node.force
-                self.shape += obj
+                self.shape += [obj]
             elif isinstance(node, BatchNode2D):
                 obj = NodeMarker(node, self.parametric_glider)
-                self.shape += obj
+                self.shape += [obj]
             elif isinstance(node, LowerNode2D):
                 obj = Lower_Att_Marker(node, self.parametric_glider)
                 obj.pos_3D = node.pos_3D
                 obj._node = node
-                self.shape += obj
+                self.shape += [obj]
             nodes[node] = obj
             self.layer_combobox.addItem(node.layer)
 
@@ -460,7 +459,7 @@ class LineTool(BaseTool):
             obj.line_type = line.line_type.name
             obj.target_length = target_length
             obj.layer = line.layer
-            self.shape += obj
+            self.shape += [obj]
             self.layer_combobox.addItem(line.layer)
         self.show_layer()
 

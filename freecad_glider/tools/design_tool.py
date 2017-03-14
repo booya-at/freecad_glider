@@ -82,9 +82,9 @@ class DesignTool(BaseTool):
     def setup_pivy(self):
         """set up the scene"""
         self.shape = coin.SoSeparator()
-        self.task_separator += self.shape
+        self.task_separator += [self.shape]
         self.add_separator = Container()
-        self.shape += self.add_separator
+        self.shape += [self.add_separator]
         self.draw_shape()
         self.drag_separator = coin.SoSeparator()
         self.event_separator = Container()
@@ -146,10 +146,10 @@ class DesignTool(BaseTool):
 
     def draw_shape(self):
         """ draws the shape of the glider"""
-        self.shape += Line(self.front)
-        self.shape += Line(self.back)
-        self.shape += Line([self.back[0], self.front[0]])
-        self.shape += Line([self.back[-1], self.front[-1]])
+        self.shape += [Line(self.front)]
+        self.shape += [Line(self.back)]
+        self.shape += [Line([self.back[0], self.front[0]])]
+        self.shape += [Line([self.back[-1], self.front[-1]])]
         self.shape += list(map(Line, self.ribs))
 
     def toggle_side(self):
@@ -168,8 +168,8 @@ class DesignTool(BaseTool):
             self.Qtoggle_side.setText("show lower side")
             self.event_separator += list(CutLine.upper_point_set)
             self.event_separator += CutLine.upper_line_list
-        self.drag_separator += self.event_separator
-        self.task_separator += self.drag_separator
+        self.drag_separator += [self.event_separator]
+        self.task_separator += [self.drag_separator]
         self.event_separator.register(self.view)
 
     def add_geo(self, event_callback):
@@ -210,7 +210,7 @@ class DesignTool(BaseTool):
                     cut_line.replace_points_by_set()
                     cut_line.update_Line()
                     cut_line.setup_visuals()
-                    self.event_separator += cut_line
+                    self.event_separator += [cut_line]
  
 
             def remove_cb(event_callback=None):
@@ -237,7 +237,7 @@ class DesignTool(BaseTool):
                     cut_line.replace_points_by_set()
                     cut_line.update_Line()
                     cut_line.setup_visuals()
-                    self.event_separator += cut_point_1, cut_line
+                    self.event_separator += [cut_point_1, cut_line]
                     self.event_separator.Select(cut_point_1)
 
                 elif action == self.add_point:
@@ -245,7 +245,7 @@ class DesignTool(BaseTool):
                     assert(isinstance(self.add_separator.static_objects[0], Marker))
                     marker = self.add_separator.static_objects[0]
                     cut_point = CutPoint.from_position_and_rib(marker.rib_nr, marker.points[0][1], self.side == "upper", self.parametric_glider)
-                    self.event_separator += cut_point
+                    self.event_separator += [cut_point]
                     self.event_separator.Select(cut_point)
 
 
@@ -280,7 +280,7 @@ class DesignTool(BaseTool):
                 self.add_separator.removeAllChildren()
                 marker = Marker([pos])
                 marker.rib_nr = index
-                self.add_separator += marker
+                self.add_separator += [marker]
             else:
                 marker = self.add_separator.static_objects[0]
                 marker.points = [pos]
@@ -326,8 +326,8 @@ class DesignTool(BaseTool):
                 marker.rib_nr = new_rib_nr
                 line = Line([list(select_obj.points[0]), pos])
                 line.active_point = select_obj
-                self.add_separator += marker
-                self.add_separator += line
+                self.add_separator += [marker]
+                self.add_separator += [line]
             else:
                 marker = self.add_separator.static_objects[0]
                 line = self.add_separator.static_objects[1]
