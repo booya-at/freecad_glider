@@ -348,6 +348,8 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
                   hull="panels", ribs=False, elements=False):
     """draw the glider to the visglider seperator"""
 
+    glider.profile_numpoints = profile_num
+
     vis_glider = vis_glider or coin.SoSeparator()
     if vis_glider.getByName("hull") is None:        # TODO: fix bool(sep_without_children) -> False pivy
         hull_sep = coin_SoSwitch(vis_glider, "hull")
