@@ -215,6 +215,7 @@ class OGGliderVP(OGBaseVP):
 
             if prop in ["all", "hole_num", "profile_num", "half_glider"]:
                 self.vis_glider.removeChild(self.vis_glider.getByName("ribs"))
+                print("remove ribs")
 
             if prop in ["num_ribs", "profile_num", "hull", "panels",
                         "half_glider", "ribs", "hole_num",
@@ -370,13 +371,12 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
         hull_panels_sep = coin.SoSeparator()
         hull_panels_sep.setName("panels")
         for cell in glider.cells:
-                for panel in cell.panels:
-                    m = panel.get_mesh(cell, midribs, with_numpy=True)
-                    if panel.material_code:
-                        color = hex_to_rgb(panel.material_code)
-                    hull_panels_sep += [mesh_sep(m,  color)]
+            for panel in cell.panels:
+                m = panel.get_mesh(cell, midribs, with_numpy=True)
+                if panel.material_code:
+                    color = hex_to_rgb(panel.material_code)
+                hull_panels_sep += [mesh_sep(m,  color)]
         hull_sep += [hull_panels_sep]
-        hull_sep.whichChild = len(hull_sep) - 1
 
     elif hull == "smooth" and draw_smooth:
         hull_smooth_sep = coin.SoSeparator()
@@ -391,7 +391,6 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
         msh.vertexProperty = vertexproperty
         hull_smooth_sep += [msh, vertexproperty]
         hull_sep += [hull_smooth_sep]
-        hull_sep.whichChild = len(hull_sep) - 1
 
     elif hull == "simple" and draw_simple:
         hull_simple_sep = coin.SoSeparator()
@@ -401,12 +400,11 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
             color = (.8, .8, .8)
             hull_simple_sep += [mesh_sep(m,  color)]
         hull_sep += [hull_simple_sep]
-        hull_sep.whichChild = len(hull_sep) - 1
-    else:
-        setHullType(hull)
+
+    setHullType(hull)
 
     if ribs and draw_ribs:
-        rib_sep = coin.SoSeparator()
+        rib_sep = coin.SoSwitch()
         rib_sep.setName("ribs")
         msh = mesh.Mesh()
         for rib in glider.ribs:
@@ -428,19 +426,8 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
 
         vis_glider += [rib_sep]
 
-
-    # for cell in glider.cells:
-    #     for i, strap in enumerate(cell.straps):
-    #         _strap_verts += strap.get_3d(cell)
-    #         _strap_lines += [_strap_count * 2, _strap_count * 2 + 1, -1]
-    #         _strap_count += 1
-    # strap_sep = coin.SoSeparator()
-    # vis_glider += strap_sep
-    # strap_material = coin.SoMaterial()
-    # strap_material.diffuseColor = (0., 0., 0.)
-    # strap_verts = coin.SoVertexProperty()
-    # strap_set = coin.SoIndexedLineSet()
-    # strap_verts.vertex.setValues(0, len(_strap_verts), _strap_verts)
-    # strap_set.coordIndex.setValues(0, len(_strap_lines), _strap_lines)
-    #
-    # strap_sep += strap_material, strap_verts, strap_set
+    rib_sep = vis_glider.getByName("ribs")
+    if ribs:
+        rib_sep.whichChild = coin.SO_SWITCH_ALL
+    else:
+        rib_sep.whichChild = coin.SO_SWITCH_NONE
