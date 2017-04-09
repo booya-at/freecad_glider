@@ -52,8 +52,8 @@ class LineTool(BaseTool):
 
         self.shape.setName("shape")
         self.shape.register(self.view)
-        self.task_separator += (self.shape, self.helper_line)
-        self.task_separator += (self.temp_point)
+        self.task_separator += [self.shape, self.helper_line]
+        self.task_separator += [self.temp_point]
         self.draw_shape()
 
         self.update_helper_line()

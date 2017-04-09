@@ -35,7 +35,7 @@ class ControlPoint(coin.SoSeparator):
         self.marker.markerIndex = coin.SoMarkerSet.CIRCLE_FILLED_9_9
         self.mat.diffuseColor.setValue(*COL_STD)
         self += self.coordinate, self.mat, self.marker
-        self.pos = [x, y, z]
+        self.pos = [float(x), float(y), float(z)]
 
     @property
     def pos(self):
@@ -44,6 +44,7 @@ class ControlPoint(coin.SoSeparator):
     @pos.setter
     def pos(self, new_pos):
         pos = self.constraint(new_pos)
+        print(pos)
         self.coordinate.point.setValue(pos[0], pos[1], pos[2] or 0.)
 
     def set_x(self, new_x):

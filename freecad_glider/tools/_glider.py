@@ -138,12 +138,6 @@ class OGGlider(OGBaseObject):
 
     def __setstate__(self, state):
         self.obj = App.ActiveDocument.getObject(state["name"])
-        self.obj.addProperty("App::PropertyPythonObject",
-                             "GliderInstance", "object",
-                             "GliderInstance", 2)
-        self.obj.addProperty("App::PropertyPythonObject",
-                             "ParametricGlider", "object",
-                             "parametric glider", 2)
         self.obj.ParametricGlider = jsonify.loads(state["ParametricGlider"])["data"]
         self.obj.GliderInstance = self.obj.ParametricGlider.get_glider_3d()
         return None
@@ -266,82 +260,6 @@ class OGGliderVP(OGBaseVP):
     def __setstate__(self, state):
         # self.updateData()
         return None
-
-
-def draw_glider_deprecrated(glider, vis_glider, midribs=0, hole_num=10, profile_numpoints=20,
-                hull="panels", ribs=False, draw_mesh=False):
-    """draw the glider to the visglider seperator"""
-    glider.profile_numpoints = profile_numpoints
-    count = 0
-    if hull == "panels":
-        for cell in glider.cells:
-            count += 1
-            for panel in cell.panels:
-                m = panel.get_mesh(cell, midribs, with_numpy=True)
-                color = (.3, .3, .3)
-                if panel.material_code:
-                    color = hex_to_rgb(panel.material_code)
-                vis_glider += [mesh_sep(m,  color, draw_mesh)]
-
-    elif hull == "smooth":
-        vertexproperty = coin.SoVertexProperty()
-        msh = coin.SoQuadMesh()
-        _ribs = glider.ribs
-        flat_coords = [i for rib in _ribs for i in rib.profile_3d.data]
-        vertexproperty.vertex.setValues(0, len(flat_coords), flat_coords)
-        msh.verticesPerRow = len(_ribs[0].profile_3d.data)
-        msh.verticesPerColumn = len(_ribs)
-        msh.vertexProperty = vertexproperty
-        vis_glider += [msh, vertexproperty]
-
-    elif hull == "simple":
-        for cell in glider.cells:
-            sep = coin.SoSeparator()
-            vertexproperty = coin.SoVertexProperty()
-            msh = coin.SoQuadMesh()
-            m = cell.get_mesh(midribs, with_numpy=True)
-            color = (.8, .8, .8)
-            vis_glider += [mesh_sep(m,  color, draw_mesh)]
-
-    if ribs:  # show ribs
-        msh = mesh.Mesh()
-        for rib in glider.ribs:
-            if not rib.profile_2d.has_zero_thickness:
-                msh += mesh.Mesh.from_rib(rib, hole_num, mesh_option="QYqazip")
-        if msh.vertices is not None:
-            vis_glider += [mesh_sep(msh, (.3, .3, .3), draw_mesh)]
-
-
-        msh = mesh.Mesh()
-        for cell in glider.cells:
-            for diagonal in cell.diagonals:
-                msh += mesh.Mesh.from_diagonal(diagonal, cell, insert_points=4)
-
-            for strap in cell.straps:
-                msh += mesh.Mesh.from_diagonal(strap, cell, insert_points=4)
-
-        if msh.vertices is not None:
-            vis_glider += [mesh_sep(msh, (.3, .3, .3), draw_mesh)]
-
-        _strap_verts = []
-        _strap_lines = []
-        _strap_count = 0
-        # for cell in glider.cells:
-        #     for i, strap in enumerate(cell.straps):
-        #         _strap_verts += strap.get_3d(cell)
-        #         _strap_lines += [_strap_count * 2, _strap_count * 2 + 1, -1]
-        #         _strap_count += 1
-        # strap_sep = coin.SoSeparator()
-        # vis_glider += strap_sep
-        # strap_material = coin.SoMaterial()
-        # strap_material.diffuseColor = (0., 0., 0.)
-        # strap_verts = coin.SoVertexProperty()
-        # strap_set = coin.SoIndexedLineSet()
-        # strap_verts.vertex.setValues(0, len(_strap_verts), _strap_verts)
-        # strap_set.coordIndex.setValues(0, len(_strap_lines), _strap_lines)
-        #
-        # strap_sep += strap_material, strap_verts, strap_set
-
 
 
 def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,

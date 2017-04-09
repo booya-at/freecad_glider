@@ -68,10 +68,10 @@ class BallooningTool(BaseTool):
 
 
     def setup_pivy(self):
-        self.task_separator += self.ballooning_sep, self.spline_sep
+        self.task_separator += [self.ballooning_sep, self.spline_sep]
         self.update_selection()
         self.grid = coin.SoSeparator()
-        self.task_separator += self.grid
+        self.task_separator += [self.grid]
         self._update_grid()
         Gui.SendMsgToActiveView("ViewFit")
         self.insert_cb = self.view.addEventCallbackPivy(coin.SoKeyboardEvent.getClassTypeId(), self.insert_point)
@@ -85,16 +85,16 @@ class BallooningTool(BaseTool):
         y_points_lower = [[grid_x[0], y, -0.001] for y in grid_y]
         y_points_upper = [[grid_x[-1], y, -0.001] for y in grid_y]
         for l in zip(x_points_lower, x_points_upper):
-            self.grid += (Line(l, color="grey").object)
+            self.grid += [Line(l, color="grey").object]
         for l in zip(y_points_lower, y_points_upper):
-            self.grid += (Line(l, color="grey").object)
+            self.grid += [Line(l, color="grey").object]
         for l in y_points_upper[::10]:
             textsep = coin.SoSeparator()
             text = coin.SoText2()
             trans = coin.SoTranslation()
             trans.translation = l
             text.string = str(l[1])
-            textsep += (trans, textsep, text)
+            textsep += [trans, textsep, text]
 
     def create_ballooning(self):
         j = 0
@@ -136,8 +136,8 @@ class BallooningTool(BaseTool):
         self.ballooning_sep.removeAllChildren()
         self.draw_lower_spline(70)
         self.draw_upper_spline(70)
-        self.ballooning_sep += (self.upper_spline)
-        self.ballooning_sep +=(self.lower_spline)
+        self.ballooning_sep += [self.upper_spline]
+        self.ballooning_sep += [self.lower_spline]
 
     def spline_edit(self):
         if self.is_edit:
@@ -162,8 +162,8 @@ class BallooningTool(BaseTool):
             self.lower_cpc.control_points[-1].fix = True
             self.lower_cpc.control_points[0].fix = True
             self.upper_cpc.control_points[0].fix = True
-            self.spline_sep += self.upper_cpc, self.lower_cpc
-            self.spline_sep += self.lower_spline, self.upper_spline
+            self.spline_sep += [self.upper_cpc, self.lower_cpc]
+            self.spline_sep += [self.lower_spline, self.upper_spline]
             self.upper_cpc.on_drag.append(self.upper_on_change)
             self.lower_cpc.on_drag.append(self.lower_on_change)
             self.upper_cpc.drag_release.append(self.upper_drag_release)
@@ -199,7 +199,7 @@ class BallooningTool(BaseTool):
         self.upper_spline.removeAllChildren()
         l = Line(vector3D(self.current_ballooning.get_expl_upper_spline(num)),
                  color="red", width=2)
-        self.upper_spline += l.object
+        self.upper_spline += [l.object]
 
     def _update_lower_spline(self, num):
         self.current_ballooning.lower_controlpoints = [
@@ -210,7 +210,7 @@ class BallooningTool(BaseTool):
         self.lower_spline.removeAllChildren()
         l = Line(vector3D(self.current_ballooning.get_expl_lower_spline(num)),
                  color="red", width=2)
-        self.lower_spline += l.object
+        self.lower_spline += [l.object]
 
     def insert_point(self, event_callback):
         event = event_callback.getEvent()
