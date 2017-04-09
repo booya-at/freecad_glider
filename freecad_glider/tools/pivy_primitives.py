@@ -44,7 +44,6 @@ class ControlPoint(coin.SoSeparator):
     @pos.setter
     def pos(self, new_pos):
         pos = self.constraint(new_pos)
-        print(pos)
         self.coordinate.point.setValue(pos[0], pos[1], pos[2] or 0.)
 
     def set_x(self, new_x):
