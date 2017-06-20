@@ -272,6 +272,12 @@ class Container(coin.SoSeparator):
                 self.ColorSelected()
                 self.selection_changed()
 
+    def deselect_all(self):
+        if self.select_object:
+            for o in self.select_object:
+                o.unselect()
+            self.select_object = []
+
 
     def drag_cb(self, event_callback, force=False):
         event = event_callback.getEvent()

@@ -6,6 +6,7 @@ import FreeCAD as App
 
 from openglider import jsonify
 from openglider import mesh
+from openglider.glider.cell.elements import TensionLine
 from . import pivy_primitives_new_new as prim
 from ._tools import coin, hex_to_rgb
 
@@ -327,6 +328,7 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
         rib_sep = coin.SoSwitch()
         rib_sep.setName("ribs")
         msh = mesh.Mesh()
+        line_msh = mesh.Mesh()
         for rib in glider.ribs:
             if not rib.profile_2d.has_zero_thickness:
                 msh += mesh.Mesh.from_rib(rib, hole_num, mesh_option="QYqazip")
@@ -339,11 +341,15 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
                 msh += mesh.Mesh.from_diagonal(diagonal, cell, insert_points=4)
 
             for strap in cell.straps:
-                msh += mesh.Mesh.from_diagonal(strap, cell, insert_points=4)
+                if isinstance(strap, TensionLine):
+                    line_msh += strap.get_mesh(cell)
+                else:
+                    msh += mesh.Mesh.from_diagonal(strap, cell, insert_points=4)
 
         if msh.vertices is not None:
             rib_sep += [mesh_sep(msh, (.3, .3, .3))]
-
+        if line_msh.vertices is not None:
+            rib_sep += [mesh_sep(line_msh, (.3, .3, .3), draw_lines=True)]
         vis_glider += [rib_sep]
 
     rib_sep = vis_glider.getByName("ribs")
@@ -351,3 +357,4 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
         rib_sep.whichChild = coin.SO_SWITCH_ALL
     else:
         rib_sep.whichChild = coin.SO_SWITCH_NONE
+

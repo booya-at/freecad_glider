@@ -29,7 +29,7 @@ class ZrotTool(BaseTool):
         self.ribs = self.parametric_glider.shape.ribs
         self.front = [rib[0] for rib in self.ribs]
         self.back = [rib[1] for rib in self.ribs]
-        self.text_scale = self.parametric_glider.shape.span / len(self.front) / 15
+        self.text_scale = self.parametric_glider.shape.span / len(self.front) / 20.
         self.x_grid = [i[0] for i in self.front]
 
         self.Qnum_aoa = QtGui.QSpinBox(self.base_widget)
@@ -51,8 +51,8 @@ class ZrotTool(BaseTool):
     def setup_pivy(self):
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
             self.parametric_glider.shape.span, pos[1], pos[2]]
-        childs = (self.aoa_cpc, self.shape, self.aoa_spline.object, 
-                  self.coords, self.grid)
+        childs = [self.aoa_cpc, self.shape, self.aoa_spline.object, 
+                  self.coords, self.grid]
         self.task_separator += childs
         self.update_aoa()
         self.update_grid()
@@ -73,10 +73,10 @@ class ZrotTool(BaseTool):
 
     def draw_shape(self):
         self.shape.removeAllChildren()
-        self.shape += (Line(self.front, color="grey").object)
-        self.shape += (Line(self.back, color="grey").object)
+        self.shape += [Line(self.front, color="grey").object]
+        self.shape += [Line(self.back, color="grey").object]
         for rib in self.ribs:
-            self.shape += (Line(rib, color="grey").object)
+            self.shape += [Line(rib, color="grey").object]
 
     def update_aoa(self):
         self.spline.controlpoints = (
@@ -99,10 +99,10 @@ class ZrotTool(BaseTool):
         max_y = max([i[1] for i in pts])
         min_y = min([i[1] for i in pts])
 
-        self.coords += (
-            Line([[0, 0], [0., max_y * 1.3 * self.scale[1]]]).object)
-        self.coords += (
-            Line([[0, 0], [max_x * 1.3, 0.]]).object)
+        self.coords += [
+            Line([[0, 0], [0., max_y * 1.3 * self.scale[1]]]).object]
+        self.coords += [
+            Line([[0, 0], [max_x * 1.3, 0.]]).object]
         # transform to scale + transform to degree
         min_y *= 180 / numpy.pi
         max_y *= 180 / numpy.pi
@@ -136,19 +136,23 @@ class ZrotTool(BaseTool):
         y_points_lower = [[grid_x[0], y, -0.001] for y in grid_y]
         y_points_upper = [[grid_x[-1], y, -0.001] for y in grid_y]
         for l in zip(x_points_lower, x_points_upper):
-            self.grid += (Line(l, color="grey").object)
+            self.grid += [Line(l, color="grey").object]
         for l in zip(y_points_lower, y_points_upper):
-            self.grid += (Line(l, color="grey").object)
+            self.grid += [Line(l, color="grey").object]
         for l in y_points_upper:
+            color = coin.SoMaterial()
+            color.diffuseColor = [0, 0, 0]
             textsep = coin.SoSeparator()
             text = coin.SoText2()
             trans = coin.SoTranslation()
             trans.translation = l
             text.string = str(l[1] * 180 / numpy.pi / self.scale[1]) + "°"
-            textsep += trans, text
-            self.grid += textsep
+            textsep += [color, trans, text]
+            self.grid += [textsep]
         aoa_int = self.spline.interpolation(50)
         for i in self.back:
+            color = coin.SoMaterial()
+            color.diffuseColor = [0, 0, 0]
             textsep = coin.SoSeparator()
             scale = coin.SoScale()
             text = coin.SoAsciiText()
@@ -160,7 +164,8 @@ class ZrotTool(BaseTool):
                 self.text_scale, self.text_scale, self.text_scale)
             trans.translation = (i[0], i[1], 0.001)
             text.string = str(aoa_int(i[0]) * 180 / numpy.pi)[:6]
-            textsep += (trans, scale, rot, textsep, text)
+            textsep += [color, trans, scale, rot, text]
+            self.grid += [textsep]
 
     def update_num(self):
         self.spline.numpoints = self.Qnum_aoa.value()

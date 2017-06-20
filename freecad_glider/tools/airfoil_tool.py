@@ -86,7 +86,7 @@ class AirfoilTool(BaseTool):
         self.Qfit_button.clicked.connect(self.spline_edit)
 
     def setup_pivy(self):
-        self.task_separator += (self.airfoil_sep, self.spline_sep)
+        self.task_separator += [self.airfoil_sep, self.spline_sep]
         self.update_selection()
         Gui.SendMsgToActiveView("ViewFit")
 
@@ -144,7 +144,7 @@ class AirfoilTool(BaseTool):
 
     def update_airfoil(self, *args):
         self.airfoil_sep.removeAllChildren()
-        self.airfoil_sep += Line(vector3D(self.current_airfoil), width=2).object
+        self.airfoil_sep += [Line(vector3D(self.current_airfoil), width=2).object]
 
     def spline_edit(self):
         if self.is_edit:
@@ -178,8 +178,8 @@ class AirfoilTool(BaseTool):
             self.upper_cpc.control_points[0].fix = True
             self.lower_cpc.control_points[-1].pos = [1., 0., 0.]
             self.upper_cpc.control_points[0].pos = [1., 0., 0.]
-            self.spline_sep += (self.upper_cpc, self.lower_cpc)
-            self.spline_sep += (self.lower_spline, self.upper_spline)
+            self.spline_sep += [self.upper_cpc, self.lower_cpc]
+            self.spline_sep += [self.lower_spline, self.upper_spline]
             self.upper_cpc.on_drag.append(self.upper_on_change)
             self.lower_cpc.on_drag.append(self.lower_on_change)
             self.upper_cpc.drag_release.append(self.upper_drag_release)
@@ -210,20 +210,20 @@ class AirfoilTool(BaseTool):
         return [[p[0], p[1], -0.01] for p in points]
 
     def draw_upper_spline(self, num):
-        self.upper_spline += (
-            Line(self.upper_control_line, color="grey").object)
-        self.upper_spline += (
+        self.upper_spline += [
+            Line(self.upper_control_line, color="grey").object]
+        self.upper_spline += [
             Line(vector3D(
                 self.current_airfoil.upper_spline.get_sequence(num)),
-                width=2).object)
+                width=2).object]
 
     def draw_lower_spline(self, num):
-        self.lower_spline += (
-            Line(self.lower_control_line, color="grey").object)
-        self.lower_spline += (
+        self.lower_spline += [
+            Line(self.lower_control_line, color="grey").object]
+        self.lower_spline += [
             Line(vector3D(
                 self.current_airfoil.lower_spline.get_sequence(num)),
-                width=2).object)
+                width=2).object]
 
     def _update_upper_spline(self, num=50):
         self.upper_spline.removeAllChildren()

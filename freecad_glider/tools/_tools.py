@@ -10,8 +10,9 @@ from openglider.vector.spline import BernsteinBase, BSplineBase
 from openglider.glider import ParametricGlider
 
 # as long as this isn't part of std pivy:
-
 def SoGroup__iadd__(self, other):
+    if not isinstance(other, list):
+        raise(AttributeError("rhs must be list"))
     for other_i in other:
         self.addChild(other_i)
     return self
@@ -22,6 +23,7 @@ def SoGroup_getByName(self, name):
         if name == child.getName():
             return child
     return None
+
 
 coin.SoGroup.__iadd__ = SoGroup__iadd__
 coin.SoGroup.getByName = SoGroup_getByName

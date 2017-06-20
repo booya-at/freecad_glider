@@ -11,6 +11,34 @@ from openglider.glider.parametric.lines import UpperNode2D, LowerNode2D, \
     BatchNode2D, Line2D, LineSet2D
 from openglider.lines.line_types import LineType
 
+class LineContainer(Container):
+    def Select(self, obj, multi=False):
+        if not multi:
+            for o in self.select_object:
+                o.unselect()
+            self.select_object = []
+        if obj:
+            if obj in self.select_object:
+                self.select_object.remove(obj)
+            elif obj.enabled:
+                self.select_object.append(obj)
+        self.ColorSelected()
+        self.selection_changed()
+
+    def select_all_cb(self, event_callback):
+        event = event_callback.getEvent()
+        if (event.getKey() == ord("a")):
+            if event.getState() == event.DOWN:
+                if self.select_object:
+                    for o in self.select_object:
+                        o.unselect()
+                    self.select_object = []
+                else:
+                    for obj in self.objects:
+                        if obj.dynamic and obj.enabled:
+                            self.select_object.append(obj)
+                self.ColorSelected()
+                self.selection_changed()
 
 def refresh():
     pass
@@ -47,7 +75,7 @@ class LineTool(BaseTool):
         self.temp_point = coin.SoSeparator()
 
         # pivy lines, points, shape
-        self.shape = Container()
+        self.shape = LineContainer()
         self.shape.selection_changed = self.selection_changed
 
         self.shape.setName("shape")
@@ -55,6 +83,7 @@ class LineTool(BaseTool):
         self.task_separator += [self.shape, self.helper_line]
         self.task_separator += [self.temp_point]
         self.draw_shape()
+        self.update_layer_selection()
 
         self.update_helper_line()
         self.setup_cb()
@@ -216,6 +245,7 @@ class LineTool(BaseTool):
                     obj.layer = text
 
     def show_layer(self):
+        self.shape.deselect_all()
         for obj in self.shape.objects:
             if hasattr(obj, "layer"):
                 if obj.layer != self.layer_combobox.currentText():
@@ -360,6 +390,7 @@ class LineTool(BaseTool):
             self.layer_selection.setEnabled(True)
             self.target_length.setEnabled(True)
             self.layer_selection.setItemByText(selected_objs[0].layer)
+            self.layer_combobox.setItemByText(selected_objs[0].layer)
             if show_line_widget(selected_objs):
                 self.tool_widget.setCurrentWidget(self.line_widget)
                 if has_uppermost_line(selected_objs):
@@ -388,7 +419,6 @@ class LineTool(BaseTool):
                 if len(pos) > 1:
                     self.up_att_pos.setDisabled(True)
                 else:
-                    # print(list(pos)[0])
                     self.up_att_pos.setValue(list(pos)[0])
                     self.up_att_pos.setEnabled(True)
             else:
