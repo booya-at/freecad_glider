@@ -167,7 +167,7 @@ class AirfoilTool(BaseTool):
             self.Qnum_points_lower.setDisabled(False)
             self.airfoil_sep.removeAllChildren()
             self.spline_sep.removeAllChildren()
-            self.airfoil_sep += Line(self.current_airfoil.data).object
+            self.airfoil_sep += [Line(self.current_airfoil.data).object]
             self.upper_cpc = ControlPointContainer(view=self.view)
             self.lower_cpc = ControlPointContainer(view=self.view)
             self.upper_cpc.control_pos = airfoil.upper_spline.controlpoints
