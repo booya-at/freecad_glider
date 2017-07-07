@@ -342,10 +342,8 @@ class DesignTool(BaseTool):
         self.view.removeEventCallbackPivy(
             coin.SoKeyboardEvent.getClassTypeId(), self.add_cb)
         self.parametric_glider.elements["cuts"] = CutLine.get_cut_dict()
-        self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
-        self.obj.ParametricGlider = self.parametric_glider
         super(DesignTool, self).accept()
-        self.obj.ViewObject.Proxy.updateData()
+        self.update_view_glider()
 
     def reject(self):
         self.event_separator.unregister()

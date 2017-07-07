@@ -117,8 +117,6 @@ class ZrotTool(BaseTool):
 
     def accept(self):
         self.aoa_cpc.remove_callbacks()
-        self.obj.ParametricGlider = self.parametric_glider
-        self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
         super(ZrotTool, self).accept()
         self.update_view_glider()
 

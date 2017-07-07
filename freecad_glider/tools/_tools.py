@@ -5,6 +5,7 @@ from copy import deepcopy
 from PySide import QtGui
 from pivy import coin
 import FreeCADGui as Gui
+import FreeCAD as App
 from openglider.jsonify import dump, load
 from openglider.vector.spline import BernsteinBase, BSplineBase
 from openglider.glider import ParametricGlider
@@ -137,14 +138,21 @@ class BaseTool(object):
 
     def __init__(self, obj):
         self.obj = obj
-        self.parametric_glider = deepcopy(self.obj.ParametricGlider)
+        self.parametric_glider = deepcopy(self.obj.Proxy.getParametricGlider())
+        self._vis_object = []
+        for obj in App.ActiveDocument.Objects:
+            try:
+                if obj.ViewObject.Visibility:
+                    obj.ViewObject.Visibility = False
+                    self._vis_object += [obj]
+            except Exception:
+                pass
         self.obj.ViewObject.Visibility = not self.hide
         self.view = Gui.ActiveDocument.ActiveView
         Gui.Selection.clearSelection()
         if self.turn:
             self.view.viewTop()
 
-        # self.view.setNavigationType('Gui::TouchpadNavigationStyle')
         # disable the rotation function
         # first get the widget where the scene ives in
 
@@ -162,21 +170,22 @@ class BaseTool(object):
         self.scene.addChild(self.task_separator)
 
     def update_view_glider(self):  # rename
-        self.obj.ParametricGlider = self.parametric_glider
-        self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
+        self.obj.Proxy.setParametricGlider(self.parametric_glider)
+        self.parametric_glider.get_glider_3d(self.obj.Proxy.getGliderInstance())
         self.obj.ViewObject.Proxy.updateData()
+        App.ActiveDocument.recompute()
 
     def accept(self):
-        self.obj.ViewObject.Visibility = True
+        for obj in self._vis_object:
+            obj.ViewObject.Visibility = True
         self.scene.removeChild(self.task_separator)
         Gui.Control.closeDialog()
-        self.view.setNavigationType(self.nav_bak)
 
     def reject(self):
-        self.obj.ViewObject.Visibility = True
+        for obj in self._vis_object:
+            obj.ViewObject.Visibility = True
         self.scene.removeChild(self.task_separator)
         Gui.Control.closeDialog()
-        self.view.setNavigationType(self.nav_bak)
 
     def setup_widget(self):
         pass

@@ -114,7 +114,6 @@ class OGBaseVP(object):
 
 class OGGlider(OGBaseObject):
     def __init__(self, obj, parametric_glider=None, import_path=None):
-        self.obj = obj
         obj.addProperty("App::PropertyPythonObject",
                         "GliderInstance", "object",
                         "GliderInstance", 2)
@@ -128,8 +127,19 @@ class OGGlider(OGBaseObject):
             with open(import_path, "r") as importfile:
                 obj.ParametricGlider = jsonify.load(importfile)["data"]
         obj.GliderInstance = obj.ParametricGlider.get_glider_3d()
-        obj.Proxy = self
         super(OGGlider, self).__init__(obj)
+
+    def getGliderInstance(self):
+        return self.obj.GliderInstance
+
+    def setGliderInstance(self, glider_instance):
+        self.obj.GliderInstance = glider_instance
+
+    def getParametricGlider(self):
+        return self.obj.ParametricGlider
+
+    def setParametricGlider(self, parametric_glider):
+        self.obj.ParametricGlider = parametric_glider
 
     def __getstate__(self):
         out = {
@@ -138,10 +148,14 @@ class OGGlider(OGBaseObject):
         return out
 
     def __setstate__(self, state):
-        self.obj = App.ActiveDocument.getObject(state["name"])
-        self.obj.ParametricGlider = jsonify.loads(state["ParametricGlider"])["data"]
-        self.obj.GliderInstance = self.obj.ParametricGlider.get_glider_3d()
+        obj = App.ActiveDocument.getObject(state["name"])
+        obj.ParametricGlider = jsonify.loads(state["ParametricGlider"])["data"]
+        obj.GliderInstance = obj.ParametricGlider.get_glider_3d()
         return None
+
+    def  onDocumentRestored(self, obj):
+        self.obj = obj
+        obj.ViewObject.Proxy._updateData(obj.ViewObject)
 
 
 class OGGliderVP(OGBaseVP):
@@ -158,7 +172,6 @@ class OGGliderVP(OGBaseVP):
         view_obj.addProperty("App::PropertyInteger",
                              "hole_num", "accuracy",
                              "number of hole vertices")
-
         view_obj.addProperty("App::PropertyInteger",
                              "line_num", "accuracy",
                              "line_num")
@@ -176,13 +189,22 @@ class OGGliderVP(OGBaseVP):
         view_obj.hole_num = get_parameter("default_num_hole_points")
         super(OGGliderVP, self).__init__(view_obj)
 
+    def getGliderInstance(self, view_obj):
+        try:
+            return view_obj.Object.Proxy.getGliderInstance()
+        except AttributeError:
+            return None
+
     def attach(self, view_obj):
         self.vis_glider = coin.SoSeparator()
         self.vis_lines = coin.SoSeparator()
         self.material = coin.SoMaterial()
         self.seperator = coin.SoSeparator()
+        self.vis_glider.setName("vis_glider")
+        self.vis_lines.setName("vis_lines")
+        self.material.setName("material")
+        self.seperator.setName("baseseperator")
         self.view_obj = view_obj
-        self.GliderInstance = view_obj.Object.GliderInstance
         self.material.diffuseColor = (.7, .7, .7)
         self.seperator += [self.vis_glider, self.vis_lines]
         pick_style = coin.SoPickStyle()
@@ -196,21 +218,25 @@ class OGGliderVP(OGBaseVP):
 
 
     def _updateData(self, fp, prop="all"):
+        print(fp, prop)
+        if not self.getGliderInstance(fp):
+            return
+        if not (hasattr(fp, "Visibility") or fp.Visibility):
+            return
         if not hasattr(fp, "half_glider"):
             return  # the vieprovider isn't set up at this moment
                     # but calls already the update function
         if not hasattr(self, "glider"):
             if not fp.half_glider:
-                self.glider = self.GliderInstance.copy_complete()
+                self.glider = self.getGliderInstance(fp).copy_complete()
             else:
-                self.glider = self.GliderInstance.copy()
+                self.glider = self.getGliderInstance(fp).copy()
         if hasattr(fp, "ribs"):      # check for last attribute to be restored
             if prop in ["all", "profile_num", "num_ribs", "half_glider"]:
                 self.vis_glider.removeChild(self.vis_glider.getByName("hull"))
 
             if prop in ["all", "hole_num", "profile_num", "half_glider"]:
                 self.vis_glider.removeChild(self.vis_glider.getByName("ribs"))
-                print("remove ribs")
 
             if prop in ["num_ribs", "profile_num", "hull", "panels",
                         "half_glider", "ribs", "hole_num",
@@ -222,9 +248,9 @@ class OGGliderVP(OGBaseVP):
                                   "all" in prop)
                 if glider_changed:
                     if not fp.half_glider:
-                        self.glider = self.GliderInstance.copy_complete()
+                        self.glider = self.getGliderInstance(fp).copy_complete()
                     else:
-                        self.glider = self.GliderInstance.copy()
+                        self.glider = self.getGliderInstance(fp).copy()
 
                 self.update_glider(midribs=fp.num_ribs,
                                    profile_numpoints=numpoints,
@@ -259,14 +285,12 @@ class OGGliderVP(OGBaseVP):
         return None
 
     def __setstate__(self, state):
-        # self.updateData()
         return None
 
 
 def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
                   hull="panels", ribs=False, elements=False):
     """draw the glider to the visglider seperator"""
-
     glider.profile_numpoints = profile_num
 
     vis_glider = vis_glider or coin.SoSeparator()

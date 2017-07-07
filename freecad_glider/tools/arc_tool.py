@@ -75,8 +75,6 @@ class ArcTool(BaseTool):
         self.update_spline()
 
     def accept(self):
-        self.obj.ParametricGlider = self.parametric_glider
-        self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
         self.arc_cpc.remove_callbacks()
         super(ArcTool, self).accept()
         self.update_view_glider()

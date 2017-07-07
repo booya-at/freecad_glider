@@ -51,6 +51,7 @@ class gliderWorkbench(Gui.Workbench):
         "LineCommand",
         "CutCommand",
         "ColorCommand",
+        "GliderFeatureCommand",
         "Gl2dExport"]
 
     productionBox = [
@@ -91,6 +92,7 @@ class gliderWorkbench(Gui.Workbench):
         Gui.addCommand("PatternCommand", tools.PatternCommand())
         Gui.addCommand("PanelCommand", tools.PanelCommand())
         Gui.addCommand("PolarsCommand", tools.PolarsCommand())
+        Gui.addCommand("GliderFeatureCommand", tools.GliderFeatureCommand())
 
         Gui.addCommand("RefreshCommand", tools.RefreshCommand())
 

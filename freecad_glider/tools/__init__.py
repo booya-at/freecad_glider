@@ -23,6 +23,7 @@ from . import panel_method as pm
 from . import cell_tool as cell_tool
 from . import design_tool as design_tool
 from . import color_tool as color_tool
+from . import features
 import openglider
 
 
@@ -42,10 +43,10 @@ class BaseCommand(object):
         return {'Pixmap': '.svg', 'MenuText': 'Text', 'ToolTip': 'Text'}
 
     def IsActive(self):
-        if FreeCAD.ActiveDocument is None:
-            return False
-        elif not self.glider_obj:
-            return False
+        if (FreeCAD.ActiveDocument is None or 
+            not self.glider_obj or 
+            hasattr(self.glider_obj, "parent")):
+            return Fals
         else:
             return True
 
@@ -58,7 +59,7 @@ class BaseCommand(object):
         if len(obj) > 0:
             obj = obj[0]
             if check_glider(obj):
-                return obj
+                return obj # parent
         return None
 
     def tool(self, obj):
@@ -122,7 +123,8 @@ class PatternCommand(BaseCommand):
         obj = Gui.Selection.getSelection()
         if len(obj) > 0:
             obj = obj[0]
-            if check_glider(obj):
+            obj = check_glider(obj)
+            if obj:
                 proceed = True
         if proceed:
             from openglider import plots
@@ -260,11 +262,8 @@ class LineCommand(BaseCommand):
 
 
 def check_glider(obj):
-    if ("GliderInstance" in obj.PropertiesList and
-            "ParametricGlider" in obj.PropertiesList):
+    if hasattr(obj, "Proxy") and hasattr(obj.Proxy, "getGliderInstance"):
         return True
-    else:
-        return False
 
 
 class PanelCommand(BaseCommand):
@@ -317,3 +316,15 @@ class RefreshCommand():
             except AttributeError:
                 App.Console.PrintWarning(str(mod) + " has no refresh function implemented\n")
         App.Console.PrintLog("RELOADED GLIDER WORKBENCH\n")
+
+
+class GliderFeatureCommand(BaseCommand):
+    def GetResources(self):
+        return {'Pixmap': 'feature.svg', 'MenuText': 'Design', 'ToolTip': 'Colors'}
+
+    def Activated(self):
+        feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "myFeature")
+        self.glider_obj.ViewObject.Visibility = False
+        features.BaseFeature(feature, self.glider_obj)
+        vp = glider.OGGliderVP(feature.ViewObject)
+        vp.updateData()

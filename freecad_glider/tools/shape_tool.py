@@ -62,12 +62,11 @@ class ShapeTool(BaseTool):
             App.Console.PrintError(e)
             self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
             return
-        self.obj.ParametricGlider = self.parametric_glider
-        self.obj.ViewObject.Proxy.updateData()
         self.back_cpc.remove_callbacks()
         self.front_cpc.remove_callbacks()
         self.cell_dist_cpc.remove_callbacks()
         super(ShapeTool, self).accept()
+        self.update_view_glider()
 
     def reject(self):
         self.back_cpc.remove_callbacks()

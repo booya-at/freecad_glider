@@ -59,8 +59,8 @@ class BaseMergeTool(BaseTool):
 
     def accept(self):
         self.bezier_cpc.remove_callbacks()
-        self.update_view_glider()
         super(BaseMergeTool, self).accept()
+        self.update_view_glider()
 
     def reject(self):
         self.bezier_cpc.remove_callbacks()

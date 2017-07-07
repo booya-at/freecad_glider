@@ -526,9 +526,8 @@ class LineTool(BaseTool):
 
         self.shape.unregister()
         self.remove_all_callbacks()
-        self.obj.ParametricGlider = self.parametric_glider
         super(LineTool, self).accept()
-        self.obj.ViewObject.Proxy.updateData()
+        self.update_view_glider()
         
     def reject(self):
         self.shape.unregister()

@@ -73,9 +73,8 @@ class ColorTool(BaseTool):
 
         self.parametric_glider.elements["materials"] = colors
         self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
-        self.obj.ParametricGlider = self.parametric_glider
         super(ColorTool, self).accept()
-        self.obj.ViewObject.Proxy.updateData()
+        self.update_view_glider()
 
 
     def reject(self):
