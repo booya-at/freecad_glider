@@ -28,6 +28,7 @@ def refresh():
 
 class DesignTool(BaseTool):
     widget_name = "Design Tool"
+
     def __init__(self, obj):
         super(DesignTool, self).__init__(obj)
         self.side = "upper"
@@ -75,7 +76,7 @@ class DesignTool(BaseTool):
     def setup_pivy(self):
         """set up the scene"""
         self.shape = coin.SoSeparator()
-        self.task_separator += self.shape
+        self.task_separator.addChild(self.shape)
         self.draw_shape()
         self.drag_separator = coin.SoSeparator()
         self.event_separator = Container()
@@ -101,11 +102,14 @@ class DesignTool(BaseTool):
 
     def draw_shape(self):
         """ draws the shape of the glider"""
-        self.shape += Line(self.front)
-        self.shape += Line(self.back)
-        self.shape += Line([self.back[0], self.front[0]])
-        self.shape += Line([self.back[-1], self.front[-1]])
-        self.shape += list(map(Line, self.ribs))
+        self.shape.addChild(Line(self.front))
+        self.shape.addChild(Line(self.back))
+
+        for front, back in self.ribs:
+            self.shape.addChild(Line([front, back]))
+        #self.shape += Line([self.back[0], self.front[0]])
+        #self.shape += Line([self.back[-1], self.front[-1]])
+        #self.shape += list(map(Line, self.ribs))
 
     def toggle_side(self):
         self.event_separator.Select(None)

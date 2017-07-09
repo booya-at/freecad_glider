@@ -3,6 +3,7 @@ import os
 import numpy as np
 
 import openglider.glider
+from openglider.mesh import Mesh
 from pivy import coin
 import FreeCAD as App
 import FreeCAD
@@ -155,6 +156,10 @@ class OGGlider(OGBaseObject):
 
 class OGGliderVP(OGBaseVP):
     def __init__(self, view_obj):
+        #self.set_defaults(view_obj)
+        super(OGGliderVP, self).__init__(view_obj)
+
+    def set_defaults(self, view_obj):
         view_obj.addProperty("App::PropertyBool",
                              "ribs", "visuals",
                              "show ribs")
@@ -182,15 +187,10 @@ class OGGliderVP(OGBaseVP):
         view_obj.addProperty("App::PropertyInteger",
                              "hole_num", "visuals",
                              "number of hole vertices")
-
-        self.set_defaults(view_obj)
-        super(OGGliderVP, self).__init__(view_obj)
-
-    def set_defaults(self, view_obj):
         view_obj.num_ribs = get_parameter("default_num_cell_points")
         view_obj.profile_num = get_parameter("default_num_prof_points")
         view_obj.line_num = get_parameter("default_num_line_points")
-        view_obj.hull = True
+        view_obj.hull = False
         view_obj.ribs = True
         view_obj.half_glider = get_parameter("default_show_half_glider")
         view_obj.panels = get_parameter("default_show_panels")
@@ -198,17 +198,17 @@ class OGGliderVP(OGBaseVP):
         view_obj.hole_num = get_parameter("default_num_hole_points")
 
     def attach(self, view_obj):
+        self.set_defaults(view_obj)
         self.vis_lines = coin.SoSeparator()
         self.vis_panels = coin.SoSeparator()
+        self.vis_hull = coin.SoSeparator()
         self.vis_ribs = coin.SoSeparator()
-        self.material = coin.SoMaterial()
+
         self.seperator = coin.SoSeparator()
+        self.seperator.addChild(self.vis_lines)
         self.view_obj = view_obj
         self.update_glider(view_obj)
-        self.material.diffuseColor = (.7, .7, .7)
-        self.seperator.addChild(self.vis_lines)
-        self.seperator.addChild(self.vis_panels)
-        self.seperator.addChild(self.vis_ribs)
+        self.draw_glider(view_obj, prop="all")
 
         pick_style = coin.SoPickStyle()
         pick_style.style.setValue(coin.SoPickStyle.BOUNDING_BOX)
@@ -228,18 +228,19 @@ class OGGliderVP(OGBaseVP):
         self.onChanged(self.view_obj, prop)
 
     def onChanged(self, view_obj, prop):
-        if not hasattr(view_obj, "half_glider") or not hasattr(view_obj, "ribs"):
+        try:
+            self.draw_glider(view_obj, prop)
+        except:
+            pass
+
+    def draw_glider(self, view_obj, prop):
+        if not hasattr(view_obj, "half_glider") or not hasattr(view_obj, "ribs") or not hasattr(view_obj, "profile_num"):
             print(prop)
             return  # the viewprovider isn't set up at this moment
                     # but calls already the update function
 
         if not hasattr(self, "glider"):
             self.update_glider(self.view_obj)
-
-        #self.seperator.removeAllChildren()
-        # pick_style = coin.SoPickStyle()
-        # pick_style.style.setValue(coin.SoPickStyle.BOUNDING_BOX)
-        # self.seperator.addChild(pick_style)
 
         if prop in ["profile_num", "half_glider", "all"]:
             self.update_all(view_obj)
@@ -268,6 +269,15 @@ class OGGliderVP(OGBaseVP):
         else:
             self.seperator.removeChild(self.vis_panels)
 
+        # show hull
+        if view_obj.hull:
+            if len(self.vis_hull) == 0:
+                self.update_hull(view_obj.num_ribs)
+            if self.vis_hull not in self.seperator:
+                self.seperator.addChild(self.vis_hull)
+        else:
+            self.seperator.removeChild(self.vis_hull)
+
         if prop in ["line_num", "all"]:
             self.update_lines(view_obj.line_num)
             #self.seperator.addChild(self.vis_lines)
@@ -278,7 +288,14 @@ class OGGliderVP(OGBaseVP):
         self.update_panels(view_obj.num_ribs)
         self.update_ribs()
         self.update_diagonals()
+        self.update_hull()
         self.update_lines(view_obj.line_num)
+
+    def update_hull(self, midribs=0):
+        self.vis_hull.removeAllChildren()
+        for cell in self.glider.cells:
+            mesh = cell.get_mesh(numribs=midribs)
+            self.vis_hull.addChild(mesh_sep(mesh, (1., .2, .2)))
 
     def update_panels(self, midribs=0, draw_mesh=False):
         self.vis_panels.removeAllChildren()
