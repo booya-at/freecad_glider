@@ -52,6 +52,9 @@ class gliderWorkbench(Gui.Workbench):
         "CutCommand",
         "ColorCommand",
         "GliderFeatureCommand",
+        "GliderRibFeatureCommand",
+        "GliderCellFeatureCommand",
+        "GliderSharkFeatureCommand",
         "Gl2dExport"]
 
     productionBox = [
@@ -92,7 +95,11 @@ class gliderWorkbench(Gui.Workbench):
         Gui.addCommand("PatternCommand", tools.PatternCommand())
         Gui.addCommand("PanelCommand", tools.PanelCommand())
         Gui.addCommand("PolarsCommand", tools.PolarsCommand())
+        
         Gui.addCommand("GliderFeatureCommand", tools.GliderFeatureCommand())
+        Gui.addCommand("GliderRibFeatureCommand", tools.GliderRibFeatureCommand())
+        Gui.addCommand("GliderCellFeatureCommand", tools.GliderCellFeatureCommand())
+        Gui.addCommand("GliderSharkFeatureCommand", tools.GliderSharkFeatureCommand())
 
         Gui.addCommand("RefreshCommand", tools.RefreshCommand())
 

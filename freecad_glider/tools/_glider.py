@@ -132,6 +132,9 @@ class OGGlider(OGBaseObject):
     def getGliderInstance(self):
         return self.obj.GliderInstance
 
+    def getParametricGlider(self):
+        return self.obj.ParametricGlider
+
     def setGliderInstance(self, glider_instance):
         self.obj.GliderInstance = glider_instance
 
@@ -220,6 +223,8 @@ class OGGliderVP(OGBaseVP):
     def _updateData(self, fp, prop="all"):
         print(fp, prop)
         if not self.getGliderInstance(fp):
+            return
+        if not fp.Visibility:
             return
         if not (hasattr(fp, "Visibility") or fp.Visibility):
             return

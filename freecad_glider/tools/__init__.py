@@ -320,11 +320,46 @@ class RefreshCommand():
 
 class GliderFeatureCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'feature.svg', 'MenuText': 'Design', 'ToolTip': 'Colors'}
+        return {'Pixmap': 'feature.svg', 'MenuText': 'Features', 'ToolTip': 'Features'}
 
     def Activated(self):
-        feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "myFeature")
+        feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "BaseFeature")
         self.glider_obj.ViewObject.Visibility = False
         features.BaseFeature(feature, self.glider_obj)
+        vp = glider.OGGliderVP(feature.ViewObject)
+        vp.updateData()
+
+class GliderRibFeatureCommand(BaseCommand):
+    def GetResources(self):
+        return {'Pixmap': "airfoil_command.svg" , 'MenuText': 'Features', 'ToolTip': 'set airfoil to ribs'}
+
+    def Activated(self):
+        feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "ribFeature")
+        self.glider_obj.ViewObject.Visibility = False
+        features.RibFeature(feature, self.glider_obj)
+        vp = glider.OGGliderVP(feature.ViewObject)
+        vp.updateData()
+
+
+class GliderCellFeatureCommand(BaseCommand):
+    def GetResources(self):
+        return {'Pixmap': "cell_command.svg" , 'MenuText': 'Features', 'ToolTip': 'set airfoil to ribs'}
+
+    def Activated(self):
+        feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "cellFeature")
+        self.glider_obj.ViewObject.Visibility = False
+        features.CellFeature(feature, self.glider_obj)
+        vp = glider.OGGliderVP(feature.ViewObject)
+        vp.updateData()
+
+
+class GliderSharkFeatureCommand(BaseCommand):
+    def GetResources(self):
+        return {'Pixmap': "airfoil_command.svg" , 'MenuText': 'Features', 'ToolTip': 'set airfoil to ribs'}
+
+    def Activated(self):
+        feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "sharkFeature")
+        self.glider_obj.ViewObject.Visibility = False
+        features.SharkFeature(feature, self.glider_obj)
         vp = glider.OGGliderVP(feature.ViewObject)
         vp.updateData()
