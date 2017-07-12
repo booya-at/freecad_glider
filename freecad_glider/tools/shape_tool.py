@@ -56,12 +56,6 @@ class ShapeTool(BaseTool):
 
     def accept(self):
         self.parametric_glider.rescale_curves()
-        try:
-            self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
-        except Exception as e:
-            App.Console.PrintError(e)
-            self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
-            return
         self.back_cpc.remove_callbacks()
         self.front_cpc.remove_callbacks()
         self.cell_dist_cpc.remove_callbacks()

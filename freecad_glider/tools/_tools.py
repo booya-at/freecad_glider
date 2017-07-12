@@ -47,26 +47,8 @@ def rgb_to_hex(color_tuple):
 def refresh():
     pass
 
-# from openglider.glider.parametric import Glider2D
-
-
 text_field = QtGui.QFormLayout.LabelRole
 input_field = QtGui.QFormLayout.FieldRole
-
-# TODO:
-#   -merge-tool
-#       -airfoil
-#       -ballooning
-#       -aoa                xx
-#       -zrot
-#   -airfoil-tool
-#   -ballooning-tool
-#   -attachmentpoint-tool
-#   -line-tool
-#   -inlet-tool
-#   -design-tool
-#   -minirips-tool
-#   -etc...
 
 
 def export_2d(glider):
@@ -170,10 +152,10 @@ class BaseTool(object):
         self.scene.addChild(self.task_separator)
 
     def update_view_glider(self):  # rename
+        # 1: update parametric-glider and get the glider_instance
         self.obj.Proxy.setParametricGlider(self.parametric_glider)
-        self.parametric_glider.get_glider_3d(self.obj.Proxy.getGliderInstance())
-        self.obj.ViewObject.Proxy.updateData()
-        App.ActiveDocument.recompute()
+        # 2: draw the glider for all visible objects
+        self.obj.Proxy.drawGlider()
 
     def accept(self):
         for obj in self._vis_object:

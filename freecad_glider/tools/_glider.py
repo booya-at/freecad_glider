@@ -90,10 +90,10 @@ class OGBaseObject(object):
 
 
 class OGBaseVP(object):
-    def __init__(self, obj):
-        obj.Proxy = self
-        self.view_obj = obj
-        self.obj = obj.Object
+    def __init__(self, view_obj):
+        view_obj.Proxy = self
+        self.view_obj = view_obj
+        self.obj = view_obj.Object
 
     def attach(self, vobj):
         pass
@@ -129,20 +129,29 @@ class OGGlider(OGBaseObject):
         obj.GliderInstance = obj.ParametricGlider.get_glider_3d()
         super(OGGlider, self).__init__(obj)
 
+    def drawGlider(self):
+        if not self.obj.ViewObject.Visibility:
+            self.obj.ViewObject.Proxy.recompute = True
+        else:
+            self.obj.ViewObject.Proxy.recompute = False
+            self.obj.ViewObject.Proxy.updateData()
+
     def getGliderInstance(self):
         return self.obj.GliderInstance
 
     def getParametricGlider(self):
-        return self.obj.ParametricGlider
-
-    def setGliderInstance(self, glider_instance):
-        self.obj.GliderInstance = glider_instance
-
-    def getParametricGlider(self):
+        """returns top level parametric glider"""
         return self.obj.ParametricGlider
 
     def setParametricGlider(self, parametric_glider):
+        """sets the top-level glider2d and recomputes the glider3d"""
         self.obj.ParametricGlider = parametric_glider
+        self.obj.GliderInstance = parametric_glider.get_glider_3d()
+        App.ActiveDocument.recompute()
+
+    def getRoot(self):
+        """return the root freecad obj"""
+        return self.obj
 
     def __getstate__(self):
         out = {
@@ -190,6 +199,7 @@ class OGGliderVP(OGBaseVP):
         view_obj.ribs = True
         view_obj.half_glider = get_parameter("default_show_half_glider")
         view_obj.hole_num = get_parameter("default_num_hole_points")
+        self.recompute = False
         super(OGGliderVP, self).__init__(view_obj)
 
     def getGliderInstance(self, view_obj):
@@ -219,15 +229,13 @@ class OGGliderVP(OGBaseVP):
     def updateData(self, prop="all", *args):
         self._updateData(self.view_obj, prop)
 
-
     def _updateData(self, fp, prop="all"):
-        print(fp, prop)
         if not self.getGliderInstance(fp):
             return
-        if not fp.Visibility:
+        if not hasattr(fp, "Visibility") or not fp.Visibility:
             return
-        if not (hasattr(fp, "Visibility") or fp.Visibility):
-            return
+        if prop in ["Visibility"] and fp.Proxy.recompute:
+            prop = "all"
         if not hasattr(fp, "half_glider"):
             return  # the vieprovider isn't set up at this moment
                     # but calls already the update function
@@ -243,9 +251,8 @@ class OGGliderVP(OGBaseVP):
             if prop in ["all", "hole_num", "profile_num", "half_glider"]:
                 self.vis_glider.removeChild(self.vis_glider.getByName("ribs"))
 
-            if prop in ["num_ribs", "profile_num", "hull", "panels",
-                        "half_glider", "ribs", "hole_num",
-                        "all"]:
+            if (prop in ["num_ribs", "profile_num", "hull", "panels",
+                         "half_glider", "ribs", "hole_num", "all"]):
                 numpoints = fp.profile_num
                 numpoints = max(numpoints, 5)
                 glider_changed = ("half_glider" in prop or
@@ -263,6 +270,7 @@ class OGGliderVP(OGBaseVP):
                                    ribs=fp.ribs,
                                    hole_num=fp.hole_num,
                                    glider_changed=glider_changed)
+                fp.Proxy.recompute = False
         if hasattr(fp, "line_num"):
             if prop in ["line_num", "half_glider", "all"]:
                 self.update_lines(fp.line_num)

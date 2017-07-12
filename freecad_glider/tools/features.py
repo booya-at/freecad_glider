@@ -11,20 +11,30 @@ class BaseFeature(OGBaseObject):
         obj.parent = parent
         super(BaseFeature, self).__init__(obj)
 
+    def drawGlider(self):
+        if not self.obj.ViewObject.Visibility:
+            self.obj.ViewObject.Proxy.recompute = True
+            self.obj.parent.Proxy.drawGlider()
+        else:
+            self.obj.ViewObject.Proxy.recompute = True
+            self.obj.ViewObject.Proxy.updateData()
+            self.obj.parent.Proxy.drawGlider()
+
     def getGliderInstance(self):
+        """adds stuff and returns changed copy"""
         return copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
 
-    def setGliderInstance(self, obj):
-        self.obj.parent.Proxy.setGliderInstance(obj)
-
-    def getParametricGlider(self, obj):
-        return self.obj.parent.getParametricGlider()
-
     def getParametricGlider(self):
+        """returns top level parametric glider"""
         return self.obj.parent.Proxy.getParametricGlider()
 
     def setParametricGlider(self, obj):
+        """sets the top-level glider2d and recomputes the glider3d"""
         self.obj.parent.Proxy.setParametricGlider(obj)
+
+    def getRoot(self):
+        """return the root freecad obj"""
+        return self.obj.parent.Proxy.getRoot()
 
     def  onDocumentRestored(self, obj):
         self.obj = obj
@@ -47,7 +57,6 @@ class RibFeature(BaseFeature):
     def getGliderInstance(self):
         glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
         airfoil = self.obj.parent.Proxy.getParametricGlider().profiles[self.obj.airfoil]
-        print(airfoil)
         # for rib in glider.ribs:
         #     print(dir(rib.profile_2d = Profile2D(airfoil)))
         return glider
@@ -65,7 +74,6 @@ class CellFeature(BaseFeature):
     def getGliderInstance(self):
         glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
         airfoil = self.obj.parent.Proxy.getParametricGlider().profiles[self.obj.airfoil]
-        print(airfoil)
         # for rib in glider.ribs:
         #     print(dir(rib.profile_2d = Profile2D(airfoil)))
         return glider

@@ -43,11 +43,7 @@ class BaseCommand(object):
         return {'Pixmap': '.svg', 'MenuText': 'Text', 'ToolTip': 'Text'}
 
     def IsActive(self):
-        if (FreeCAD.ActiveDocument is None or 
-            not self.glider_obj or 
-            hasattr(self.glider_obj, "parent")):
-            return Fals
-        else:
+        if (FreeCAD.ActiveDocument is not None and self.glider_obj):
             return True
 
     def Activated(self):
@@ -59,7 +55,16 @@ class BaseCommand(object):
         if len(obj) > 0:
             obj = obj[0]
             if check_glider(obj):
-                return obj # parent
+                return obj
+        return None
+
+    @property
+    def feature(self):
+        obj = Gui.Selection.getSelection()
+        if len(obj) > 0:
+            obj = obj[0]
+            if check_glider(obj):
+                return obj
         return None
 
     def tool(self, obj):
@@ -324,24 +329,29 @@ class GliderFeatureCommand(BaseCommand):
 
     def Activated(self):
         feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "BaseFeature")
-        self.glider_obj.ViewObject.Visibility = False
-        features.BaseFeature(feature, self.glider_obj)
+        self.feature.ViewObject.Visibility = False
+        features.BaseFeature(feature, self.feature)
         vp = glider.OGGliderVP(feature.ViewObject)
         vp.updateData()
 
-class GliderRibFeatureCommand(BaseCommand):
+    def IsActive(self):
+        if (FreeCAD.ActiveDocument is not None and self.feature):
+            return True
+
+
+class GliderRibFeatureCommand(GliderFeatureCommand):
     def GetResources(self):
         return {'Pixmap': "airfoil_command.svg" , 'MenuText': 'Features', 'ToolTip': 'set airfoil to ribs'}
 
     def Activated(self):
         feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "ribFeature")
-        self.glider_obj.ViewObject.Visibility = False
+        self.feature.ViewObject.Visibility = False
         features.RibFeature(feature, self.glider_obj)
         vp = glider.OGGliderVP(feature.ViewObject)
         vp.updateData()
 
 
-class GliderCellFeatureCommand(BaseCommand):
+class GliderCellFeatureCommand(GliderFeatureCommand):
     def GetResources(self):
         return {'Pixmap': "cell_command.svg" , 'MenuText': 'Features', 'ToolTip': 'set airfoil to ribs'}
 
@@ -353,7 +363,7 @@ class GliderCellFeatureCommand(BaseCommand):
         vp.updateData()
 
 
-class GliderSharkFeatureCommand(BaseCommand):
+class GliderSharkFeatureCommand(GliderFeatureCommand):
     def GetResources(self):
         return {'Pixmap': "airfoil_command.svg" , 'MenuText': 'Features', 'ToolTip': 'set airfoil to ribs'}
 
