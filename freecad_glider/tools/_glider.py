@@ -283,6 +283,8 @@ class OGGliderVP(OGBaseVP):
 
     def update_lines(self, num=3):
         self.vis_lines.removeAllChildren()
+        if num < 2:
+            return
         self.glider.lineset.recalc()
         for line in self.glider.lineset.lines:
             points = line.get_line_points(numpoints=num)
@@ -393,5 +395,5 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
     if ribs:
         rib_sep.whichChild = coin.SO_SWITCH_ALL
     else:
-        rib_sep.whichChild = coin.SO_SWITCH_NONE
-
+        if hasattr(rib_sep, "whichChild"):
+            rib_sep.whichChild = coin.SO_SWITCH_NONE

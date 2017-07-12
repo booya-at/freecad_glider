@@ -51,22 +51,21 @@ class gliderWorkbench(Gui.Workbench):
         "LineCommand",
         "CutCommand",
         "ColorCommand",
+        "Gl2dExport"]
+
+    featureBox = [
         "GliderFeatureCommand",
         "GliderRibFeatureCommand",
         "GliderCellFeatureCommand",
-        "GliderSharkFeatureCommand",
-        "Gl2dExport"]
+        "GliderSharkFeatureCommand"]
 
     productionBox = [
         "PatternCommand",
         "PanelCommand",
-        "PolarsCommand"
-        ]
+        "PolarsCommand"]
 
     devBox = [
-        "RefreshCommand"
-        ]
-
+        "RefreshCommand"]
 
     def GetClassName(self):
         return "Gui::PythonWorkbench"
@@ -74,7 +73,7 @@ class gliderWorkbench(Gui.Workbench):
     def Initialize(self):
         import tools
         global Dir
-        
+
         Gui.addCommand('CreateGlider', tools.CreateGlider())
         Gui.addCommand('ShapeCommand', tools.ShapeCommand())
         Gui.addCommand('AirfoilCommand', tools.AirfoilCommand())
@@ -95,7 +94,7 @@ class gliderWorkbench(Gui.Workbench):
         Gui.addCommand("PatternCommand", tools.PatternCommand())
         Gui.addCommand("PanelCommand", tools.PanelCommand())
         Gui.addCommand("PolarsCommand", tools.PolarsCommand())
-        
+
         Gui.addCommand("GliderFeatureCommand", tools.GliderFeatureCommand())
         Gui.addCommand("GliderRibFeatureCommand", tools.GliderRibFeatureCommand())
         Gui.addCommand("GliderCellFeatureCommand", tools.GliderCellFeatureCommand())
@@ -103,11 +102,14 @@ class gliderWorkbench(Gui.Workbench):
 
         Gui.addCommand("RefreshCommand", tools.RefreshCommand())
 
-        self.appendToolbar("Tools", self.toolBox)
+        self.appendToolbar("GliderTools", self.toolBox)
         self.appendToolbar("Production", self.productionBox)
+        self.appendToolbar("Feature", self.featureBox)
         self.appendToolbar("Develop", self.devBox)
-        self.appendMenu("Tools", self.toolBox)
+
+        self.appendMenu("GliderTools", self.toolBox)
         self.appendMenu("Production", self.productionBox)
+        self.appendMenu("Feature", self.featureBox)
 
         Gui.addPreferencePage(Dir + "/ui/preferences.ui", "Display")
 

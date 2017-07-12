@@ -72,7 +72,6 @@ class ColorTool(BaseTool):
             colors.append(cell_colors)
 
         self.parametric_glider.elements["materials"] = colors
-        self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
         super(ColorTool, self).accept()
         self.update_view_glider()
 
