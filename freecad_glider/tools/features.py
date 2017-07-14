@@ -11,14 +11,16 @@ class BaseFeature(OGBaseObject):
         obj.parent = parent
         super(BaseFeature, self).__init__(obj)
 
-    def drawGlider(self):
+    def drawGlider(self, call_parent=True):
         if not self.obj.ViewObject.Visibility:
             self.obj.ViewObject.Proxy.recompute = True
-            self.obj.parent.Proxy.drawGlider()
+            if call_parent:
+                self.obj.parent.Proxy.drawGlider()
         else:
             self.obj.ViewObject.Proxy.recompute = True
             self.obj.ViewObject.Proxy.updateData()
-            self.obj.parent.Proxy.drawGlider()
+            if call_parent:
+                self.obj.parent.Proxy.drawGlider()
 
     def getGliderInstance(self):
         """adds stuff and returns changed copy"""
@@ -36,10 +38,14 @@ class BaseFeature(OGBaseObject):
         """return the root freecad obj"""
         return self.obj.parent.Proxy.getRoot()
 
-    def  onDocumentRestored(self, obj):
+    def onDocumentRestored(self, obj):
         self.obj = obj
-        obj.ViewObject.Proxy._updateData(obj.ViewObject)
-
+        self.obj.parent.Proxy.onDocumentRestored(self.obj.parent)
+        if not self.obj.ViewObject.Visibility:
+            self.obj.ViewObject.Proxy.recompute = True
+        else:
+            self.obj.ViewObject.Proxy.recompute = True
+            self.obj.ViewObject.Proxy.updateData(prop="Visibility")
 
     def __getstate__(self):
         return None
@@ -57,29 +63,31 @@ class RibFeature(BaseFeature):
     def getGliderInstance(self):
         glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
         airfoil = self.obj.parent.Proxy.getParametricGlider().profiles[self.obj.airfoil]
-        # for rib in glider.ribs:
-        #     print(dir(rib.profile_2d = Profile2D(airfoil)))
+        for i, rib in enumerate(glider.ribs):
+            if i in self.obj.ribs:
+                rib.profile_2d = airfoil
         return glider
 
-    def execute(self, fp, *args):
-        print("execute")
+    def execute(self, fp):
+        self.drawGlider()
 
 
-class CellFeature(BaseFeature):
+class BallooningFeature(BaseFeature):
     def __init__(self, obj, parent):
-        super(CellFeature, self).__init__(obj, parent)
-        obj.addProperty("App::PropertyIntegerList", "ribs", "not yet", "docs")
-        obj.addProperty("App::PropertyInteger", "airfoil", "not yet", "docs")
+        super(BallooningFeature, self).__init__(obj, parent)
+        obj.addProperty("App::PropertyIntegerList", "cells", "not yet", "docs")
+        obj.addProperty("App::PropertyInteger", "ballooning", "not yet", "docs")
 
     def getGliderInstance(self):
         glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
-        airfoil = self.obj.parent.Proxy.getParametricGlider().profiles[self.obj.airfoil]
-        # for rib in glider.ribs:
-        #     print(dir(rib.profile_2d = Profile2D(airfoil)))
+        ballooning = self.obj.parent.Proxy.getParametricGlider().balloonings[self.obj.ballooning]
+        for i, cell in enumerate(glider.cells):
+            if i in self.obj.cells:
+                cell.ballooning = ballooning
         return glider
 
-    def execute(self, fp, *args):
-        print("execute")
+    def execute(self, fp):
+        self.drawGlider()
 
 
 class SharkFeature(BaseFeature):

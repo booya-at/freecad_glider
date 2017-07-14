@@ -95,8 +95,9 @@ class OGBaseVP(object):
         self.view_obj = view_obj
         self.obj = view_obj.Object
 
-    def attach(self, vobj):
-        pass
+    def attach(self, view_obj):
+        self.view_obj = view_obj
+        self.obj = view_obj.Object
 
     def updateData(self, fp, prop):
         pass
@@ -165,9 +166,13 @@ class OGGlider(OGBaseObject):
         obj.GliderInstance = obj.ParametricGlider.get_glider_3d()
         return None
 
-    def  onDocumentRestored(self, obj):
+    def onDocumentRestored(self, obj):
         self.obj = obj
-        obj.ViewObject.Proxy._updateData(obj.ViewObject)
+        if not self.obj.ViewObject.Visibility:
+            self.obj.ViewObject.Proxy.recompute = True
+        else:
+            self.obj.ViewObject.Proxy.recompute = True
+            self.obj.ViewObject.Proxy.updateData(prop="Visibility")
 
 
 class OGGliderVP(OGBaseVP):
@@ -204,11 +209,12 @@ class OGGliderVP(OGBaseVP):
 
     def getGliderInstance(self, view_obj):
         try:
-            return view_obj.Object.Proxy.getGliderInstance()
-        except AttributeError:
+            return self.obj.Proxy.getGliderInstance()
+        except AttributeError as e:
             return None
 
     def attach(self, view_obj):
+        super(OGGliderVP, self).attach(view_obj)
         self.vis_glider = coin.SoSeparator()
         self.vis_lines = coin.SoSeparator()
         self.material = coin.SoMaterial()
@@ -217,7 +223,6 @@ class OGGliderVP(OGBaseVP):
         self.vis_lines.setName("vis_lines")
         self.material.setName("material")
         self.seperator.setName("baseseperator")
-        self.view_obj = view_obj
         self.material.diffuseColor = (.7, .7, .7)
         self.seperator += [self.vis_glider, self.vis_lines]
         pick_style = coin.SoPickStyle()
@@ -245,6 +250,7 @@ class OGGliderVP(OGBaseVP):
             else:
                 self.glider = self.getGliderInstance(fp).copy()
         if hasattr(fp, "ribs"):      # check for last attribute to be restored
+            # print("if hasattr(fp, ribs)")
             if prop in ["all", "profile_num", "num_ribs", "half_glider"]:
                 self.vis_glider.removeChild(self.vis_glider.getByName("hull"))
 

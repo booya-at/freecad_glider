@@ -351,14 +351,14 @@ class GliderRibFeatureCommand(GliderFeatureCommand):
         vp.updateData()
 
 
-class GliderCellFeatureCommand(GliderFeatureCommand):
+class GliderBallooningFeatureCommand(GliderFeatureCommand):
     def GetResources(self):
         return {'Pixmap': "cell_command.svg" , 'MenuText': 'Features', 'ToolTip': 'set airfoil to ribs'}
 
     def Activated(self):
-        feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "cellFeature")
+        feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "ballooningFeature")
         self.glider_obj.ViewObject.Visibility = False
-        features.CellFeature(feature, self.glider_obj)
+        features.BallooningFeature(feature, self.glider_obj)
         vp = glider.OGGliderVP(feature.ViewObject)
         vp.updateData()
 

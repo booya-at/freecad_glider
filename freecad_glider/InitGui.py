@@ -56,7 +56,7 @@ class gliderWorkbench(Gui.Workbench):
     featureBox = [
         "GliderFeatureCommand",
         "GliderRibFeatureCommand",
-        "GliderCellFeatureCommand",
+        "GliderBallooningFeatureCommand",
         "GliderSharkFeatureCommand"]
 
     productionBox = [
@@ -97,7 +97,7 @@ class gliderWorkbench(Gui.Workbench):
 
         Gui.addCommand("GliderFeatureCommand", tools.GliderFeatureCommand())
         Gui.addCommand("GliderRibFeatureCommand", tools.GliderRibFeatureCommand())
-        Gui.addCommand("GliderCellFeatureCommand", tools.GliderCellFeatureCommand())
+        Gui.addCommand("GliderBallooningFeatureCommand", tools.GliderBallooningFeatureCommand())
         Gui.addCommand("GliderSharkFeatureCommand", tools.GliderSharkFeatureCommand())
 
         Gui.addCommand("RefreshCommand", tools.RefreshCommand())
