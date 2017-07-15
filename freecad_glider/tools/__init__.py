@@ -128,8 +128,7 @@ class PatternCommand(BaseCommand):
         obj = Gui.Selection.getSelection()
         if len(obj) > 0:
             obj = obj[0]
-            obj = check_glider(obj)
-            if obj:
+            if check_glider(obj):
                 proceed = True
         if proceed:
             from openglider import plots
@@ -139,8 +138,8 @@ class PatternCommand(BaseCommand):
                 directory='~')
             if not file_name[0] == "":
                 file_name = file_name[0]
-                pat = plots.Patterns(obj.ParametricGlider)
-                pat.unwrap(file_name, obj.GliderInstance)
+                pat = plots.Patterns(obj.Proxy.getParametricGlider())
+                pat.unwrap(file_name, obj.Proxy.getGliderInstance())
 
     @staticmethod
     def fcvec(vec):

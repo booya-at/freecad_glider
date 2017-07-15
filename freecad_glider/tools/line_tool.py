@@ -522,7 +522,7 @@ class LineTool(BaseTool):
 
         for node in self.parametric_glider.lineset.nodes:
             if isinstance(node, UpperNode2D):
-                node.name = node.layer + str(node.rib_no)
+                node.name = node.layer + str(node.cell_no)
 
         self.shape.unregister()
         self.remove_all_callbacks()
@@ -585,11 +585,11 @@ class Upper_Att_Marker(NodeMarker):
 
     @property
     def rib_nr(self):
-        return self._node.rib_no
+        return self._node.cell_no
 
     @rib_nr.setter
     def rib_nr(self, nr):
-        self._node.rib_no = nr
+        self._node.cell_no = nr
         self.pos = vector3D(self._node.get_2D(self.par_glider.shape))
         for foo in self.on_drag:
             foo()
