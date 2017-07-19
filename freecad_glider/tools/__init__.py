@@ -372,3 +372,14 @@ class GliderSharkFeatureCommand(GliderFeatureCommand):
         features.SharkFeature(feature, self.glider_obj)
         vp = glider.OGGliderVP(feature.ViewObject)
         vp.updateData()
+
+class GliderSingleSkinRibFeatureCommand(GliderFeatureCommand):
+    def GetResources(self):
+        return {'Pixmap': "airfoil_command.svg" , 'MenuText': 'Features', 'ToolTip': 'set single-skin feature'}
+
+    def Activated(self):
+        feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "singleSkinRib")
+        self.glider_obj.ViewObject.Visibility = False
+        features.SingleSkinRibFeature(feature, self.glider_obj)
+        vp = glider.OGGliderVP(feature.ViewObject)
+        vp.updateData()

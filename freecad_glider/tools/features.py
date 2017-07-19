@@ -119,9 +119,27 @@ class SharkFeature(BaseFeature):
         x1, x2, x3, y_add =  self.obj.x1, self.obj.x2, self.obj.x3, self.obj.y_add
         from openglider.airfoil.profile_2d import Profile2D
         glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
-        for rib in glider.ribs:
+        for rib in enumerate(glider.ribs):
             rib.profile_2d = Profile2D(self.apply(rib.profile_2d._data, x1, x2, x3, y_add))
         return glider
 
     def execute(self, fp, *args):
         self.obj.ViewObject.Proxy.updateData()
+
+
+class SingleSkinRibFeature(BaseFeature):
+    def __init__(self, obj, parent):
+        super(SingleSkinRibFeature, self).__init__(obj, parent)
+        obj.addProperty("App::PropertyIntegerList", "ribs", "not yet", "docs")
+        obj.addProperty("App::PropertyFloat", "height", "not yet", "docs").height = 0.5
+        obj.addProperty("App::PropertyFloat", "att_dist", "not yet", "docs").att_dist = 0.1
+
+    def getGliderInstance(self):
+        glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
+        for i, rib in enumerate(glider.ribs):
+            if i in self.obj.ribs:
+                rib.single_skin_par = {"att_dist": self.obj.att_dist, "height": self.obj.height}
+        return glider
+
+    def execute(self, fp):
+        self.drawGlider()

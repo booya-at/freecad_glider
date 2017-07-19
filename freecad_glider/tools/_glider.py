@@ -376,7 +376,7 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
         line_msh = mesh.Mesh()
         for rib in glider.ribs:
             if not rib.profile_2d.has_zero_thickness:
-                msh += mesh.Mesh.from_rib(rib, hole_num, mesh_option="QYqazip")
+                msh += mesh.Mesh.from_rib(rib, hole_num, mesh_option="QYqazip", glider=glider)
         if msh.vertices is not None:
             rib_sep += [mesh_sep(msh, (.3, .3, .3))]
 
