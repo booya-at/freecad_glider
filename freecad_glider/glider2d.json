@@ -665,7 +665,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 9, 
+                                "cell_no": 9, 
                                 "layer": "", 
                                 "rib_pos": 0.37, 
                                 "force": 3.0, 
@@ -676,7 +676,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 8, 
+                                "cell_no": 8, 
                                 "layer": "", 
                                 "rib_pos": 0.37, 
                                 "force": 3.0, 
@@ -687,7 +687,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 9, 
+                                "cell_no": 9, 
                                 "layer": "brake", 
                                 "rib_pos": 1.0, 
                                 "force": 0.1, 
@@ -698,7 +698,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 4, 
+                                "cell_no": 4, 
                                 "layer": "", 
                                 "rib_pos": 0.14, 
                                 "force": 4.0, 
@@ -709,7 +709,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 1, 
+                                "cell_no": 1, 
                                 "layer": "", 
                                 "rib_pos": 0.68, 
                                 "force": 2.0, 
@@ -720,7 +720,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 3, 
+                                "cell_no": 3, 
                                 "layer": "", 
                                 "rib_pos": 0.37, 
                                 "force": 3.0, 
@@ -731,7 +731,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 11, 
+                                "cell_no": 11, 
                                 "layer": "brake", 
                                 "rib_pos": 1.0, 
                                 "force": 0.1, 
@@ -766,7 +766,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 8, 
+                                "cell_no": 8, 
                                 "layer": "brake", 
                                 "rib_pos": 1.0, 
                                 "force": 0.2, 
@@ -789,7 +789,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 9, 
+                                "cell_no": 9, 
                                 "layer": "", 
                                 "rib_pos": 0.68, 
                                 "force": 2.0, 
@@ -800,7 +800,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 2, 
+                                "cell_no": 2, 
                                 "layer": "", 
                                 "rib_pos": 0.68, 
                                 "force": 2.0, 
@@ -811,7 +811,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 6, 
+                                "cell_no": 6, 
                                 "layer": "", 
                                 "rib_pos": 0.68, 
                                 "force": 2.0, 
@@ -858,7 +858,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 3, 
+                                "cell_no": 3, 
                                 "layer": "", 
                                 "rib_pos": 0.68, 
                                 "force": 2.0, 
@@ -893,7 +893,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 1, 
+                                "cell_no": 1, 
                                 "layer": "", 
                                 "rib_pos": 0.37, 
                                 "force": 3.0, 
@@ -916,7 +916,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 1, 
+                                "cell_no": 1, 
                                 "layer": "brake", 
                                 "rib_pos": 1.0, 
                                 "force": 0.7, 
@@ -939,7 +939,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 7, 
+                                "cell_no": 7, 
                                 "layer": "brake", 
                                 "rib_pos": 1.0, 
                                 "force": 0.2, 
@@ -950,7 +950,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 4, 
+                                "cell_no": 4, 
                                 "layer": "", 
                                 "rib_pos": 0.68, 
                                 "force": 2.0, 
@@ -961,7 +961,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 5, 
+                                "cell_no": 5, 
                                 "layer": "brake", 
                                 "rib_pos": 1.0, 
                                 "force": 0.7, 
@@ -972,7 +972,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 2, 
+                                "cell_no": 2, 
                                 "layer": "brake", 
                                 "rib_pos": 1.0, 
                                 "force": 0.7, 
@@ -995,7 +995,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 6, 
+                                "cell_no": 6, 
                                 "layer": "", 
                                 "rib_pos": 0.14, 
                                 "force": 4.0, 
@@ -1006,7 +1006,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 11, 
+                                "cell_no": 11, 
                                 "layer": "", 
                                 "rib_pos": 0.14, 
                                 "force": 2.000000000000001, 
@@ -1058,7 +1058,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 6, 
+                                "cell_no": 6, 
                                 "layer": "brake", 
                                 "rib_pos": 1.0, 
                                 "force": 0.2, 
@@ -1081,7 +1081,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 12, 
+                                "cell_no": 12, 
                                 "layer": "brake", 
                                 "rib_pos": 1.0, 
                                 "force": 0.1, 
@@ -1092,7 +1092,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 12, 
+                                "cell_no": 12, 
                                 "layer": "", 
                                 "rib_pos": 0.04, 
                                 "force": 2.0, 
@@ -1103,7 +1103,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 9, 
+                                "cell_no": 9, 
                                 "layer": "", 
                                 "rib_pos": 0.14, 
                                 "force": 4.0, 
@@ -1126,7 +1126,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 7, 
+                                "cell_no": 7, 
                                 "layer": "", 
                                 "rib_pos": 0.37, 
                                 "force": 3.0, 
@@ -1137,7 +1137,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 11, 
+                                "cell_no": 11, 
                                 "layer": "", 
                                 "rib_pos": 0.5, 
                                 "force": 2.0, 
@@ -1160,7 +1160,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 8, 
+                                "cell_no": 8, 
                                 "layer": "", 
                                 "rib_pos": 0.68, 
                                 "force": 2.0, 
@@ -1171,7 +1171,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 2, 
+                                "cell_no": 2, 
                                 "layer": "", 
                                 "rib_pos": 0.37, 
                                 "force": 3.0, 
@@ -1194,7 +1194,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 12, 
+                                "cell_no": 12, 
                                 "layer": "", 
                                 "rib_pos": 0.37, 
                                 "force": 1.5, 
@@ -1205,7 +1205,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 8, 
+                                "cell_no": 8, 
                                 "layer": "", 
                                 "rib_pos": 0.14, 
                                 "force": 4.0, 
@@ -1228,7 +1228,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 12, 
+                                "cell_no": 12, 
                                 "layer": "", 
                                 "rib_pos": 0.75, 
                                 "force": 0.9, 
@@ -1275,7 +1275,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 1, 
+                                "cell_no": 1, 
                                 "layer": "", 
                                 "rib_pos": 0.14, 
                                 "force": 4.0, 
@@ -1286,7 +1286,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 6, 
+                                "cell_no": 6, 
                                 "layer": "", 
                                 "rib_pos": 0.37, 
                                 "force": 3.0, 
@@ -1326,7 +1326,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 7, 
+                                "cell_no": 7, 
                                 "layer": "", 
                                 "rib_pos": 0.68, 
                                 "force": 2.0, 
@@ -1337,7 +1337,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 4, 
+                                "cell_no": 4, 
                                 "layer": "", 
                                 "rib_pos": 0.37, 
                                 "force": 3.0, 
@@ -1384,7 +1384,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 2, 
+                                "cell_no": 2, 
                                 "layer": "", 
                                 "rib_pos": 0.14, 
                                 "force": 4.0, 
@@ -1407,7 +1407,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 7, 
+                                "cell_no": 7, 
                                 "layer": "", 
                                 "rib_pos": 0.14, 
                                 "force": 4.0, 
@@ -1418,7 +1418,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 3, 
+                                "cell_no": 3, 
                                 "layer": "brake", 
                                 "rib_pos": 1.0, 
                                 "force": 0.7, 
@@ -1441,7 +1441,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 3, 
+                                "cell_no": 3, 
                                 "layer": "", 
                                 "rib_pos": 0.14, 
                                 "force": 4.0, 
@@ -1476,7 +1476,7 @@
                             "_module": "openglider.glider.parametric.lines", 
                             "_type": "UpperNode2D", 
                             "data": {
-                                "rib_no": 4, 
+                                "cell_no": 4, 
                                 "layer": "brake", 
                                 "rib_pos": 1.0, 
                                 "force": 0.7, 

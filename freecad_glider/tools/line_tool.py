@@ -513,11 +513,11 @@ class LineTool(BaseTool):
         try:
             new_lines = LineSet2D(lines)
             self.parametric_glider.lineset = new_lines
-            self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
+            self.parametric_glider.get_glider_3d(self.obj.Proxy.getGliderInstance())
         except Exception as e:
             App.Console.PrintError(traceback.format_exc())
             self.parametric_glider.lineset = lineset
-            self.parametric_glider.get_glider_3d(self.obj.GliderInstance)
+            self.parametric_glider.get_glider_3d(self.obj.Proxy.getGliderInstance())
             return
 
         for node in self.parametric_glider.lineset.nodes:
