@@ -1,6 +1,7 @@
 from ._glider import OGBaseObject, OGGliderVP
 
 from openglider.airfoil.profile_2d import Profile2D
+from openglider.glider.rib import SingleSkinRib
 import numpy as np
 import copy
 
@@ -133,12 +134,25 @@ class SingleSkinRibFeature(BaseFeature):
         obj.addProperty("App::PropertyIntegerList", "ribs", "not yet", "docs")
         obj.addProperty("App::PropertyFloat", "height", "not yet", "docs").height = 0.5
         obj.addProperty("App::PropertyFloat", "att_dist", "not yet", "docs").att_dist = 0.1
+        obj.addProperty("App::PropertyInteger", "num_points", "accuracy", "number of points").num_points = 20
 
     def getGliderInstance(self):
         glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
+        new_ribs = []
+        single_skin_par = {"att_dist": self.obj.att_dist, 
+                           "height": self.obj.height,
+                           "num_points": self.obj.num_points}
+
         for i, rib in enumerate(glider.ribs):
             if i in self.obj.ribs:
-                rib.single_skin_par = {"att_dist": self.obj.att_dist, "height": self.obj.height}
+                if not isinstance(rib, SingleSkinRib):
+                    new_ribs.append(SingleSkinRib.from_rib(rib, single_skin_par))
+                else:
+                    rib.single_skin_par = single_skin_par
+                    new_ribs.append(rib)
+            else:
+                new_ribs.append(rib)
+        glider.replace_ribs(new_ribs)
         return glider
 
     def execute(self, fp):

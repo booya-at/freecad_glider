@@ -211,6 +211,7 @@ class OGGliderVP(OGBaseVP):
         try:
             return self.obj.Proxy.getGliderInstance()
         except AttributeError as e:
+            print(e)
             return None
 
     def attach(self, view_obj):

@@ -3,6 +3,7 @@ from __future__ import division
 from PySide import QtGui, QtCore
 import numpy as np
 import FreeCAD as App
+from openglider.glider.cell.elements import Panel
 
 from ._tools import BaseTool, input_field, text_field, coin
 from .pivy_primitives_new_new import Line, Marker, Container, vector3D
@@ -58,8 +59,8 @@ class DesignTool(BaseTool):
         self.form.append(self.tool_widget)
 
         self.Qcut_type = QtGui.QComboBox(self.tool_widget)
-        self.Qcut_type.addItem("folded")
-        self.Qcut_type.addItem("orthogonal")
+        for _, cut_type in Panel.CUT_TYPES():
+            self.Qcut_type.addItem(cut_type)
         self.Qcut_type.setEnabled(False)
         self.Qcut_type.currentIndexChanged.connect(self.cut_type_changed)
 
