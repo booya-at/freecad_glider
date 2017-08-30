@@ -54,7 +54,6 @@ class gliderWorkbench(Gui.Workbench):
         "Gl2dExport"]
 
     featureBox = [
-        "GliderFeatureCommand",
         "GliderRibFeatureCommand",
         "GliderBallooningFeatureCommand",
         "GliderSharkFeatureCommand",
@@ -96,7 +95,6 @@ class gliderWorkbench(Gui.Workbench):
         Gui.addCommand("PanelCommand", tools.PanelCommand())
         Gui.addCommand("PolarsCommand", tools.PolarsCommand())
 
-        Gui.addCommand("GliderFeatureCommand", tools.GliderFeatureCommand())
         Gui.addCommand("GliderRibFeatureCommand", tools.GliderRibFeatureCommand())
         Gui.addCommand("GliderBallooningFeatureCommand", tools.GliderBallooningFeatureCommand())
         Gui.addCommand("GliderSharkFeatureCommand", tools.GliderSharkFeatureCommand())

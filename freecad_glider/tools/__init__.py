@@ -337,7 +337,7 @@ class GliderFeatureCommand(BaseCommand):
 
 class GliderRibFeatureCommand(GliderFeatureCommand):
     def GetResources(self):
-        return {'Pixmap': "airfoil_command.svg" , 'MenuText': 'Features', 'ToolTip': 'set airfoil to ribs'}
+        return {'Pixmap': "rib_feature.svg" , 'MenuText': 'Features', 'ToolTip': 'set airfoil to ribs'}
 
     def Activated(self):
         feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "ribFeature")
@@ -349,7 +349,7 @@ class GliderRibFeatureCommand(GliderFeatureCommand):
 
 class GliderBallooningFeatureCommand(GliderFeatureCommand):
     def GetResources(self):
-        return {'Pixmap': "cell_command.svg" , 'MenuText': 'Features', 'ToolTip': 'set airfoil to ribs'}
+        return {'Pixmap': "ballooning_feature.svg" , 'MenuText': 'Features', 'ToolTip': 'set ballooning to ribs'}
 
     def Activated(self):
         feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "ballooningFeature")
@@ -361,7 +361,7 @@ class GliderBallooningFeatureCommand(GliderFeatureCommand):
 
 class GliderSharkFeatureCommand(GliderFeatureCommand):
     def GetResources(self):
-        return {'Pixmap': "airfoil_command.svg" , 'MenuText': 'Features', 'ToolTip': 'set airfoil to ribs'}
+        return {'Pixmap': "sharknose_feature.svg" , 'MenuText': 'Features', 'ToolTip': 'shark nose'}
 
     def Activated(self):
         feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "sharkFeature")
@@ -372,7 +372,7 @@ class GliderSharkFeatureCommand(GliderFeatureCommand):
 
 class GliderSingleSkinRibFeatureCommand(GliderFeatureCommand):
     def GetResources(self):
-        return {'Pixmap': "airfoil_command.svg" , 'MenuText': 'Features', 'ToolTip': 'set single-skin feature'}
+        return {'Pixmap': "singleskin_feature.svg" , 'MenuText': 'Features', 'ToolTip': 'set single-skin feature'}
 
     def Activated(self):
         feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "singleSkinRib")
