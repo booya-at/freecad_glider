@@ -310,16 +310,13 @@ class RefreshCommand():
         return True
 
     def Activated(self):
-        mods = [glider, tools, airfoil_tool, shape_tool, arc_tool, aoa_tool]
-        mods += [ballooning_tool, line_tool, merge_tool, pm, cell_tool, design_tool]
-        mods += [color_tool]
-        for mod in mods:
-            reload(mod)
-            try:
-                mod.refresh()
-            except AttributeError:
-                App.Console.PrintWarning(str(mod) + " has no refresh function implemented\n")
-        App.Console.PrintLog("RELOADED GLIDER WORKBENCH\n")
+        from types import ModuleType
+        DONOTRELOAD = ["FreeCAD", "FreeCADGui"]
+        vals = globals().values()
+        for val in vals:
+            if type(val) is ModuleType and val.__name__ not in DONOTRELOAD:
+                reload(val)
+        App.Console.PrintLog("reload everything")
 
 
 class GliderFeatureCommand(BaseCommand):

@@ -330,12 +330,12 @@ class Container(coin.SoSeparator):
             for foo in self.on_drag:
                 foo()
 
-    def grab_cb(self, event_callback):
+    def grab_cb(self, event_callback, force=False):
         # press g to move an entity
         event = event_callback.getEvent()
         # get all drag objects, every selected object can add some drag objects
         # but the eventhandler is not allowed to call the drag twice on an object
-        if event.getKey() == ord("g"):
+        if event.getKey() == ord("g") or force:
             self.drag_objects = set()
             for i in self.select_object:
                 for j in i.drag_objects:

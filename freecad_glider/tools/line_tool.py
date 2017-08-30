@@ -1,5 +1,9 @@
 from __future__ import division
 
+import sys
+if sys.version_info.major > 2:
+    from importlib import reload
+
 from PySide import QtGui, QtCore
 import traceback
 import numpy as np
@@ -10,6 +14,11 @@ from .pivy_primitives_new_new import coin, Line, Marker, Container, vector3D
 from openglider.glider.parametric.lines import UpperNode2D, LowerNode2D, \
     BatchNode2D, Line2D, LineSet2D
 from openglider.lines.line_types import LineType
+
+
+def refresh():
+    pass
+
 
 class LineContainer(Container):
     def Select(self, obj, multi=False):
@@ -39,10 +48,6 @@ class LineContainer(Container):
                             self.select_object.append(obj)
                 self.ColorSelected()
                 self.selection_changed()
-
-def refresh():
-    pass
-
 
 # all line info goes into the tool.
 # the lineset will be totally reloaded after the tool work is ready
@@ -132,6 +137,10 @@ class LineTool(BaseTool):
         self.line_layout.setWidget(1, input_field, self.Qline_list)
         self.target_length.valueChanged.connect(self.update_target_length)
         self.Qline_list.currentItemChanged.connect(self.update_line_type)
+        self.QLineName = QtGui.QLineEdit()
+        self.line_layout.setWidget(2, text_field, QtGui.QLabel("name"))
+        self.line_layout.setWidget(2, input_field, self.QLineName)
+        self.QLineName.textChanged.connect(self.line_name_changed)
 
         self.attach_x_val = QtGui.QDoubleSpinBox()
         self.attach_y_val = QtGui.QDoubleSpinBox()
@@ -208,6 +217,9 @@ class LineTool(BaseTool):
         self.layer_combobox.currentIndexChanged.connect(self.show_layer)
         self.layer_selection.activated.connect(self.set_layer_by_current)
         self.layer_selection.setEnabled(False)
+
+    def line_name_changed(self, name):
+        self.shape.select_object[0].name = name
 
     def add_new_layer(self):
         self.add_layer_dialog.exec_()
@@ -330,7 +342,15 @@ class LineTool(BaseTool):
         event = event_callback.getEvent()
         if ((event.getKey() == ord("i") or force) and
             (event.getState() == 1)):
-            if self.upper_preview_node:
+            objs = self.shape.select_object
+            if len(objs) == 1 and (isinstance(objs[0], Lower_Att_Marker)):
+                node = objs[0].node
+                point = Lower_Att_Marker(node, self.parametric_glider)
+                point.layer = self.layer_combobox.currentText()
+                self.shape += [point]
+                self.shape.Select(point)
+                self.shape.grab_cb(event_callback, force=True)
+            elif self.upper_preview_node:
                 self.add_attachment_point(self.upper_preview_node[0])
             else:
                 pos = event.getPosition()
@@ -346,6 +366,18 @@ class LineTool(BaseTool):
                     point.layer = self.layer_combobox.currentText()
                 self.shape += [point]
                 return point
+
+    def copy_node(self, event_callback, force=False):
+        event = event_callback.getEvent()
+        if ((event.getKey() == ord("c")) and
+            (event.getState() == 1)):
+            # get selection
+            objs = self.shape.select_object
+            if len(objs) == 1 and (isinstance(objs[0], Upper_Att_Marker)):
+                node = objs[0].node
+                ap = Upper_Att_Marker(node, self.parametric_glider)
+                ap.layer = self.layer_combobox.currentText()
+                self.shape += [ap]
 
     def add_attachment_point(self, pos):
         x, y = pos
@@ -398,8 +430,13 @@ class LineTool(BaseTool):
                 else:
                     self.target_length.setValue(selected_objs[0].target_length)
                 line_type_item = self.Qline_list.findItems(
-                        selected_objs[0].line_type, QtCore.Qt.MatchExactly)[0]
+                    selected_objs[0].line_type, QtCore.Qt.MatchExactly)[0]
                 self.Qline_list.setCurrentItem(line_type_item)
+                if len(selected_objs) != 1:
+                    self.QLineName.setDisabled(True)
+                else:
+                    self.QLineName.setEnabled(True)
+                    self.QLineName.setText(selected_objs[0].name)
             elif show_lower_att_widget(selected_objs):
                 self.tool_widget.setCurrentWidget(self.lw_att_wid)
                 x, y, z = selected_objs[0].pos_3D
@@ -484,10 +521,10 @@ class LineTool(BaseTool):
         for line in self.parametric_glider.lineset.lines:
             m1 = nodes[line.lower_node]
             m2 = nodes[line.upper_node]
-            target_length = line.target_length
             obj = ConnectionLine(m1, m2)
             obj.line_type = line.line_type.name
-            obj.target_length = target_length
+            obj.target_length = line.target_length
+            obj.name = line.name
             obj.layer = line.layer
             self.shape += [obj]
             self.layer_combobox.addItem(line.layer)
@@ -507,7 +544,10 @@ class LineTool(BaseTool):
                     l.target_length = obj.target_length
                 l.line_type = LineType.types[obj.line_type]
                 l.layer = obj.layer
+                l.name = obj.name
                 lines.append(l)
+                if isinstance(l.upper_node, UpperNode2D):
+                    l.upper_node.name = obj.name
 
         lineset = self.parametric_glider.lineset
         try:
@@ -519,10 +559,6 @@ class LineTool(BaseTool):
             self.parametric_glider.lineset = lineset
             self.parametric_glider.get_glider_3d(self.obj.Proxy.getGliderInstance())
             return
-
-        for node in self.parametric_glider.lineset.nodes:
-            if isinstance(node, UpperNode2D):
-                node.name = node.layer + str(node.cell_no)
 
         self.shape.unregister()
         self.remove_all_callbacks()
@@ -645,6 +681,7 @@ class ConnectionLine(Line):
         self.target_length = 1.
         self.line_type = "default"
         self.layer = ""
+        self.name = "line_name"
 
     def is_uppermost_line(self):
         return (isinstance(self.marker1, Upper_Att_Marker) or 
