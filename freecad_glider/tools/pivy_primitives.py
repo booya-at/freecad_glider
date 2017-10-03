@@ -140,8 +140,9 @@ class ControlPointContainer(coin.SoSeparator):
                 point = path.getNode(length - 2)
                 point = list(filter(lambda ctrl: ctrl.getNodeId() == point.getNodeId(), self.control_points))
                 if point != []:
-                    self.current_point = point[0]
-                    break
+                    if (not hasattr(point[0], "fix") or not point[0].fix):
+                        self.current_point = point[0]
+                        break
             else:
                 self.current_point = None
 

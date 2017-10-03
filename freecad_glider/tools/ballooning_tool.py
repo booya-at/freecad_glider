@@ -158,10 +158,10 @@ class BallooningTool(BaseTool):
             self.lower_cpc.grid = [0.01, 0.01, 100]
             self.upper_cpc.control_pos = self.current_ballooning.upper_controlpoints
             self.lower_cpc.control_pos = self.current_ballooning.lower_controlpoints
-            self.upper_cpc.control_points[-1].fix = True
+            # self.upper_cpc.control_points[-1].fix = True
             self.lower_cpc.control_points[-1].fix = True
             self.lower_cpc.control_points[0].fix = True
-            self.upper_cpc.control_points[0].fix = True
+            # self.upper_cpc.control_points[0].fix = True
             self.spline_sep += [self.upper_cpc, self.lower_cpc]
             self.spline_sep += [self.lower_spline, self.upper_spline]
             self.upper_cpc.on_drag.append(self.upper_on_change)
@@ -191,9 +191,14 @@ class BallooningTool(BaseTool):
         self._update_lower_spline(70)
 
     def _update_upper_spline(self, num):
+        self.upper_cpc.control_points[-1].set_x(1.)
+        self.upper_cpc.control_points[0].set_x(0.)
+        self.lower_cpc.control_points[-1].set_y(-self.upper_cpc.control_points[-1].pos[1])
+        self.lower_cpc.control_points[0].set_y(-self.upper_cpc.control_points[0].pos[1])
         self.current_ballooning.upper_controlpoints = [
             i[:-1] for i in self.upper_cpc.control_pos]
         self.draw_upper_spline(num)
+        self._update_lower_spline(num)
 
     def draw_upper_spline(self, num):
         self.upper_spline.removeAllChildren()
