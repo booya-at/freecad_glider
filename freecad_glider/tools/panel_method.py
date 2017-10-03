@@ -19,28 +19,28 @@ from .pivy_primitives_new_new import Container, Marker, coin, Line, COLORS
 
 
 
-import matplotlib
-matplotlib.use('Qt4Agg')
-matplotlib.rcParams['backend.qt4']='PySide'
+# import matplotlib
+# matplotlib.use('Qt4Agg')
+# matplotlib.rcParams['backend.qt4']='PySide'
 
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-import matplotlib.pyplot as plt
+# from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+# import matplotlib.pyplot as plt
 
 def refresh():
     pass
 
-class MplCanvas(FigureCanvas):
-    """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
+# class MplCanvas(FigureCanvas):
+#     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
 
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
-        self.fig = plt.figure(figsize=(width, height), dpi=dpi)
-        super(MplCanvas, self).__init__(self.fig)
-        self.axes = self.fig.add_subplot(111)
-        self.setParent(parent)
-        self.updateGeometry()
+#     def __init__(self, parent=None, width=5, height=4, dpi=100):
+#         self.fig = plt.figure(figsize=(width, height), dpi=dpi)
+#         super(MplCanvas, self).__init__(self.fig)
+#         self.axes = self.fig.add_subplot(111)
+#         self.setParent(parent)
+#         self.updateGeometry()
 
-    def plot(self, *args, **kwargs):
-        self.axes.plot(*args, **kwargs)
+#     def plot(self, *args, **kwargs):
+#         self.axes.plot(*args, **kwargs)
 
 
 class polars():
@@ -93,16 +93,16 @@ class polars():
             self.cDi = np.array(self.cDi)
             self.cPi = np.array(self.cPi)
 
-    def potentialPlot(self):
-        self.canvas = MplCanvas()
-        self.canvas.plot(cD, cL, label="Drag $c_D * 10$")
-        self.canvas.plot(cP, cL, label="Pitch -$c_P$")
-        self.canvas.axes.xaxis.set_label("$\\alpha$")
-        self.canvas.axes.legend()
-        self.canvas.axes.grid()
-        self.canvas.draw()
-        self.canvas.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-        self.canvas.show()
+    # def potentialPlot(self):
+    #     self.canvas = MplCanvas()
+    #     self.canvas.plot(cD, cL, label="Drag $c_D * 10$")
+    #     self.canvas.plot(cP, cL, label="Pitch -$c_P$")
+    #     self.canvas.axes.xaxis.set_label("$\\alpha$")
+    #     self.canvas.axes.legend()
+    #     self.canvas.axes.grid()
+    #     self.canvas.draw()
+    #     self.canvas.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+    #     self.canvas.show()
 
     def solve_const_vert_Force(self):
         from scipy.optimize import newton_krylov
