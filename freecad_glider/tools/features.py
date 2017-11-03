@@ -131,17 +131,36 @@ class SharkFeature(BaseFeature):
 class SingleSkinRibFeature(BaseFeature):
     def __init__(self, obj, parent):
         super(SingleSkinRibFeature, self).__init__(obj, parent)
-        obj.addProperty("App::PropertyIntegerList", "ribs", "not yet", "docs")
-        obj.addProperty("App::PropertyFloat", "height", "not yet", "docs").height = 0.5
-        obj.addProperty("App::PropertyFloat", "att_dist", "not yet", "docs").att_dist = 0.1
-        obj.addProperty("App::PropertyInteger", "num_points", "accuracy", "number of points").num_points = 20
+        obj.addProperty("App::PropertyIntegerList",
+                        "ribs", "not yet", "docs")
+        obj.addProperty("App::PropertyFloat", "height", 
+                        "not yet", "docs").height = 0.5
+        obj.addProperty("App::PropertyFloat", "att_dist", 
+                        "not yet", "docs").att_dist = 0.1
+        obj.addProperty("App::PropertyInteger", "num_points", 
+                        "accuracy", "number of points").num_points = 20
+        obj.addProperty("App::PropertyBool", "le_gap", 
+                        "not_yet", "should the leading edge match the rib").le_gap = True
+        obj.addProperty("App::PropertyBool", "te_gap", 
+                        "not_yet", "should the leading edge match the rib").te_gap = True
 
     def getGliderInstance(self):
         glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
         new_ribs = []
+        ##### backward compatibility
+        if not hasattr(self.obj, "le_gap"):
+            self.obj.addProperty("App::PropertyBool", "le_gap", 
+                                 "not_yet", "should the leading edge match the rib").le_gap = True
+        if not hasattr(self.obj, "te_gap"):
+            self.obj.addProperty("App::PropertyBool", "te_gap", 
+                                 "not_yet", "should the leading edge match the rib").te_gap = True
+        ##### end backward compatibility
+
         single_skin_par = {"att_dist": self.obj.att_dist, 
                            "height": self.obj.height,
-                           "num_points": self.obj.num_points}
+                           "num_points": self.obj.num_points,
+                           "le_gap": self.obj.le_gap,
+                           "te_gap": self.obj.te_gap}
 
         for i, rib in enumerate(glider.ribs):
             if i in self.obj.ribs:
