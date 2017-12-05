@@ -18,17 +18,17 @@ class CellTool(BaseTool):
         super(CellTool, self).__init__(obj)
         self.diagonals_table = diagonals_table()
         self.diagonals_table.get_from_ParametricGlider(self.parametric_glider)
-        self.diagonals_button = QtGui.QPushButton("diagonals")
+        self.diagonals_button = QtGui.QPushButton('diagonals')
         self.diagonals_button.clicked.connect(self.diagonals_table.show)
         self.layout.setWidget(0, input_field, self.diagonals_button)
 
         self.vector_table = vector_table()
         self.vector_table.get_from_ParametricGlider(self.parametric_glider)
-        self.vector_button = QtGui.QPushButton("vector strap")
+        self.vector_button = QtGui.QPushButton('vector strap')
         self.vector_button.clicked.connect(self.vector_table.show)
         self.layout.setWidget(1, input_field, self.vector_button)
 
-        self.update_button = QtGui.QPushButton("update glider")
+        self.update_button = QtGui.QPushButton('update glider')
         self.update_button.clicked.connect(self.update_glider)
         self.layout.setWidget(2, input_field, self.update_button)
         draw_glider(self.parametric_glider.get_glider_3d(), self.task_separator, hull=None, ribs=True)
@@ -64,97 +64,97 @@ def number_input(number):
 
 class diagonals_table(base_table_widget):
     def __init__(self):
-        super(diagonals_table, self).__init__(name="diagonals")
+        super(diagonals_table, self).__init__(name='diagonals')
         self.table.setRowCount(10)
         self.table.setColumnCount(9)
         self.table.setHorizontalHeaderLabels([
-            "right\nfront",
-            "rf\nheight",
-            "right\nback",
-            "rb\nheight",
-            "left\nback",
-            "lb\nheight",
-            "left\nfront",
-            "lf\nheight",
-            "ribs"])
+            'right\nfront',
+            'rf\nheight',
+            'right\nback',
+            'rb\nheight',
+            'left\nback',
+            'lb\nheight',
+            'left\nfront',
+            'lf\nheight',
+            'ribs'])
 
     def get_from_ParametricGlider(self, ParametricGlider):
-        if "diagonals" in ParametricGlider.elements:
-            diags = ParametricGlider.elements["diagonals"]
+        if 'diagonals' in ParametricGlider.elements:
+            diags = ParametricGlider.elements['diagonals']
             for row, element in enumerate(diags):
                 entries = list(
-                    element["right_front"] +
-                    element["right_back"] +
-                    element["left_back"] +
-                    element["left_front"])
-                entries.append(element["cells"])
+                    element['right_front'] +
+                    element['right_back'] +
+                    element['left_back'] +
+                    element['left_front'])
+                entries.append(element['cells'])
                 self.table.setRow(row, entries)
 
     def apply_to_glider(self, ParametricGlider):
         num_rows = self.table.rowCount()
         # remove all diagonals from the glide_2d
-        ParametricGlider.elements["diagonals"] = []
+        ParametricGlider.elements['diagonals'] = []
         for n_row in range(num_rows):
             row = self.get_row(n_row)
             if row:
                 diagonal = {}
-                diagonal["right_front"] = (row[0], row[1])
-                diagonal["right_back"] = (row[2], row[3])
-                diagonal["left_back"] = (row[4], row[5])
-                diagonal["left_front"] = (row[6], row[7])
-                diagonal["cells"] = row[-1]
-                ParametricGlider.elements["diagonals"].append(diagonal)
+                diagonal['right_front'] = (row[0], row[1])
+                diagonal['right_back'] = (row[2], row[3])
+                diagonal['left_back'] = (row[4], row[5])
+                diagonal['left_front'] = (row[6], row[7])
+                diagonal['cells'] = row[-1]
+                ParametricGlider.elements['diagonals'].append(diagonal)
 
     def get_row(self, n_row):
         str_row = [self.table.item(n_row, i).text() for i in range(9) if self.table.item(n_row, i)]
-        str_row = [item for item in str_row if item != ""]
+        str_row = [item for item in str_row if item != '']
         if len(str_row) != 9:
-            print("something wrong with row " + str(n_row))
+            print('something wrong with row ' + str(n_row))
             return None
         try:
-            return list(map(float, str_row[:-1]) + [map(int, str_row[-1].split(","))])
+            return list(map(float, str_row[:-1]) + [map(int, str_row[-1].split(','))])
         except TypeError:
-            print("something wrong with row " + str(n_row))
+            print('something wrong with row ' + str(n_row))
             return None
 
 
 class vector_table(base_table_widget):
     def __init__(self):
-        super(vector_table, self).__init__(name="vector straps")
+        super(vector_table, self).__init__(name='vector straps')
         self.table.setRowCount(10)
         self.table.setColumnCount(3)
-        self.table.setHorizontalHeaderLabels(["left", "right", "ribs"])
+        self.table.setHorizontalHeaderLabels(['left', 'right', 'ribs'])
 
     def get_from_ParametricGlider(self, ParametricGlider):
-        if "straps" in ParametricGlider.elements:
-            straps = ParametricGlider.elements["straps"]
+        if 'straps' in ParametricGlider.elements:
+            straps = ParametricGlider.elements['straps']
             for row, element in enumerate(straps):
-                entries = [element["right"], element["left"]]
-                entries.append(element["cells"])
+                entries = [element['right'], element['left']]
+                entries.append(element['cells'])
                 self.table.setRow(row, entries)
 
     def apply_to_glider(self, ParametricGlider):
         num_rows = self.table.rowCount()
         # remove all diagonals from the glide_2d
-        ParametricGlider.elements["straps"] = []
+        ParametricGlider.elements['straps'] = []
         for n_row in range(num_rows):
             row = self.get_row(n_row)
             if row:
                 strap = {}
-                strap["right"] = row[0]
-                strap["left"] = row[1]
-                strap["cells"] = row[2]
-                ParametricGlider.elements["straps"].append(strap)
+                strap['right'] = row[0]
+                strap['left'] = row[1]
+                strap['cells'] = row[2]
+                ParametricGlider.elements['straps'].append(strap)
 
     def get_row(self, n_row):
         str_row = [self.table.item(n_row, i).text() for i in range(3) if self.table.item(n_row, i)]
 
-        str_row = [item for item in str_row if item != ""]
+        str_row = [item for item in str_row if item != '']
         if len(str_row) != 3:
-            print("something wrong with row " + str(n_row))
+            print('something wrong with row ' + str(n_row))
             return None
         try:
-            return list(map(float, str_row[:-1]) + [map(int, str_row[-1].split(","))])
+            return list(map(float, str_row[:-1]) + [map(int, str_row[-1].split(','))])
         except TypeError:
-            print("something wrong with row " + str(n_row))
+            print('something wrong with row ' + str(n_row))
             return None

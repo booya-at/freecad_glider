@@ -30,7 +30,7 @@ def refresh():
     pass
 
 # class MplCanvas(FigureCanvas):
-#     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
+#     '''Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.).'''
 
 #     def __init__(self, parent=None, width=5, height=4, dpi=100):
 #         self.fig = plt.figure(figsize=(width, height), dpi=dpi)
@@ -45,9 +45,9 @@ def refresh():
 
 class polars():
     try:
-        paraBEM = __import__("paraBEM")
-        pan3d = __import__("paraBEM.pan3d", globals(), locals(), ["abc"])
-        paraBEM_utils = __import__("paraBEM.utils", globals(), locals(), ["abc"])
+        paraBEM = __import__('paraBEM')
+        pan3d = __import__('paraBEM.pan3d', globals(), locals(), ['abc'])
+        paraBEM_utils = __import__('paraBEM.utils', globals(), locals(), ['abc'])
     except ImportError:
         paraBEM = None
 
@@ -60,7 +60,7 @@ class polars():
     
     def create_potential_table(self):
         if not self.paraBEM:
-            self.QWarning = QtGui.QLabel("no panel_method installed")
+            self.QWarning = QtGui.QLabel('no panel_method installed')
             self.layout.addWidget(self.QWarning)
         else:
             self._vertices, self._panels, self._trailing_edges = paraBEM_Panels(
@@ -75,7 +75,7 @@ class polars():
             case.A_ref = self.parametric_glider.shape.area
             case.mom_ref_point = self.paraBEM.Vector3(1.25, 0, -6)
             case.v_inf = self.paraBEM.Vector(self.parametric_glider.v_inf)
-            case.drag_calc = "trefftz"
+            case.drag_calc = 'trefftz'
             case.farfield = 5
             case.create_wake(10000000, 20)
             pols = case.polars(self.paraBEM_utils.v_inf_deg_range3(case.v_inf, 2, 15, 20))
@@ -95,9 +95,9 @@ class polars():
 
     # def potentialPlot(self):
     #     self.canvas = MplCanvas()
-    #     self.canvas.plot(cD, cL, label="Drag $c_D * 10$")
-    #     self.canvas.plot(cP, cL, label="Pitch -$c_P$")
-    #     self.canvas.axes.xaxis.set_label("$\\alpha$")
+    #     self.canvas.plot(cD, cL, label='Drag $c_D * 10$')
+    #     self.canvas.plot(cP, cL, label='Pitch -$c_P$')
+    #     self.canvas.axes.xaxis.set_label('$\\alpha$')
     #     self.canvas.axes.legend()
     #     self.canvas.axes.grid()
     #     self.canvas.draw()
@@ -146,7 +146,7 @@ class polars():
         a_p = [find_zeros(vel(phi), phi), find_zeros(gz(), phi)]
         canvas = MplCanvas()
         canvas.plot(vel(phi), gz())
-        canvas.plot(a_p[0], a_p[1], marker="o")
+        canvas.plot(a_p[0], a_p[1], marker='o')
         canvas.plot()
         canvas.axes.grid()
         canvas.draw()
@@ -161,22 +161,22 @@ class polars():
 
 
 class PanelTool(BaseTool):
-    widget_name = "Properties"
+    widget_name = 'Properties'
     hide = True
     try:
-        paraBEM = __import__("paraBEM")
-        pan3d = __import__("paraBEM.pan3d", globals(), locals(), ["abc"])
+        paraBEM = __import__('paraBEM')
+        pan3d = __import__('paraBEM.pan3d', globals(), locals(), ['abc'])
     except ImportError:
         paraBEM = None
 
     def __init__(self, obj):
         super(PanelTool, self).__init__(obj)
         if not self.paraBEM:
-            self.QWarning = QtGui.QLabel("no panel_method installed")
+            self.QWarning = QtGui.QLabel('no panel_method installed')
             self.layout.addWidget(self.QWarning)
         else:
             self.case = None
-            self.Qrun = QtGui.QPushButton("run")
+            self.Qrun = QtGui.QPushButton('run')
             self.Qmidribs = QtGui.QSpinBox()
             self.Qsymmetric = QtGui.QCheckBox()
             self.Qmean_profile = QtGui.QCheckBox()
@@ -195,25 +195,25 @@ class PanelTool(BaseTool):
             self.setup_pivy()
 
     def setup_widget(self):
-        self.layout.setWidget(0, text_field, QtGui.QLabel("profile points"))
+        self.layout.setWidget(0, text_field, QtGui.QLabel('profile points'))
         self.layout.setWidget(0, input_field, self.Qprofile_points)
-        self.layout.setWidget(1, text_field, QtGui.QLabel("midribs"))
+        self.layout.setWidget(1, text_field, QtGui.QLabel('midribs'))
         self.layout.setWidget(1, input_field, self.Qmidribs)
-        self.layout.setWidget(2, text_field, QtGui.QLabel("symmetric"))
+        self.layout.setWidget(2, text_field, QtGui.QLabel('symmetric'))
         self.layout.setWidget(2, input_field, self.Qsymmetric)
-        self.layout.setWidget(3, text_field, QtGui.QLabel("mean profile"))
+        self.layout.setWidget(3, text_field, QtGui.QLabel('mean profile'))
         self.layout.setWidget(3, input_field, self.Qmean_profile)
-        self.layout.setWidget(4, text_field, QtGui.QLabel("number of streams"))
+        self.layout.setWidget(4, text_field, QtGui.QLabel('number of streams'))
         self.layout.setWidget(4, input_field, self.Qstream_points)
-        self.layout.setWidget(5, text_field, QtGui.QLabel("stream radius"))
+        self.layout.setWidget(5, text_field, QtGui.QLabel('stream radius'))
         self.layout.setWidget(5, input_field, self.Qstream_radius)
-        self.layout.setWidget(6, text_field, QtGui.QLabel("points per streamline"))
+        self.layout.setWidget(6, text_field, QtGui.QLabel('points per streamline'))
         self.layout.setWidget(6, input_field, self.Qstream_num)
-        self.layout.setWidget(7, text_field, QtGui.QLabel("stream interval"))
+        self.layout.setWidget(7, text_field, QtGui.QLabel('stream interval'))
         self.layout.setWidget(7, input_field, self.Qstream_interval)
-        self.layout.setWidget(8, text_field, QtGui.QLabel("min_val"))
+        self.layout.setWidget(8, text_field, QtGui.QLabel('min_val'))
         self.layout.setWidget(8, input_field, self.Qmin_val)
-        self.layout.setWidget(9, text_field, QtGui.QLabel("max_val"))
+        self.layout.setWidget(9, text_field, QtGui.QLabel('max_val'))
         self.layout.setWidget(9, input_field, self.Qmax_val)
         self.layout.addWidget(self.Qrun)
 
@@ -374,10 +374,10 @@ class PanelTool(BaseTool):
                 return 0
         max_val=self.Qmax_val.value()
         min_val=self.Qmin_val.value()
-        red = numpy.array(COLORS["red"])
-        blue = numpy.array(COLORS["blue"])
-        yellow = numpy.array(COLORS["yellow"])
-        white = numpy.array(COLORS["white"])
+        red = numpy.array(COLORS['red'])
+        blue = numpy.array(COLORS['blue'])
+        yellow = numpy.array(COLORS['yellow'])
+        white = numpy.array(COLORS['white'])
         norm_val = (value - min_val) / (max_val - min_val)
         return list(f(3, 0, norm_val) * red + f(3,1,norm_val) * yellow + f(3,2,norm_val) * white + f(3,3,norm_val) * blue)
 

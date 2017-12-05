@@ -23,7 +23,7 @@ class activeGlider(object):
         sel = Gui.Selection.getSelection()
         if len(sel) == 1:
             obj = sel[0]
-            if hasattr(obj, "GliderInstance"):
+            if hasattr(obj, "Proxy") and hasattr(obj.Proxy, 'getGliderInstance'):
                 self._glider = obj
                 return
         self._glider = None
@@ -35,11 +35,11 @@ class activeGlider(object):
 
     @property
     def ParametricGlider(self):
-        return self.glider.ParametricGlider
+        return self.glider.Proxy.getParametricGlider()
 
     @property
     def GliderInstance(self):
-        return self.glider.GliderInstance
+        return self.glider.Proxy.getGliderInstance()
 
     @property
     def visuals(self):
@@ -54,7 +54,7 @@ class activeGlider(object):
 
     def __repr__(self):
         if self.glider:
-            return self.glider.GliderInstance.__repr__()
+            return self.GliderInstance.__repr__()
         else:
             return "No Glider selected"
 

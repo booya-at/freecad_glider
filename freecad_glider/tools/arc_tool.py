@@ -11,10 +11,10 @@ def refresh():
 
 class ArcTool(BaseTool):
     hide = True
-    widget_name = "ArcTool"
+    widget_name = 'ArcTool'
 
     def __init__(self, obj):
-        """adds a symmetric spline to the scene"""
+        '''adds a symmetric spline to the scene'''
         super(ArcTool, self).__init__(obj)
 
         controlpoints = list(map(vector3D, self.parametric_glider.arc.curve.controlpoints))
@@ -35,9 +35,9 @@ class ArcTool(BaseTool):
         self.Qnum_arc.setValue(len(self.parametric_glider.arc.curve.controlpoints))
         self.parametric_glider.arc.curve.numpoints = self.Qnum_arc.value()
 
-        self.layout.setWidget(0, text_field, QtGui.QLabel("arc num_points"))
+        self.layout.setWidget(0, text_field, QtGui.QLabel('arc num_points'))
         self.layout.setWidget(0, input_field, self.Qnum_arc)
-        self.layout.setWidget(1, text_field, QtGui.QLabel("bspline type"))
+        self.layout.setWidget(1, text_field, QtGui.QLabel('bspline type'))
         self.layout.setWidget(1, input_field, self.spline_select)
 
         self.Qnum_arc.valueChanged.connect(self.update_num)
@@ -57,7 +57,7 @@ class ArcTool(BaseTool):
     def update_spline(self):
         self.shape.removeAllChildren()
         self.parametric_glider.arc.curve.controlpoints = [vector2D(i) for i in self.arc_cpc.control_pos]
-        self.shape.addChild(Line(self.parametric_glider.arc.curve.get_sequence(num=30), color="grey").object)
+        self.shape.addChild(Line(self.parametric_glider.arc.curve.get_sequence(num=30), color='grey').object)
 
     def update_spline_type(self):
         self.arc_cpc.control_pos = self.parametric_glider.arc.curve.controlpoints
@@ -67,7 +67,7 @@ class ArcTool(BaseTool):
         return self.parametric_glider.arc.get_arc_positions(self.parametric_glider.shape.rib_x_values)
 
     def update_real_arc(self):
-        self.shape.addChild(Line(self.get_arc_positions(), color="red", width=2).object)
+        self.shape.addChild(Line(self.get_arc_positions(), color='red', width=2).object)
 
     def update_num(self, *arg):
         self.parametric_glider.arc.curve.numpoints = self.Qnum_arc.value()

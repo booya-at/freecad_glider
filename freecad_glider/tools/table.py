@@ -13,18 +13,18 @@ class table_tool(BaseTool):
         super(table_tool, self).__init__(obj)
 
         self.table_widget = base_table_widget()
-        self.table_button = QtGui.QPushButton("table")
+        self.table_button = QtGui.QPushButton('table')
         self.table_button.clicked.connect(self.table_widget.show)
         self.layout.setWidget(0, input_field, self.table_button)
 
         self.table_widget_1 = base_table_widget()
-        self.table_button_1 = QtGui.QPushButton("table")
+        self.table_button_1 = QtGui.QPushButton('table')
         self.table_button_1.clicked.connect(self.table_widget_1.show)
         self.layout.setWidget(1, input_field, self.table_button_1)
 
 
 class base_table_widget(QtGui.QWidget):
-    """a table which is shown infront of the mainwindow"""
+    '''a table which is shown infront of the mainwindow'''
     instances = []
     _last_pos = None
 
@@ -33,14 +33,14 @@ class base_table_widget(QtGui.QWidget):
         for obj in cls.instances:
             obj.hide()
 
-    def __init__(self, parent=None, name="test"):
+    def __init__(self, parent=None, name='test'):
         base_table_widget.instances.append(self)
         super(base_table_widget, self).__init__(parent)
         self.layout = QtGui.QVBoxLayout()
         self.table = base_table(self)
         self.setLayout(self.layout)
         label = QtGui.QLabel(name)
-        label.setFont(QtGui.QFont("Arial", 20))
+        label.setFont(QtGui.QFont('Arial', 20))
         label.setAlignment(QtCore.Qt.AlignCenter)
         self.layout.addWidget(label)
         self.layout.addWidget(self.table)
@@ -65,8 +65,8 @@ class base_table_widget(QtGui.QWidget):
         layout = QtGui.QHBoxLayout()
         widget = QtGui.QWidget()
         widget.setLayout(layout)
-        accept_button = QtGui.QPushButton("Ok")
-        reject_button = QtGui.QPushButton("Cancel")
+        accept_button = QtGui.QPushButton('Ok')
+        reject_button = QtGui.QPushButton('Cancel')
         accept_button.clicked.connect(self.accept)
         reject_button.clicked.connect(self.reject)
         layout.addWidget(accept_button)
@@ -123,7 +123,7 @@ class base_table(QtGui.QTableWidget):
         return QtCore.QSize(self.table_width, self.table_height)
 
     def setItem(self, row, col, entry):
-        if hasattr(entry,"__iter__") and not isinstance(entry, str):
+        if hasattr(entry,'__iter__') and not isinstance(entry, str):
             entry = str(entry)[1:-1]
         else:
             entry = str(entry)

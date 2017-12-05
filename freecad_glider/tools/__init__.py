@@ -6,9 +6,9 @@ from PySide import QtGui
 try:
     from importlib import reload
 except ImportError:
-    App.Console.PrintError("this is python2\n")
-    App.Console.PrintWarning("there is a newer version (python3)\n")
-    App.Console.PrintMessage("try to motivate dev to port to python3\n")
+    App.Console.PrintError('this is python2\n')
+    App.Console.PrintWarning('there is a newer version (python3)\n')
+    App.Console.PrintMessage('try to motivate dev to port to python3\n')
 
 from . import _glider as glider
 from . import _tools as tools
@@ -101,12 +101,12 @@ class CreateGlider(BaseCommand):
 
     @staticmethod
     def create_glider(import_path=None, parametric_glider=None):
-        glider_object = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "Glider")
+        glider_object = FreeCAD.ActiveDocument.addObject('App::FeaturePython', 'Glider')
         glider.OGGlider(glider_object, import_path=import_path, parametric_glider=parametric_glider)
         vp = glider.OGGliderVP(glider_object.ViewObject)
         vp.updateData()
         FreeCAD.ActiveDocument.recompute()
-        Gui.SendMsgToActiveView("ViewFit")
+        Gui.SendMsgToActiveView('ViewFit')
         return glider_object
 
     @property
@@ -134,9 +134,9 @@ class PatternCommand(BaseCommand):
             from openglider import plots
             file_name = QtGui.QFileDialog.getSaveFileName(
                 parent=None,
-                caption="create panels",
+                caption='create panels',
                 directory='~')
-            if not file_name[0] == "":
+            if not file_name[0] == '':
                 file_name = file_name[0]
                 pat = plots.Patterns(obj.Proxy.getParametricGlider())
                 pat.unwrap(file_name, obj.Proxy.getGliderInstance())
@@ -151,14 +151,14 @@ class ImportGlider(BaseCommand):
     def create_glider_with_dialog():
         file_name = QtGui.QFileDialog.getOpenFileName(
             parent=None,
-            caption="import glider",
+            caption='import glider',
             directory='~')
-        if not file_name[0] == "":
+        if not file_name[0] == '':
             file_name = file_name[0]
-            file_type = file_name.split(".")[1]
-            if file_type == "json":
+            file_type = file_name.split('.')[1]
+            if file_type == 'json':
                 CreateGlider.create_glider(import_path=file_name)
-            elif file_type == "ods":
+            elif file_type == 'ods':
                 par_glider = openglider.glider.ParametricGlider.import_ods(file_name)
                 CreateGlider.create_glider(parametric_glider=par_glider)
 
@@ -266,7 +266,7 @@ class LineCommand(BaseCommand):
 
 
 def check_glider(obj):
-    if hasattr(obj, "Proxy") and hasattr(obj.Proxy, "getGliderInstance"):
+    if hasattr(obj, 'Proxy') and hasattr(obj.Proxy, 'getGliderInstance'):
         return True
 
 
@@ -311,12 +311,12 @@ class RefreshCommand():
 
     def Activated(self):
         from types import ModuleType
-        DONOTRELOAD = ["FreeCAD", "FreeCADGui"]
+        DONOTRELOAD = ['FreeCAD', 'FreeCADGui']
         vals = globals().values()
         for val in vals:
             if type(val) is ModuleType and val.__name__ not in DONOTRELOAD:
                 reload(val)
-        App.Console.PrintLog("reload everything")
+        App.Console.PrintLog('reload everything')
 
 
 class GliderFeatureCommand(BaseCommand):
@@ -324,7 +324,7 @@ class GliderFeatureCommand(BaseCommand):
         return {'Pixmap': 'feature.svg', 'MenuText': 'Features', 'ToolTip': 'Features'}
 
     def Activated(self):
-        feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "BaseFeature")
+        feature = FreeCAD.ActiveDocument.addObject('App::FeaturePython', 'BaseFeature')
         self.feature.ViewObject.Visibility = False
         features.BaseFeature(feature, self.feature)
         vp = glider.OGGliderVP(feature.ViewObject)
@@ -337,10 +337,10 @@ class GliderFeatureCommand(BaseCommand):
 
 class GliderRibFeatureCommand(GliderFeatureCommand):
     def GetResources(self):
-        return {'Pixmap': "rib_feature.svg" , 'MenuText': 'Features', 'ToolTip': 'set airfoil to ribs'}
+        return {'Pixmap': 'rib_feature.svg' , 'MenuText': 'Features', 'ToolTip': 'set airfoil to ribs'}
 
     def Activated(self):
-        feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "ribFeature")
+        feature = FreeCAD.ActiveDocument.addObject('App::FeaturePython', 'ribFeature')
         self.feature.ViewObject.Visibility = False
         features.RibFeature(feature, self.glider_obj)
         vp = glider.OGGliderVP(feature.ViewObject)
@@ -349,10 +349,10 @@ class GliderRibFeatureCommand(GliderFeatureCommand):
 
 class GliderBallooningFeatureCommand(GliderFeatureCommand):
     def GetResources(self):
-        return {'Pixmap': "ballooning_feature.svg" , 'MenuText': 'Features', 'ToolTip': 'set ballooning to ribs'}
+        return {'Pixmap': 'ballooning_feature.svg' , 'MenuText': 'Features', 'ToolTip': 'set ballooning to ribs'}
 
     def Activated(self):
-        feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "ballooningFeature")
+        feature = FreeCAD.ActiveDocument.addObject('App::FeaturePython', 'ballooningFeature')
         self.glider_obj.ViewObject.Visibility = False
         features.BallooningFeature(feature, self.glider_obj)
         vp = glider.OGGliderVP(feature.ViewObject)
@@ -361,10 +361,10 @@ class GliderBallooningFeatureCommand(GliderFeatureCommand):
 
 class GliderSharkFeatureCommand(GliderFeatureCommand):
     def GetResources(self):
-        return {'Pixmap': "sharknose_feature.svg" , 'MenuText': 'Features', 'ToolTip': 'shark nose'}
+        return {'Pixmap': 'sharknose_feature.svg' , 'MenuText': 'Features', 'ToolTip': 'shark nose'}
 
     def Activated(self):
-        feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "sharkFeature")
+        feature = FreeCAD.ActiveDocument.addObject('App::FeaturePython', 'sharkFeature')
         self.glider_obj.ViewObject.Visibility = False
         features.SharkFeature(feature, self.glider_obj)
         vp = glider.OGGliderVP(feature.ViewObject)
@@ -372,10 +372,10 @@ class GliderSharkFeatureCommand(GliderFeatureCommand):
 
 class GliderSingleSkinRibFeatureCommand(GliderFeatureCommand):
     def GetResources(self):
-        return {'Pixmap': "singleskin_feature.svg" , 'MenuText': 'Features', 'ToolTip': 'set single-skin feature'}
+        return {'Pixmap': 'singleskin_feature.svg' , 'MenuText': 'Features', 'ToolTip': 'set single-skin feature'}
 
     def Activated(self):
-        feature = FreeCAD.ActiveDocument.addObject("App::FeaturePython", "singleSkinRib")
+        feature = FreeCAD.ActiveDocument.addObject('App::FeaturePython', 'singleSkinRib')
         self.glider_obj.ViewObject.Visibility = False
         features.SingleSkinRibFeature(feature, self.glider_obj)
         vp = glider.OGGliderVP(feature.ViewObject)

@@ -13,7 +13,7 @@ from openglider.glider import ParametricGlider
 # as long as this isn't part of std pivy:
 def SoGroup__iadd__(self, other):
     if not isinstance(other, list):
-        raise(AttributeError("rhs must be list"))
+        raise(AttributeError('rhs must be list'))
     for other_i in other:
         self.addChild(other_i)
     return self
@@ -54,9 +54,9 @@ input_field = QtGui.QFormLayout.FieldRole
 def export_2d(glider):
     filename = QtGui.QFileDialog.getSaveFileName(
         parent=None,
-        caption="export glider",
+        caption='export glider',
         directory='~')
-    if filename[0] != "":
+    if filename[0] != '':
         with open(filename[0], 'w') as exportfile:
             dump(glider.ParametricGlider, exportfile)
 
@@ -64,17 +64,17 @@ def export_2d(glider):
 def import_2d(glider):
     file_name = QtGui.QFileDialog.getOpenFileName(
         parent=None,
-        caption="import glider",
+        caption='import glider',
         directory='~')
-    if file_name[0] != "":
+    if file_name[0] != '':
         file_name = file_name[0]
-        file_type = file_name.split(".")[1]
-        if file_type == "json":
+        file_type = file_name.split('.')[1]
+        if file_type == 'json':
             with open(file_name, 'r') as importfile:
-                glider.ParametricGlider = load(importfile)["data"]
+                glider.ParametricGlider = load(importfile)['data']
                 glider.ParametricGlider.get_glider_3d(glider.GliderInstance)
                 glider.ViewObject.Proxy.updateData()
-        elif file_type == "ods":
+        elif file_type == 'ods':
             glider.ParametricGlider = ParametricGlider.import_ods(file_name)
             glider.ParametricGlider.get_glider_3d(glider.GliderInstance)
             glider.ViewObject.Proxy.updateData()
@@ -82,16 +82,16 @@ def import_2d(glider):
 
 class spline_select(QtGui.QComboBox):
     spline_types = {
-        "Bezier": (BernsteinBase, 0),
-        "BSpline_2": (BSplineBase(2), 1),
-        "BSpline_3": (BSplineBase(3), 2)
+        'Bezier': (BernsteinBase, 0),
+        'BSpline_2': (BSplineBase(2), 1),
+        'BSpline_3': (BSplineBase(3), 2)
     }
 
     def __init__(self, spline_objects, update_function, parent=None):
         super(spline_select, self).__init__(parent)
         self.update_function = update_function
         self.spline_objects = spline_objects    # list of splines
-        for key in ["Bezier", "BSpline_2", "BSpline_3"]:
+        for key in ['Bezier', 'BSpline_2', 'BSpline_3']:
             self.addItem(key)
         self.setCurrentIndex(self.spline_types[self.current_spline_type][1])
         self.currentIndexChanged.connect(self.set_spline_type)
@@ -101,11 +101,11 @@ class spline_select(QtGui.QComboBox):
         if self.spline_objects:
             base = self.spline_objects[0].basefactory
             if base.__class__ == BernsteinBase.__class__:
-                return "Bezier"
+                return 'Bezier'
             else:
-                return "BSpline_" + str(base.degree)
+                return 'BSpline_' + str(base.degree)
         else:
-            return "Bezier"
+            return 'Bezier'
 
     def set_spline_type(self, *args):
         for spline in self.spline_objects:
@@ -115,7 +115,7 @@ class spline_select(QtGui.QComboBox):
 
 class BaseTool(object):
     hide = True
-    widget_name = "Unnamed"
+    widget_name = 'Unnamed'
     turn = True
 
     def __init__(self, obj):
@@ -148,7 +148,7 @@ class BaseTool(object):
 
         # scene container
         self.task_separator = coin.SoSeparator()
-        self.task_separator.setName("task_seperator")
+        self.task_separator.setName('task_seperator')
         self.scene.addChild(self.task_separator)
 
     def update_view_glider(self):  # rename

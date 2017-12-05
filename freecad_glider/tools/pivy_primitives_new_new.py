@@ -15,27 +15,27 @@ def vector3D(vec):
         elif len(vec) == 2:
             return np.array(vec).tolist() + [0.]
         else:
-            print("something wrong with this list: ", vec)
+            print('something wrong with this list: ', vec)
     else:
         return [vector3D(i) for i in vec]
 
 
 COLORS = {
-    "black": (0, 0, 0),
-    "white": (1., 1., 1.),
-    "grey": (0.5, 0.5, 0.5),
-    "red": (1., 0., 0.),
-    "blue": (0., 0., 1.),
-    "green": (0., 1., 1.),
-    "yellow": (0., 1., 0.)
+    'black': (0, 0, 0),
+    'white': (1., 1., 1.),
+    'grey': (0.5, 0.5, 0.5),
+    'red': (1., 0., 0.),
+    'blue': (0., 0., 1.),
+    'green': (0., 1., 1.),
+    'yellow': (0., 1., 0.)
 }
 
 
 class Object3D(coin.SoSeparator):
-    std_col = "black"
-    ovr_col = "red"
-    sel_col = "yellow"
-    disabled_col = "grey"
+    std_col = 'black'
+    ovr_col = 'red'
+    sel_col = 'yellow'
+    disabled_col = 'grey'
 
     def __init__(self, points, dynamic=False):
         super(Object3D, self).__init__()
@@ -56,7 +56,7 @@ class Object3D(coin.SoSeparator):
         self._tmp_points = None
         self.enabled = True
         if depth(points) != 2:
-            raise AttributeError("depth of list should be 2")
+            raise AttributeError('depth of list should be 2')
         self.points = points
 
     def set_disabled(self):
@@ -178,7 +178,7 @@ class Container(coin.SoSeparator):
 
     def addChild(self, child):
         super(Container, self).addChild(child)
-        if hasattr(child, "dynamic"):
+        if hasattr(child, 'dynamic'):
             if child.dynamic:
                 self.objects.append(child)
             else:
@@ -227,7 +227,7 @@ class Container(coin.SoSeparator):
         self.Highlight(obj)
 
     def SendRay(self, mouse_pos):
-        """sends a ray trough the scene and return the nearest entity"""
+        '''sends a ray trough the scene and return the nearest entity'''
         render_manager = self.view.getViewer().getSoRenderManager()
         ray_pick = coin.SoRayPickAction(render_manager.getViewportRegion())
         ray_pick.setPoint(coin.SbVec2s(*mouse_pos))
@@ -259,7 +259,7 @@ class Container(coin.SoSeparator):
 
     def select_all_cb(self, event_callback):
         event = event_callback.getEvent()
-        if (event.getKey() == ord("a")):
+        if (event.getKey() == ord('a')):
             if event.getState() == event.DOWN:
                 if self.select_object:
                     for o in self.select_object:
@@ -307,8 +307,8 @@ class Container(coin.SoSeparator):
                 key = chr(event.getKey())
             except ValueError:
                 # there is no character for this value
-                key = "_"
-            if key in "xyz" and key != self._direction:
+                key = '_'
+            if key in 'xyz' and key != self._direction:
                 self._direction = key
             else:
                 self._direction = None
@@ -335,7 +335,7 @@ class Container(coin.SoSeparator):
         event = event_callback.getEvent()
         # get all drag objects, every selected object can add some drag objects
         # but the eventhandler is not allowed to call the drag twice on an object
-        if event.getKey() == ord("g") or force:
+        if event.getKey() == ord('g') or force:
             self.drag_objects = set()
             for i in self.select_object:
                 for j in i.drag_objects:
@@ -357,7 +357,7 @@ class Container(coin.SoSeparator):
         event = event_callback.getEvent()
         # get all drag objects, every selected object can add some drag objects
         # but the eventhandler is not allowed to call the drag twice on an object
-        if event.getKey() == ord(u"\uffff") and (event.getState() == 1):
+        if event.getKey() == ord(u'\uffff') and (event.getState() == 1):
             self.removeSelected()
 
     def register(self, view):
@@ -414,9 +414,9 @@ class Container(coin.SoSeparator):
     def constrained_vector(self, vector):
         if self._direction is None:
             return vector
-        if self._direction == "x":
+        if self._direction == 'x':
             return [vector[0], 0, 0]
-        elif self._direction == "y":
+        elif self._direction == 'y':
             return [0, vector[1], 0]
-        elif self._direction == "z":
+        elif self._direction == 'z':
             return [0, 0, vector[2]]

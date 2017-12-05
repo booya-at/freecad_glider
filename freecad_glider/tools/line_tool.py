@@ -36,7 +36,7 @@ class LineContainer(Container):
 
     def select_all_cb(self, event_callback):
         event = event_callback.getEvent()
-        if (event.getKey() == ord("a")):
+        if (event.getKey() == ord('a')):
             if event.getState() == event.DOWN:
                 if self.select_object:
                     for o in self.select_object:
@@ -58,7 +58,7 @@ class LineContainer(Container):
 # 3: eventhandler for adding and connecting lines
 
 class LineTool(BaseTool):
-    widget_name = "Line Tool"
+    widget_name = 'Line Tool'
     def __init__(self, obj):
         super(LineTool, self).__init__(obj)
 
@@ -83,7 +83,7 @@ class LineTool(BaseTool):
         self.shape = LineContainer()
         self.shape.selection_changed = self.selection_changed
 
-        self.shape.setName("shape")
+        self.shape.setName('shape')
         self.shape.register(self.view)
         self.task_separator += [self.shape, self.helper_line]
         self.task_separator += [self.temp_point]
@@ -107,8 +107,8 @@ class LineTool(BaseTool):
         self.layer_selection = LayerComboBox(self.layer_widget)
         self.layer_combobox = LayerComboBox(self.layer_widget)
 
-        self.tool_widget.setWindowTitle("object properties")
-        self.layer_widget.setWindowTitle("layers")
+        self.tool_widget.setWindowTitle('object properties')
+        self.layer_widget.setWindowTitle('layers')
         self.form.append(self.layer_widget)
         self.form.append(self.tool_widget)
 
@@ -131,14 +131,14 @@ class LineTool(BaseTool):
 
         self.target_length = QtGui.QDoubleSpinBox()
         self.line_layout.setWidget(
-            0, text_field, QtGui.QLabel("target length: "))
+            0, text_field, QtGui.QLabel('target length: '))
         self.line_layout.setWidget(0, input_field, self.target_length)
-        self.line_layout.setWidget(1, text_field, QtGui.QLabel("line type: "))
+        self.line_layout.setWidget(1, text_field, QtGui.QLabel('line type: '))
         self.line_layout.setWidget(1, input_field, self.Qline_list)
         self.target_length.valueChanged.connect(self.update_target_length)
         self.Qline_list.currentItemChanged.connect(self.update_line_type)
         self.QLineName = QtGui.QLineEdit()
-        self.line_layout.setWidget(2, text_field, QtGui.QLabel("name"))
+        self.line_layout.setWidget(2, text_field, QtGui.QLabel('name'))
         self.line_layout.setWidget(2, input_field, self.QLineName)
         self.QLineName.textChanged.connect(self.line_name_changed)
 
@@ -158,14 +158,14 @@ class LineTool(BaseTool):
 
         self.up_att_force = QtGui.QDoubleSpinBox()
         self.up_att_force.setSingleStep(0.1)
-        self.up_att_lay.setWidget(0, text_field, QtGui.QLabel("force"))
+        self.up_att_lay.setWidget(0, text_field, QtGui.QLabel('force'))
         self.up_att_lay.setWidget(0, input_field, self.up_att_force)
         self.up_att_force.valueChanged.connect(self.update_up_att_force)
 
         self.up_att_rib = QtGui.QSpinBox()
         self.up_att_rib.setMinimum(0)
         self.up_att_rib.setMaximum(self.parametric_glider.shape.half_rib_num - 1)
-        self.up_att_lay.setWidget(1, text_field, QtGui.QLabel("rib nr"))
+        self.up_att_lay.setWidget(1, text_field, QtGui.QLabel('rib nr'))
         self.up_att_lay.setWidget(1, input_field, self.up_att_rib)
         self.up_att_rib.valueChanged.connect(self.update_up_att_rib)
 
@@ -173,7 +173,7 @@ class LineTool(BaseTool):
         self.up_att_pos.setMinimum(0)
         self.up_att_pos.setMaximum(1)
         self.up_att_pos.setSingleStep(0.01)
-        self.up_att_lay.setWidget(2, text_field, QtGui.QLabel("position"))
+        self.up_att_lay.setWidget(2, text_field, QtGui.QLabel('position'))
         self.up_att_lay.setWidget(2, input_field, self.up_att_pos)
         self.up_att_pos.valueChanged.connect(self.update_up_att_pos)
 
@@ -183,7 +183,7 @@ class LineTool(BaseTool):
         self.tool_widget.addWidget(self.up_att_wid)
         self.tool_widget.setCurrentWidget(self.none_widget)
 
-        button = QtGui.QPushButton("Help")
+        button = QtGui.QPushButton('Help')
         self.layout.setWidget(0, input_field, button)
         button.clicked.connect(self.show_help)
 
@@ -195,19 +195,19 @@ class LineTool(BaseTool):
             QtCore.SIGNAL('valueChanged(double)'),
             self.update_helper_line)
 
-        self.layout.setWidget(1, text_field, QtGui.QLabel("helper_line_pos"))
+        self.layout.setWidget(1, text_field, QtGui.QLabel('helper_line_pos'))
         self.layout.setWidget(1, input_field, self.Qhl_pos)
 
         # layers:
 
-        add_button = QtGui.QPushButton("add layer")
-        del_button = QtGui.QPushButton("delete layer")
+        add_button = QtGui.QPushButton('add layer')
+        del_button = QtGui.QPushButton('delete layer')
         self.layer_layout.setWidget(
-            0, text_field, QtGui.QLabel("work on layer"))
+            0, text_field, QtGui.QLabel('work on layer'))
         self.layer_layout.setWidget(0, input_field, self.layer_combobox)
         self.layer_layout.setWidget(1, text_field, add_button)
         self.layer_layout.setWidget(1, input_field, del_button)
-        self.layer_layout.setWidget(2, text_field, QtGui.QLabel("setLayer"))
+        self.layer_layout.setWidget(2, text_field, QtGui.QLabel('setLayer'))
         self.layer_layout.setWidget(2, input_field, self.layer_selection)
 
         # dialogs
@@ -233,7 +233,7 @@ class LineTool(BaseTool):
 
     def delete_layer(self):
         current_layer = self.layer_combobox.currentText()
-        self.set_layer(text="", objects=self.shape.objects,
+        self.set_layer(text='', objects=self.shape.objects,
                        from_layer=current_layer)
         self.layer_combobox.removeItem(self.layer_combobox.currentIndex())
         self.update_layer_selection()
@@ -252,14 +252,14 @@ class LineTool(BaseTool):
         text = text or self.layer_selection.currentText()
         objects = objects or self.shape.select_object
         for obj in objects:
-            if hasattr(obj, "layer"):
+            if hasattr(obj, 'layer'):
                 if from_layer is None or from_layer == obj.layer:
                     obj.layer = text
 
     def show_layer(self):
         self.shape.deselect_all()
         for obj in self.shape.objects:
-            if hasattr(obj, "layer"):
+            if hasattr(obj, 'layer'):
                 if obj.layer != self.layer_combobox.currentText():
                     if obj.enabled:
                         obj.set_disabled()
@@ -268,13 +268,13 @@ class LineTool(BaseTool):
                         obj.set_enabled()
 
     def show_help(self):
-        App.Console.PrintMessage("Use this commands to rule the lineinput\n")
-        App.Console.PrintMessage("g...grap element and move it\n")
-        App.Console.PrintMessage("l...create line from 2 points\n")
-        App.Console.PrintMessage("v...add a new point\n")
-        App.Console.PrintMessage("x...delete a point or a line\n")
-        App.Console.PrintMessage("cltr + p...attachment point\n")
-        App.Console.PrintMessage("cltr...multiselection\n")
+        App.Console.PrintMessage('Use this commands to rule the lineinput\n')
+        App.Console.PrintMessage('g...grap element and move it\n')
+        App.Console.PrintMessage('l...create line from 2 points\n')
+        App.Console.PrintMessage('v...add a new point\n')
+        App.Console.PrintMessage('x...delete a point or a line\n')
+        App.Console.PrintMessage('cltr + p...attachment point\n')
+        App.Console.PrintMessage('cltr...multiselection\n')
 
     def setup_cb(self):
         self.point_preview_cb = self.view.addEventCallbackPivy(
@@ -295,7 +295,7 @@ class LineTool(BaseTool):
     def update_helper_line(self, pos=50):
         self.helper_line.removeAllChildren()
         l = Line(vector3D(self.help_line(pos / 100)), dynamic=False)
-        l.set_color("red")
+        l.set_color('red')
         self.helper_line += [l]
 
     def help_line(self, pos=0.5):
@@ -313,13 +313,13 @@ class LineTool(BaseTool):
                 if (abs(s[0] - pos[0]) ** 2 + abs(s[1] - pos[1]) ** 2) < (15 ** 2) and point[0] >= 0:
                     self.upper_preview_node = (point, i)
                     m = Marker(vector3D([point]), dynamic=False)
-                    m.set_color("blue")
+                    m.set_color('blue')
                     self.temp_point += [m]
                     break
 
     def add_line(self, event_callback):
         event = event_callback.getEvent()
-        if (event.getKey() == ord("l") and
+        if (event.getKey() == ord('l') and
             event.getState() == 1):
             objs = self.shape.select_object
             if len(objs) == 2:
@@ -340,7 +340,7 @@ class LineTool(BaseTool):
 
     def add_node(self, event_callback, force=False):
         event = event_callback.getEvent()
-        if ((event.getKey() == ord("i") or force) and
+        if ((event.getKey() == ord('i') or force) and
             (event.getState() == 1)):
             objs = self.shape.select_object
             if len(objs) == 1 and (isinstance(objs[0], Lower_Att_Marker)):
@@ -369,7 +369,7 @@ class LineTool(BaseTool):
 
     def copy_node(self, event_callback, force=False):
         event = event_callback.getEvent()
-        if ((event.getKey() == ord("c")) and
+        if ((event.getKey() == ord('c')) and
             (event.getState() == 1)):
             # get selection
             objs = self.shape.select_object
@@ -452,12 +452,9 @@ class LineTool(BaseTool):
                 else:
                     self.up_att_rib.setValue(list(rib_nr)[0])
                     self.up_att_rib.setEnabled(True)
-                pos = set([i.rib_pos for i in selected_objs])
-                if len(pos) > 1:
-                    self.up_att_pos.setDisabled(True)
-                else:
-                    self.up_att_pos.setValue(list(pos)[0])
-                    self.up_att_pos.setEnabled(True)
+                pos = selected_objs[0].rib_pos
+                self.up_att_pos.setValue(pos)
+                self.up_att_pos.setEnabled(True)
             else:
                 self.tool_widget.setCurrentWidget(self.none_widget)
         else:
@@ -489,7 +486,7 @@ class LineTool(BaseTool):
             obj.rib_nr = self.up_att_rib.value()
 
     def update_up_att_pos(self, *args):
-        # print("update pos")
+        # print('update pos')
         for obj in self.shape.select_object:
             obj.rib_pos = self.up_att_pos.value()
 
@@ -531,10 +528,10 @@ class LineTool(BaseTool):
         self.show_layer()
 
     def accept(self):
-        """glider 2d will recive the 2d information
+        '''glider 2d will recive the 2d information
             the attachmentpoints are already stored.
             the other points are stored into the batch_points list
-        """
+        '''
         lines = []
 
         for obj in self.shape.objects:
@@ -572,9 +569,9 @@ class LineTool(BaseTool):
 
 
 class NodeMarker(Marker):
-    std_col = "black"
-    ovr_col = "red"
-    sel_col = "yellow"
+    std_col = 'black'
+    ovr_col = 'red'
+    sel_col = 'yellow'
 
     def __init__(self, node, par_glider, pos=None):
         if pos is None:
@@ -607,7 +604,7 @@ class NodeMarker(Marker):
 
 
 class Upper_Att_Marker(NodeMarker):
-    std_col = "blue"
+    std_col = 'blue'
     def __init__(self, node, par_glider):
         super(Upper_Att_Marker, self).__init__(node, par_glider)
 
@@ -637,7 +634,7 @@ class Upper_Att_Marker(NodeMarker):
     @rib_pos.setter
     def rib_pos(self, pos):
         self._node.rib_pos = pos
-        # print("update pos")
+        # print('update pos')
         self.pos = vector3D(self._node.get_2D(self.par_glider.shape))
         for foo in self.on_drag:
             foo()
@@ -647,7 +644,7 @@ class Upper_Att_Marker(NodeMarker):
 
 
 class Lower_Att_Marker(NodeMarker):
-    std_col = "green"
+    std_col = 'green'
 
     def __init__(self, node, par_glider):
         pos = node.pos_2D
@@ -679,9 +676,9 @@ class ConnectionLine(Line):
         self.marker2.on_drag.append(self.update_Line)
         self.drawstyle.lineWidth = 1.
         self.target_length = 1.
-        self.line_type = "default"
-        self.layer = ""
-        self.name = "line_name"
+        self.line_type = 'default'
+        self.layer = ''
+        self.name = 'line_name'
 
     def is_uppermost_line(self):
         return (isinstance(self.marker1, Upper_Att_Marker) or 
@@ -722,7 +719,7 @@ class LayerComboBox(QtGui.QComboBox):
     def __init__(self, parent=None):
         super(LayerComboBox, self).__init__(parent)
         self.setInsertPolicy(QtGui.QComboBox.InsertAlphabetically)
-        self.addItem("")
+        self.addItem('')
 
     def addItem(self, text):
         if self.findText(text) == -1:
@@ -731,7 +728,7 @@ class LayerComboBox(QtGui.QComboBox):
     def removeItem(self, index):
         super(LayerComboBox, self).removeItem(index)
         if self.count() == 0:
-            self.addItem("")
+            self.addItem('')
 
     def removeAll(self):
         while self.currentIndex() != -1:

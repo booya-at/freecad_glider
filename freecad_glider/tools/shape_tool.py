@@ -19,7 +19,7 @@ def refresh():
 
 
 class ShapeTool(BaseTool):
-    widget_name = "Shape Tool"
+    widget_name = 'Shape Tool'
 
     def __init__(self, obj):
         super(ShapeTool, self).__init__(obj)
@@ -40,7 +40,7 @@ class ShapeTool(BaseTool):
         self.Qnum_cells = QtGui.QSpinBox(self.base_widget)
         self.Qset_const_fixed = QtGui.QCheckBox(self.base_widget)
         self.Qset_const = QtGui.QPushButton(self.base_widget)
-        # self.Qset_zero = QtGui.QPushButton("set zero", self.base_widget)
+        # self.Qset_zero = QtGui.QPushButton('set zero', self.base_widget)
 
         # add another form widget displaying data
         self.Qarea = QtGui.QDoubleSpinBox(self.base_widget)
@@ -52,7 +52,7 @@ class ShapeTool(BaseTool):
 
         self.setup_widget()
         self.setup_pivy()
-        Gui.SendMsgToActiveView("ViewFit")
+        Gui.SendMsgToActiveView('ViewFit')
 
     def accept(self):
         self.parametric_glider.rescale_curves()
@@ -111,27 +111,27 @@ class ShapeTool(BaseTool):
         Qaspect_ratio_layout.addWidget(self.Qaspect_ratio)
         Qaspect_ratio_layout.addWidget(self.Qaspect_ratio_fixed)
 
-        # self.layout.setWidget(1, text_field, QtGui.QLabel("manual shape edit"))
+        # self.layout.setWidget(1, text_field, QtGui.QLabel('manual shape edit'))
         # self.layout.setWidget(1, input_field, self.Qmanual_edit)
-        self.layout.setWidget(2, text_field, QtGui.QLabel("front num_points"))
+        self.layout.setWidget(2, text_field, QtGui.QLabel('front num_points'))
         self.layout.setWidget(2, input_field, self.Qnum_front)
-        self.layout.setWidget(3, text_field, QtGui.QLabel("back num_points"))
+        self.layout.setWidget(3, text_field, QtGui.QLabel('back num_points'))
         self.layout.setWidget(3, input_field, self.Qnum_back)
-        # self.layout.setWidget(4, text_field, QtGui.QLabel("manual cell pos"))
+        # self.layout.setWidget(4, text_field, QtGui.QLabel('manual cell pos'))
         # self.layout.setWidget(4, input_field, self.Qcheck1)
-        self.layout.setWidget(4, text_field, QtGui.QLabel("num_cells"))
+        self.layout.setWidget(4, text_field, QtGui.QLabel('num_cells'))
         self.layout.setWidget(4, input_field, self.Qnum_cells)
-        self.layout.setWidget(5, text_field, QtGui.QLabel("dist num_points"))
+        self.layout.setWidget(5, text_field, QtGui.QLabel('dist num_points'))
         self.layout.setWidget(5, input_field, self.Qnum_dist)
-        self.layout.setWidget(6, text_field, QtGui.QLabel("constant AR"))
+        self.layout.setWidget(6, text_field, QtGui.QLabel('constant AR'))
         self.layout.setLayout(6, input_field, Qset_const_layout)
         # self.layout.setWidget(7, input_field, self.Qset_zero)
-        self.layout.setWidget(8, text_field, QtGui.QLabel("span:"))
+        self.layout.setWidget(8, text_field, QtGui.QLabel('span:'))
         self.layout.setLayout(8, input_field, Qspan_layout)
 
-        self.layout.setWidget(9, text_field, QtGui.QLabel("flat area:"))
+        self.layout.setWidget(9, text_field, QtGui.QLabel('flat area:'))
         self.layout.setLayout(9, input_field, Qarea_layout)
-        self.layout.setWidget(10, text_field, QtGui.QLabel("aspect ratio:"))
+        self.layout.setWidget(10, text_field, QtGui.QLabel('aspect ratio:'))
         self.layout.setLayout(10, input_field, Qaspect_ratio_layout)
 
         self.update_properties()
@@ -196,13 +196,13 @@ class ShapeTool(BaseTool):
         self.Qaspect_ratio.setEnabled(True)
         if self.Qarea_fixed.isChecked():
             self.Qarea.setEnabled(False)
-            return "area"
+            return 'area'
         if self.Qspan_fixed.isChecked():
             self.Qspan.setEnabled(False)
-            return "span"
+            return 'span'
         if self.Qaspect_ratio_fixed.isChecked():
             self.Qaspect_ratio.setEnabled(False)
-            return "aspect_ratio"
+            return 'aspect_ratio'
         return None
 
     def set_area(self):
@@ -287,18 +287,18 @@ class ShapeTool(BaseTool):
         self.shape.addChild(Line([back.data[0], front.data[0]], width=2).object)
         self.shape.addChild(Line([back.data[-1], front.data[-1]], width=2).object)
         points = list(map(vector3D, self.parametric_glider.shape.front_curve.data))
-        self.shape.addChild(Line(points, color="grey").object)
+        self.shape.addChild(Line(points, color='grey').object)
         points = list(map(vector3D, self.parametric_glider.shape.back_curve.data))
-        self.shape.addChild(Line(points, color="grey").object)
-        self.shape.addChild(Line(dist_line, color="red", width=2).object)
+        self.shape.addChild(Line(points, color='grey').object)
+        self.shape.addChild(Line(dist_line, color='red', width=2).object)
         if not preview:
             for rib in ribs:
                 width = 1
-                col = "grey"
+                col = 'grey'
                 if list(rib) in (ribs[0], ribs[-1]):
                     width = 2
-                    col = "black"
+                    col = 'black'
                 self.shape.addChild(Line(rib, color=col, width=width).object)
             for i in dist_line:
-                self.shape.addChild(Line([[0, i[1]], i, [i[0], 0]], color="grey").object)
+                self.shape.addChild(Line([[0, i[1]], i, [i[0], 0]], color='grey').object)
 

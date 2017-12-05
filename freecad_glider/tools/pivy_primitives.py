@@ -6,18 +6,18 @@ from openglider.vector.spline import Bezier
 
 
 COLORS ={
-    "black": (0, 0, 0),
-    "white": (1., 1., 1.),
-    "grey": (0.5, 0.5, 0.5),
-    "red": (1., 0., 0.),
-    "blue": (0., 0., 1.),
-    "green": (0., 1., 1.),
-    "yellow": (0., 1., 0.)
+    'black': (0, 0, 0),
+    'white': (1., 1., 1.),
+    'grey': (0.5, 0.5, 0.5),
+    'red': (1., 0., 0.),
+    'blue': (0., 0., 1.),
+    'green': (0., 1., 1.),
+    'yellow': (0., 1., 0.)
 }
 
-COL_STD = COLORS["black"]
-COL_OVR = COLORS["red"]
-COL_SEL = COLORS["yellow"]
+COL_STD = COLORS['black']
+COL_OVR = COLORS['red']
+COL_SEL = COLORS['yellow']
 
 
 class ControlPoint(coin.SoSeparator):
@@ -31,7 +31,7 @@ class ControlPoint(coin.SoSeparator):
         self.fix = False
 
     def setup_coin(self, x, y, z):
-        self.mat.setName("mat")
+        self.mat.setName('mat')
         self.marker.markerIndex = coin.SoMarkerSet.CIRCLE_FILLED_9_9
         self.mat.diffuseColor.setValue(*COL_STD)
         self += [self.coordinate, self.mat, self.marker]
@@ -75,7 +75,7 @@ class ControlPoint(coin.SoSeparator):
         return self.mat.diffuseColor == COL_SEL
 
     def constraint(self, new_pos):
-        "overwrite for special behavior"
+        'overwrite for special behavior'
         return new_pos
 
 
@@ -140,7 +140,7 @@ class ControlPointContainer(coin.SoSeparator):
                 point = path.getNode(length - 2)
                 point = list(filter(lambda ctrl: ctrl.getNodeId() == point.getNodeId(), self.control_points))
                 if point != []:
-                    if (not hasattr(point[0], "fix") or not point[0].fix):
+                    if (not hasattr(point[0], 'fix') or not point[0].fix):
                         self.current_point = point[0]
                         break
             else:
@@ -188,7 +188,7 @@ class ControlPointContainer(coin.SoSeparator):
 
 
 class Line(object):
-    def __init__(self, points, color="black", width=1):
+    def __init__(self, points, color='black', width=1):
         self.object = coin.SoSeparator()
         self.ls = coin.SoLineSet()
         self.data = coin.SoCoordinate3()
@@ -207,7 +207,7 @@ class Line(object):
         self.data.point.setValues(0, len(self.points), self.points)
 
 class Line1(coin.SoSeparator):
-    def __init__(self, points, color="black"):
+    def __init__(self, points, color='black'):
         self.ls = coin.SoLineSet()
         self.data = coin.SoCoordinate3()
         self.color = coin.SoMaterial()
@@ -227,7 +227,7 @@ class Line1(coin.SoSeparator):
 
 
 class Marker(coin.SoSeparator):
-    def __init__(self, points=[], color="black"):
+    def __init__(self, points=[], color='black'):
         super(Marker, self).__init__()
         self.marker = coin.SoMarkerSet()
         self.marker.markerIndex = coin.SoMarkerSet.CIRCLE_FILLED_9_9

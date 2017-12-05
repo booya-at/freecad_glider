@@ -12,19 +12,19 @@ def refresh():
 
 
 class BallooningTool(BaseTool):
-    widget_name = "Selection"
+    widget_name = 'Selection'
 
     def __init__(self, obj):
         super(BallooningTool, self).__init__(obj)
         # base_widget
         self.QList_View = QtGui.QListWidget(self.base_widget)
-        self.Qdelete_button = QtGui.QPushButton("delete", self.base_widget)
-        self.Qnew_button = QtGui.QPushButton("new", self.base_widget)
+        self.Qdelete_button = QtGui.QPushButton('delete', self.base_widget)
+        self.Qnew_button = QtGui.QPushButton('new', self.base_widget)
         self.Qballooning_name = QtGui.QLineEdit()
 
         self.Qballooning_widget = QtGui.QWidget()
         self.Qballooning_layout = QtGui.QFormLayout(self.Qballooning_widget)
-        self.Qfit_button = QtGui.QPushButton("modify with handles")
+        self.Qfit_button = QtGui.QPushButton('modify with handles')
 
         self.ballooning_sep = coin.SoSeparator()
         self.spline_sep = coin.SoSeparator()
@@ -42,7 +42,7 @@ class BallooningTool(BaseTool):
     def setup_widget(self):
         # ballooning widget
         self.form.insert(0, self.Qballooning_widget)
-        self.Qballooning_widget.setWindowTitle("ballooning")
+        self.Qballooning_widget.setWindowTitle('ballooning')
         self.Qballooning_layout.addWidget(self.Qballooning_name)
         self.Qballooning_layout.addWidget(self.Qfit_button)
 
@@ -73,7 +73,7 @@ class BallooningTool(BaseTool):
         self.grid = coin.SoSeparator()
         self.task_separator += [self.grid]
         self._update_grid()
-        Gui.SendMsgToActiveView("ViewFit")
+        Gui.SendMsgToActiveView('ViewFit')
         self.insert_cb = self.view.addEventCallbackPivy(coin.SoKeyboardEvent.getClassTypeId(), self.insert_point)
 
     def _update_grid(self, grid_x=None, grid_y=None):
@@ -85,9 +85,9 @@ class BallooningTool(BaseTool):
         y_points_lower = [[grid_x[0], y, -0.001] for y in grid_y]
         y_points_upper = [[grid_x[-1], y, -0.001] for y in grid_y]
         for l in zip(x_points_lower, x_points_upper):
-            self.grid += [Line(l, color="grey").object]
+            self.grid += [Line(l, color='grey').object]
         for l in zip(y_points_lower, y_points_upper):
-            self.grid += [Line(l, color="grey").object]
+            self.grid += [Line(l, color='grey').object]
         for l in y_points_upper[::10]:
             textsep = coin.SoSeparator()
             text = coin.SoText2()
@@ -100,10 +100,10 @@ class BallooningTool(BaseTool):
         j = 0
         for index in range(self.QList_View.count()):
             name = self.QList_View.item(index).text()
-            if "ballooning" in name:
+            if 'ballooning' in name:
                 j += 1
         ballooning = BallooningBezier()
-        ballooning.name = "ballooning" + str(j)
+        ballooning.name = 'ballooning' + str(j)
         new_item = QBalooning(ballooning)
         self.QList_View.addItem(new_item)
         self.QList_View.setCurrentItem(new_item)
@@ -203,7 +203,7 @@ class BallooningTool(BaseTool):
     def draw_upper_spline(self, num):
         self.upper_spline.removeAllChildren()
         l = Line(vector3D(self.current_ballooning.get_expl_upper_spline(num)),
-                 color="red", width=2)
+                 color='red', width=2)
         self.upper_spline += [l.object]
 
     def _update_lower_spline(self, num):
@@ -214,12 +214,12 @@ class BallooningTool(BaseTool):
     def draw_lower_spline(self, num):
         self.lower_spline.removeAllChildren()
         l = Line(vector3D(self.current_ballooning.get_expl_lower_spline(num)),
-                 color="red", width=2)
+                 color='red', width=2)
         self.lower_spline += [l.object]
 
     def insert_point(self, event_callback):
         event = event_callback.getEvent()
-        if (event.getKey() == ord("i")):
+        if (event.getKey() == ord('i')):
             if not self.is_edit:
                 return
             if event.getState() == event.DOWN:

@@ -14,20 +14,20 @@ def refresh():
     pass
 
 class AirfoilTool(BaseTool):
-    widget_name = "Selection"
+    widget_name = 'Selection'
 
     def __init__(self, obj):
         super(AirfoilTool, self).__init__(obj)
         # base_widget
         self.QList_View = QtGui.QListWidget(self.base_widget)
-        self.Qdelete_button = QtGui.QPushButton("delete", self.base_widget)
-        self.Qnew_button = QtGui.QPushButton("new", self.base_widget)
+        self.Qdelete_button = QtGui.QPushButton('delete', self.base_widget)
+        self.Qnew_button = QtGui.QPushButton('new', self.base_widget)
         self.Qairfoil_name = QtGui.QLineEdit()
 
         self.Qairfoil_widget = QtGui.QWidget()
         self.Qairfoil_layout = QtGui.QFormLayout(self.Qairfoil_widget)
-        self.Qimport_button = QtGui.QPushButton("import airfoil")
-        self.Qfit_button = QtGui.QPushButton("modify with handles")
+        self.Qimport_button = QtGui.QPushButton('import airfoil')
+        self.Qfit_button = QtGui.QPushButton('modify with handles')
         self.Qnum_points_upper = QtGui.QSpinBox(self.base_widget)
         self.Qnum_points_lower = QtGui.QSpinBox(self.base_widget)
 
@@ -49,7 +49,7 @@ class AirfoilTool(BaseTool):
     def setup_widget(self):
         # airfoil widget
         self.form.insert(0, self.Qairfoil_widget)
-        self.Qairfoil_widget.setWindowTitle("airfoil")
+        self.Qairfoil_widget.setWindowTitle('airfoil')
         self.Qairfoil_layout.addWidget(self.Qairfoil_name)
         self.Qairfoil_layout.addWidget(self.Qimport_button)
         self.Qairfoil_layout.addWidget(self.Qfit_button)
@@ -88,16 +88,16 @@ class AirfoilTool(BaseTool):
     def setup_pivy(self):
         self.task_separator += [self.airfoil_sep, self.spline_sep]
         self.update_selection()
-        Gui.SendMsgToActiveView("ViewFit")
+        Gui.SendMsgToActiveView('ViewFit')
 
     def import_file_dialog(self):
         filename = QtGui.QFileDialog.getOpenFileName(
             parent=None,
-            caption="import airfoil",
+            caption='import airfoil',
             directory='~',
             filter='*.dat',
             selectedFilter='*.dat')
-        if filename[0] != "":
+        if filename[0] != '':
             self.QList_View.addItem(
                 QAirfoil_item(
                     BezierProfile2D.import_from_dat(filename[0])))
@@ -106,10 +106,10 @@ class AirfoilTool(BaseTool):
         j = 0
         for index in range(self.QList_View.count()):
             name = self.QList_View.item(index).text()
-            if "airfoil" in name:
+            if 'airfoil' in name:
                 j += 1
         airfoil = BezierProfile2D.compute_naca(4412)
-        airfoil.name = "airfoil" + str(j)
+        airfoil.name = 'airfoil' + str(j)
         new_item = QAirfoil_item(airfoil)
         self.QList_View.addItem(new_item)
         self.QList_View.setCurrentItem(new_item)
@@ -211,7 +211,7 @@ class AirfoilTool(BaseTool):
 
     def draw_upper_spline(self, num):
         self.upper_spline += [
-            Line(self.upper_control_line, color="grey").object]
+            Line(self.upper_control_line, color='grey').object]
         self.upper_spline += [
             Line(vector3D(
                 self.current_airfoil.upper_spline.get_sequence(num)),
@@ -219,7 +219,7 @@ class AirfoilTool(BaseTool):
 
     def draw_lower_spline(self, num):
         self.lower_spline += [
-            Line(self.lower_control_line, color="grey").object]
+            Line(self.lower_control_line, color='grey').object]
         self.lower_spline += [
             Line(vector3D(
                 self.current_airfoil.lower_spline.get_sequence(num)),

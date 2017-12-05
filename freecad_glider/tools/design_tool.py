@@ -30,10 +30,10 @@ def refresh():
 
 
 class DesignTool(BaseTool):
-    widget_name = "Design Tool"
+    widget_name = 'Design Tool'
     def __init__(self, obj):
         super(DesignTool, self).__init__(obj)
-        self.side = "lower"
+        self.side = 'lower'
 
         # get 2d shape properties
         _shape = self.parametric_glider.shape.get_shape()
@@ -49,12 +49,12 @@ class DesignTool(BaseTool):
         self.setup_pivy()
 
     def setup_widget(self):
-        """set up the qt stuff"""
-        self.Qtoggle_side = QtGui.QPushButton("show lower side")
+        '''set up the qt stuff'''
+        self.Qtoggle_side = QtGui.QPushButton('show lower side')
         self.layout.setWidget(0, input_field, self.Qtoggle_side)
 
         self.tool_widget = QtGui.QWidget()
-        self.tool_widget.setWindowTitle("object properties")
+        self.tool_widget.setWindowTitle('object properties')
         self.tool_layout = QtGui.QFormLayout(self.tool_widget)
         self.form.append(self.tool_widget)
 
@@ -64,7 +64,7 @@ class DesignTool(BaseTool):
         self.Qcut_type.setEnabled(False)
         self.Qcut_type.currentIndexChanged.connect(self.cut_type_changed)
 
-        self.tool_layout.setWidget(0, text_field, QtGui.QLabel("cut type"))
+        self.tool_layout.setWidget(0, text_field, QtGui.QLabel('cut type'))
         self.tool_layout.setWidget(0, input_field, self.Qcut_type)
 
         self.QPointPos = QtGui.QDoubleSpinBox()
@@ -73,7 +73,7 @@ class DesignTool(BaseTool):
         self.QPointPos.setSingleStep(0.01)
         self.QPointPos.valueChanged.connect(self.point_pos_changed)
 
-        self.tool_layout.setWidget(1, text_field, QtGui.QLabel("point position"))
+        self.tool_layout.setWidget(1, text_field, QtGui.QLabel('point position'))
         self.tool_layout.setWidget(1, input_field, self.QPointPos)
 
 
@@ -81,7 +81,7 @@ class DesignTool(BaseTool):
         self.Qtoggle_side.clicked.connect(self.toggle_side)
 
     def setup_pivy(self):
-        """set up the scene"""
+        '''set up the scene'''
         self.shape = coin.SoSeparator()
         self.task_separator += [self.shape]
         self.add_separator = Container()
@@ -129,7 +129,7 @@ class DesignTool(BaseTool):
     def point_pos_changed(self):
         points = set()
         lines = set()
-        sign = 2. * (self.side != "upper") - 1.
+        sign = 2. * (self.side != 'upper') - 1.
         for element in self.event_separator.select_object:
             if isinstance(element, CutPoint):
                 points.add(element)
@@ -146,7 +146,7 @@ class DesignTool(BaseTool):
             line.update_Line()
 
     def draw_shape(self):
-        """ draws the shape of the glider"""
+        ''' draws the shape of the glider'''
         self.shape += [Line(self.front)]
         self.shape += [Line(self.back)]
         self.shape += [Line([self.back[0], self.front[0]])]
@@ -159,14 +159,14 @@ class DesignTool(BaseTool):
         self.drag_separator.removeAllChildren()
         self.event_separator = Container()
         self.event_separator.selection_changed = self.selection_changed
-        if self.side == "upper":
-            self.side = "lower"
-            self.Qtoggle_side.setText("show upper side")
+        if self.side == 'upper':
+            self.side = 'lower'
+            self.Qtoggle_side.setText('show upper side')
             self.event_separator += list(CutLine.lower_point_set)
             self.event_separator += CutLine.lower_line_list
-        elif self.side == "lower":
-            self.side = "upper"
-            self.Qtoggle_side.setText("show lower side")
+        elif self.side == 'lower':
+            self.side = 'upper'
+            self.Qtoggle_side.setText('show lower side')
             self.event_separator += list(CutLine.upper_point_set)
             self.event_separator += CutLine.upper_line_list
         self.drag_separator += [self.event_separator]
@@ -178,7 +178,7 @@ class DesignTool(BaseTool):
            press v to start the mode. if a point is selected, the left and right rib will offer the possebility to add
            a point + line, if no point is selected, it's possible to add a point to any rib'''
         event = event_callback.getEvent()
-        if (event.getKey() == ord("i") and event.getState() == 0):
+        if (event.getKey() == ord('i') and event.getState() == 0):
             if self._add_mode: return
             print(1)
             self._add_mode = True
@@ -207,7 +207,7 @@ class DesignTool(BaseTool):
                 cut_point_1 = select_obj[0]
                 cut_point_2 = select_obj[1]
                 if abs(cut_point_1.rib_nr - cut_point_2.rib_nr) == 1:
-                    cut_line = CutLine(cut_point_1, cut_point_2, "folded")
+                    cut_line = CutLine(cut_point_1, cut_point_2, 'folded')
                     cut_line.replace_points_by_set()
                     cut_line.update_Line()
                     cut_line.setup_visuals()
@@ -232,9 +232,9 @@ class DesignTool(BaseTool):
                     assert(isinstance(self.add_separator.static_objects[1], Line))
                     marker = self.add_separator.static_objects[0]
                     line = self.add_separator.static_objects[1]
-                    cut_point_1 = CutPoint.from_position_and_rib(marker.rib_nr, marker.points[0][1], self.side == "upper", self.parametric_glider)
+                    cut_point_1 = CutPoint.from_position_and_rib(marker.rib_nr, marker.points[0][1], self.side == 'upper', self.parametric_glider)
                     cut_point_2 = line.active_point
-                    cut_line = CutLine(cut_point_1, cut_point_2, "folded")
+                    cut_line = CutLine(cut_point_1, cut_point_2, 'folded')
                     cut_line.replace_points_by_set()
                     cut_line.update_Line()
                     cut_line.setup_visuals()
@@ -245,7 +245,7 @@ class DesignTool(BaseTool):
                     assert(len(self.add_separator.static_objects) == 1)
                     assert(isinstance(self.add_separator.static_objects[0], Marker))
                     marker = self.add_separator.static_objects[0]
-                    cut_point = CutPoint.from_position_and_rib(marker.rib_nr, marker.points[0][1], self.side == "upper", self.parametric_glider)
+                    cut_point = CutPoint.from_position_and_rib(marker.rib_nr, marker.points[0][1], self.side == 'upper', self.parametric_glider)
                     self.event_separator += [cut_point]
                     self.event_separator.Select(cut_point)
 
@@ -342,7 +342,7 @@ class DesignTool(BaseTool):
         self.event_separator.unregister()
         self.view.removeEventCallbackPivy(
             coin.SoKeyboardEvent.getClassTypeId(), self.add_cb)
-        self.parametric_glider.elements["cuts"] = CutLine.get_cut_dict()
+        self.parametric_glider.elements['cuts'] = CutLine.get_cut_dict()
         super(DesignTool, self).accept()
         self.update_view_glider()
 
@@ -375,7 +375,7 @@ class CutPoint(Marker):
         try:
             return list(self.parametric_glider.shape[self.rib_nr, abs(self.rib_pos)] + [0])
         except IndexError:
-            raise "index " + self.rib_nr + " out of range"
+            raise 'index ' + self.rib_nr + ' out of range'
 
     def get_rib_pos(self):
         # we have to do this 
@@ -501,11 +501,11 @@ class CutLine(Line):
         CutLine.lower_point_set = set()
         CutLine.upper_line_list = []
         CutLine.lower_line_list = []
-        for cut in parametric_glider.elements["cuts"]:
-            for cell_nr in cut["cells"]:
-                CutLine(CutPoint(cell_nr, cut["left"], parametric_glider), 
-                        CutPoint(cell_nr + 1, cut["right"], parametric_glider),
-                        cut["type"])
+        for cut in parametric_glider.elements['cuts']:
+            for cell_nr in cut['cells']:
+                CutLine(CutPoint(cell_nr, cut['left'], parametric_glider), 
+                        CutPoint(cell_nr + 1, cut['right'], parametric_glider),
+                        cut['type'])
         for l in cls.upper_line_list:
             l.replace_points_by_set()
             l.setup_visuals()
@@ -525,24 +525,24 @@ class CutLine(Line):
 
     def get_dict(self):
         return {
-            "cells": [self.cell_nr],
-            "left": self.get_point(inner=True).get_rib_pos(),
-            "right" : self.get_point(inner=False).get_rib_pos(),
-            "type" : self.cut_type
+            'cells': [self.cell_nr],
+            'left': self.get_point(inner=True).get_rib_pos(),
+            'right' : self.get_point(inner=False).get_rib_pos(),
+            'type' : self.cut_type
         }
 
     @classmethod
     def get_cut_dict(cls):
         cuts = [line.get_dict() for line in cls.upper_line_list + cls.lower_line_list]
-        cuts = sorted(cuts, key=lambda x: x["right"])
+        cuts = sorted(cuts, key=lambda x: x['right'])
         sorted_cuts = [cuts[0]]
         for cut in cuts[1:]:
-            for key in ["type", "left", "right"]:
+            for key in ['type', 'left', 'right']:
                 if cut[key] != sorted_cuts[-1][key]:
                     sorted_cuts.append(cut)
                     break
             else:
-                sorted_cuts[-1]["cells"].append(cut["cells"][0])
+                sorted_cuts[-1]['cells'].append(cut['cells'][0])
         return sorted_cuts
 
     def check_dependency(self):

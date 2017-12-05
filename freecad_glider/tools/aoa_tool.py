@@ -15,7 +15,7 @@ def refresh():
 class ZrotTool(BaseTool):
     num_on_drag = 80
     num_release = 200
-    widget_name = "Z rotation"
+    widget_name = 'Z rotation'
 
     def __init__(self, obj):
         super(ZrotTool, self).__init__(obj)
@@ -25,7 +25,7 @@ class ZrotTool(BaseTool):
         self.shape = coin.SoSeparator()
         self.coords = coin.SoSeparator()
         self.grid = coin.SoSeparator()
-        self.aoa_spline = Line([], color="red", width=2)
+        self.aoa_spline = Line([], color='red', width=2)
         self.ribs = self.parametric_glider.shape.ribs
         self.front = [rib[0] for rib in self.ribs]
         self.back = [rib[1] for rib in self.ribs]
@@ -59,9 +59,9 @@ class ZrotTool(BaseTool):
         self.draw_shape()
 
     def setup_widget(self):
-        self.layout.setWidget(0, text_field, QtGui.QLabel("num_points"))
+        self.layout.setWidget(0, text_field, QtGui.QLabel('num_points'))
         self.layout.setWidget(0, input_field, self.Qnum_aoa)
-        self.layout.setWidget(1, text_field, QtGui.QLabel("spline type"))
+        self.layout.setWidget(1, text_field, QtGui.QLabel('spline type'))
         self.layout.setWidget(1, input_field, self.spline_select)
 
         self.Qnum_aoa.setValue(len(self.spline.controlpoints))
@@ -73,10 +73,10 @@ class ZrotTool(BaseTool):
 
     def draw_shape(self):
         self.shape.removeAllChildren()
-        self.shape += [Line(self.front, color="grey").object]
-        self.shape += [Line(self.back, color="grey").object]
+        self.shape += [Line(self.front, color='grey').object]
+        self.shape += [Line(self.back, color='grey').object]
         for rib in self.ribs:
-            self.shape += [Line(rib, color="grey").object]
+            self.shape += [Line(rib, color='grey').object]
 
     def update_aoa(self):
         self.spline.controlpoints = (
@@ -134,9 +134,9 @@ class ZrotTool(BaseTool):
         y_points_lower = [[grid_x[0], y, -0.001] for y in grid_y]
         y_points_upper = [[grid_x[-1], y, -0.001] for y in grid_y]
         for l in zip(x_points_lower, x_points_upper):
-            self.grid += [Line(l, color="grey").object]
+            self.grid += [Line(l, color='grey').object]
         for l in zip(y_points_lower, y_points_upper):
-            self.grid += [Line(l, color="grey").object]
+            self.grid += [Line(l, color='grey').object]
         for l in y_points_upper:
             color = coin.SoMaterial()
             color.diffuseColor = [0, 0, 0]
@@ -144,7 +144,7 @@ class ZrotTool(BaseTool):
             text = coin.SoText2()
             trans = coin.SoTranslation()
             trans.translation = l
-            text.string = str(l[1] * 180 / numpy.pi / self.scale[1]) + "°"
+            text.string = str(l[1] * 180 / numpy.pi / self.scale[1]) + '°'
             textsep += [color, trans, text]
             self.grid += [textsep]
         aoa_int = self.spline.interpolation(50)
@@ -186,7 +186,7 @@ class AoaTool(ZrotTool):
         super(AoaTool, self).setup_widget()
         self.QGlide = QtGui.QDoubleSpinBox(self.base_widget)
         self.QGlide.setValue(self.parametric_glider.glide)
-        self.layout.setWidget(3, text_field, QtGui.QLabel("glidenumber"))
+        self.layout.setWidget(3, text_field, QtGui.QLabel('glidenumber'))
         self.layout.setWidget(3, input_field, self.QGlide)
 
     def accept(self):

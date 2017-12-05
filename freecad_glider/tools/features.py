@@ -8,7 +8,7 @@ import copy
 class BaseFeature(OGBaseObject):
     def __init__(self, obj, parent):
         self.obj = obj
-        obj.addProperty("App::PropertyLink", "parent", "not yet", "docs")
+        obj.addProperty('App::PropertyLink', 'parent', 'not yet', 'docs')
         obj.parent = parent
         super(BaseFeature, self).__init__(obj)
 
@@ -24,19 +24,19 @@ class BaseFeature(OGBaseObject):
                 self.obj.parent.Proxy.drawGlider()
 
     def getGliderInstance(self):
-        """adds stuff and returns changed copy"""
+        '''adds stuff and returns changed copy'''
         return copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
 
     def getParametricGlider(self):
-        """returns top level parametric glider"""
+        '''returns top level parametric glider'''
         return self.obj.parent.Proxy.getParametricGlider()
 
     def setParametricGlider(self, obj):
-        """sets the top-level glider2d and recomputes the glider3d"""
+        '''sets the top-level glider2d and recomputes the glider3d'''
         self.obj.parent.Proxy.setParametricGlider(obj)
 
     def getRoot(self):
-        """return the root freecad obj"""
+        '''return the root freecad obj'''
         return self.obj.parent.Proxy.getRoot()
 
     def onDocumentRestored(self, obj):
@@ -46,7 +46,7 @@ class BaseFeature(OGBaseObject):
             self.obj.ViewObject.Proxy.recompute = True
         else:
             self.obj.ViewObject.Proxy.recompute = True
-            self.obj.ViewObject.Proxy.updateData(prop="Visibility")
+            self.obj.ViewObject.Proxy.updateData(prop='Visibility')
 
     def __getstate__(self):
         return None
@@ -58,8 +58,8 @@ class BaseFeature(OGBaseObject):
 class RibFeature(BaseFeature):
     def __init__(self, obj, parent):
         super(RibFeature, self).__init__(obj, parent)
-        obj.addProperty("App::PropertyIntegerList", "ribs", "not yet", "docs")
-        obj.addProperty("App::PropertyInteger", "airfoil", "not yet", "docs")
+        obj.addProperty('App::PropertyIntegerList', 'ribs', 'not yet', 'docs')
+        obj.addProperty('App::PropertyInteger', 'airfoil', 'not yet', 'docs')
 
     def getGliderInstance(self):
         glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
@@ -76,8 +76,8 @@ class RibFeature(BaseFeature):
 class BallooningFeature(BaseFeature):
     def __init__(self, obj, parent):
         super(BallooningFeature, self).__init__(obj, parent)
-        obj.addProperty("App::PropertyIntegerList", "cells", "not yet", "docs")
-        obj.addProperty("App::PropertyInteger", "ballooning", "not yet", "docs")
+        obj.addProperty('App::PropertyIntegerList', 'cells', 'not yet', 'docs')
+        obj.addProperty('App::PropertyInteger', 'ballooning', 'not yet', 'docs')
 
     def getGliderInstance(self):
         glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
@@ -94,12 +94,12 @@ class BallooningFeature(BaseFeature):
 class SharkFeature(BaseFeature):
     def __init__(self, obj, parent):
         super(SharkFeature, self).__init__(obj, parent)
-        obj.addProperty("App::PropertyIntegerList", "ribs", "not yet", "docs")
-        obj.addProperty("App::PropertyFloat", "x1", "shark-nose", "distance")
-        obj.addProperty("App::PropertyFloat", "x2", "shark-nose", "distance")
-        obj.addProperty("App::PropertyFloat", "x3", "shark-nose", "distance")
-        obj.addProperty("App::PropertyFloat", "y_add", "shark-nose", "amount")
-        obj.addProperty("App::PropertyInteger", "type", "not yet", "0-> linear, 1->quadratic")
+        obj.addProperty('App::PropertyIntegerList', 'ribs', 'not yet', 'docs')
+        obj.addProperty('App::PropertyFloat', 'x1', 'shark-nose', 'distance')
+        obj.addProperty('App::PropertyFloat', 'x2', 'shark-nose', 'distance')
+        obj.addProperty('App::PropertyFloat', 'x3', 'shark-nose', 'distance')
+        obj.addProperty('App::PropertyFloat', 'y_add', 'shark-nose', 'amount')
+        obj.addProperty('App::PropertyInteger', 'type', 'not yet', '0-> linear, 1->quadratic')
         obj.x1 = 0.1
         obj.x2 = 0.11
         obj.x3 = 0.5
@@ -131,36 +131,42 @@ class SharkFeature(BaseFeature):
 class SingleSkinRibFeature(BaseFeature):
     def __init__(self, obj, parent):
         super(SingleSkinRibFeature, self).__init__(obj, parent)
-        obj.addProperty("App::PropertyIntegerList",
-                        "ribs", "not yet", "docs")
-        obj.addProperty("App::PropertyFloat", "height", 
-                        "not yet", "docs").height = 0.5
-        obj.addProperty("App::PropertyFloat", "att_dist", 
-                        "not yet", "docs").att_dist = 0.1
-        obj.addProperty("App::PropertyInteger", "num_points", 
-                        "accuracy", "number of points").num_points = 20
-        obj.addProperty("App::PropertyBool", "le_gap", 
-                        "not_yet", "should the leading edge match the rib").le_gap = True
-        obj.addProperty("App::PropertyBool", "te_gap", 
-                        "not_yet", "should the leading edge match the rib").te_gap = True
+        obj.addProperty('App::PropertyIntegerList',
+                        'ribs', 'not yet', 'docs')
+        obj.addProperty('App::PropertyFloat', 'height', 
+                        'not yet', 'docs').height = 0.5
+        obj.addProperty('App::PropertyFloat', 'att_dist', 
+                        'not yet', 'docs').att_dist = 0.1
+        obj.addProperty('App::PropertyInteger', 'num_points', 
+                        'accuracy', 'number of points').num_points = 20
+        obj.addProperty('App::PropertyBool', 'le_gap', 
+                        'not_yet', 'should the leading edge match the rib').le_gap = True
+        obj.addProperty('App::PropertyBool', 'te_gap', 
+                        'not_yet', 'should the trailing edge match the rib').te_gap = True
+        obj.addProperty('App::PropertyBool', 'double_first',
+                        'not yet', 'this is for double a lines').double_first = False
 
     def getGliderInstance(self):
         glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
         new_ribs = []
         ##### backward compatibility
-        if not hasattr(self.obj, "le_gap"):
-            self.obj.addProperty("App::PropertyBool", "le_gap", 
-                                 "not_yet", "should the leading edge match the rib").le_gap = True
-        if not hasattr(self.obj, "te_gap"):
-            self.obj.addProperty("App::PropertyBool", "te_gap", 
-                                 "not_yet", "should the leading edge match the rib").te_gap = True
+        if not hasattr(self.obj, 'le_gap'):
+            self.obj.addProperty('App::PropertyBool', 'le_gap', 
+                                 'not_yet', 'should the leading edge match the rib').le_gap = True
+        if not hasattr(self.obj, 'te_gap'):
+            self.obj.addProperty('App::PropertyBool', 'te_gap', 
+                                 'not_yet', 'should the leading edge match the rib').te_gap = True
+        if not hasattr(self.obj, 'double_first'):
+            self.obj.addProperty('App::PropertyBool', 'double_first',
+                'not yet', 'this is for double a lines').double_first = False
         ##### end backward compatibility
 
-        single_skin_par = {"att_dist": self.obj.att_dist, 
-                           "height": self.obj.height,
-                           "num_points": self.obj.num_points,
-                           "le_gap": self.obj.le_gap,
-                           "te_gap": self.obj.te_gap}
+        single_skin_par = {'att_dist': self.obj.att_dist, 
+                           'height': self.obj.height,
+                           'num_points': self.obj.num_points,
+                           'le_gap': self.obj.le_gap,
+                           'te_gap': self.obj.te_gap,
+                           'double_first': self.obj.double_first}
 
         for i, rib in enumerate(glider.ribs):
             if i in self.obj.ribs:

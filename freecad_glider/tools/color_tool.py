@@ -12,7 +12,7 @@ def refresh():
     pass
 
 class ColorTool(BaseTool):
-    widget_name = "Color Tool"
+    widget_name = 'Color Tool'
     def __init__(self, obj):
         super(ColorTool, self).__init__(obj)
 
@@ -21,7 +21,7 @@ class ColorTool(BaseTool):
         # panel.materialcode
         # panel.cut_back
         # panel.cut_front
-        # cut_front["left"]
+        # cut_front['left']
 
 
         # setup the GUI
@@ -29,7 +29,7 @@ class ColorTool(BaseTool):
         self.setup_pivy()
 
     def setup_widget(self):
-        self.Qcolore_select = QtGui.QPushButton("select color")
+        self.Qcolore_select = QtGui.QPushButton('select color')
         self.layout.setWidget(0, input_field, self.Qcolore_select)
         self.color_dialog = QtGui.QColorDialog()
         self.Qcolore_select.clicked.connect(self.color_dialog.open)
@@ -45,10 +45,10 @@ class ColorTool(BaseTool):
             x_values = [-x_values[0]] + x_values
         for i, cell in enumerate(self.panels):
             for j, panel in enumerate(cell):
-                p1 = [x_values[i], panel.cut_front["left"], 0.]
-                p2 = [x_values[i], panel.cut_back["left"], 0.]
-                p3 = [x_values[i + 1], panel.cut_back["right"], 0.]
-                p4 = [x_values[i + 1], panel.cut_front["right"], 0.]
+                p1 = [x_values[i], panel.cut_front['left'], 0.]
+                p2 = [x_values[i], panel.cut_back['left'], 0.]
+                p3 = [x_values[i + 1], panel.cut_back['right'], 0.]
+                p4 = [x_values[i + 1], panel.cut_front['right'], 0.]
                 vis_panel = Polygon([p1, p2, p3, p4][::-1], True)
                 panel.vis_panel = vis_panel
                 if panel.material_code:
@@ -71,7 +71,7 @@ class ColorTool(BaseTool):
                 cell_colors.append(rgb_to_hex(panel.vis_panel._std_color))
             colors.append(cell_colors)
 
-        self.parametric_glider.elements["materials"] = colors
+        self.parametric_glider.elements['materials'] = colors
         super(ColorTool, self).accept()
         self.update_view_glider()
 
