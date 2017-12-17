@@ -380,3 +380,14 @@ class GliderSingleSkinRibFeatureCommand(GliderFeatureCommand):
         features.SingleSkinRibFeature(feature, self.glider_obj)
         vp = glider.OGGliderVP(feature.ViewObject)
         vp.updateData()
+
+class GliderFlapFeatureCommand(GliderFeatureCommand):
+    def GetResources(self):
+        return {'Pixmap': 'singleskin_feature.svg' , 'MenuText': 'Features', 'ToolTip': 'flap feature'}
+
+    def Activated(self):
+        feature = FreeCAD.ActiveDocument.addObject('App::FeaturePython', 'flapFeature')
+        self.glider_obj.ViewObject.Visibility = False
+        features.FlapFeature(feature, self.glider_obj)
+        vp = glider.OGGliderVP(feature.ViewObject)
+        vp.updateData()

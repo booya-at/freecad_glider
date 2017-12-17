@@ -168,6 +168,7 @@ class OGGlider(OGBaseObject):
 
     def onDocumentRestored(self, obj):
         self.obj = obj
+        self.obj.ViewObject.Proxy.addProperties(self.obj.ViewObject)
         if not self.obj.ViewObject.Visibility:
             self.obj.ViewObject.Proxy.recompute = True
         else:
@@ -204,8 +205,17 @@ class OGGliderVP(OGBaseVP):
         view_obj.ribs = True
         view_obj.half_glider = get_parameter('default_show_half_glider')
         view_obj.hole_num = get_parameter('default_num_hole_points')
+        self.addProperties(view_obj)
         self.recompute = False
         super(OGGliderVP, self).__init__(view_obj)
+
+    def addProperties(self, view_object):
+        self.view_obj = view_object
+        if not hasattr(self.view_obj, 'fill_ribs'):
+            self.view_obj.addProperty('App::PropertyBool',
+                                 'fill_ribs', 'visuals', 'fill ribs')
+            self.view_obj.fill_ribs = False
+
 
     def getGliderInstance(self, view_obj):
         try:
@@ -245,26 +255,25 @@ class OGGliderVP(OGBaseVP):
         if not hasattr(fp, 'half_glider'):
             return  # the vieprovider isn't set up at this moment
                     # but calls already the update function
+        if prop == 'profile_num' and fp.profile_num < 20:
+            return # don't do anything if profile_num is smaller than 20
         if not hasattr(self, 'glider'):
             if not fp.half_glider:
                 self.glider = self.getGliderInstance(fp).copy_complete()
             else:
                 self.glider = self.getGliderInstance(fp).copy()
         if hasattr(fp, 'ribs'):      # check for last attribute to be restored
-            # print('if hasattr(fp, ribs)')
             if prop in ['all', 'profile_num', 'num_ribs', 'half_glider']:
                 self.vis_glider.removeChild(self.vis_glider.getByName('hull'))
 
-            if prop in ['all', 'hole_num', 'profile_num', 'half_glider']:
+            if prop in ['all', 'hole_num', 'profile_num', 'half_glider', 'fill_ribs']:
                 self.vis_glider.removeChild(self.vis_glider.getByName('ribs'))
 
             if (prop in ['num_ribs', 'profile_num', 'hull', 'panels',
-                         'half_glider', 'ribs', 'hole_num', 'all']):
+                         'half_glider', 'ribs', 'hole_num', 'fill_ribs', 'all']):
                 numpoints = fp.profile_num
                 numpoints = max(numpoints, 5)
-                glider_changed = ('half_glider' in prop or
-                                  'profile_num' in prop or
-                                  'all' in prop)
+                glider_changed = (prop in ['half_glider', 'profile_num', 'all'])
                 if glider_changed:
                     if not fp.half_glider:
                         self.glider = self.getGliderInstance(fp).copy_complete()
@@ -276,7 +285,8 @@ class OGGliderVP(OGBaseVP):
                                    hull=fp.hull,
                                    ribs=fp.ribs,
                                    hole_num=fp.hole_num,
-                                   glider_changed=glider_changed)
+                                   glider_changed=glider_changed,
+                                   fill_ribs=fp.fill_ribs)
                 fp.Proxy.recompute = False
         if hasattr(fp, 'line_num'):
             if prop in ['line_num', 'half_glider', 'all']:
@@ -284,9 +294,10 @@ class OGGliderVP(OGBaseVP):
 
     def update_glider(self, midribs=0, profile_numpoints=20,
                       hull='panels', ribs=False, 
-                      hole_num=10, glider_changed=True):
-        draw_glider(self.glider, self.vis_glider, midribs, hole_num, profile_numpoints,
-                    hull, ribs)
+                      hole_num=10, glider_changed=True, fill_ribs=True):
+        draw_glider(self.glider, vis_glider=self.vis_glider, midribs=midribs, 
+                    hole_num=hole_num, profile_num=profile_numpoints,
+                    hull=hull, ribs=ribs, fill_ribs=fill_ribs)
 
     def update_lines(self, num=3):
         self.vis_lines.removeAllChildren()
@@ -311,7 +322,7 @@ class OGGliderVP(OGBaseVP):
 
 
 def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
-                  hull='panels', ribs=False, elements=False):
+                  hull='panels', ribs=False, elements=False, fill_ribs=True):
     '''draw the glider to the visglider seperator'''
     glider.profile_numpoints = profile_num
 
@@ -377,9 +388,9 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
         line_msh = mesh.Mesh()
         for rib in glider.ribs:
             if not rib.profile_2d.has_zero_thickness:
-                msh += mesh.Mesh.from_rib(rib, hole_num, mesh_option='QYqazip', glider=glider)
+                msh += mesh.Mesh.from_rib(rib, hole_num, mesh_option='QYqazip', glider=glider, filled=fill_ribs)
         if msh.vertices is not None:
-            rib_sep += [mesh_sep(msh, (.3, .3, .3))]
+            rib_sep += [mesh_sep(msh, (.3, .3, .3), draw_lines = not fill_ribs)]
 
         msh = mesh.Mesh()
         for cell in glider.cells:

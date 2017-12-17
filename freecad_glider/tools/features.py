@@ -42,6 +42,7 @@ class BaseFeature(OGBaseObject):
     def onDocumentRestored(self, obj):
         self.obj = obj
         self.obj.parent.Proxy.onDocumentRestored(self.obj.parent)
+        self.obj.ViewObject.Proxy.addProperties(self.obj.ViewObject)
         if not self.obj.ViewObject.Visibility:
             self.obj.ViewObject.Proxy.recompute = True
         else:
@@ -54,6 +55,8 @@ class BaseFeature(OGBaseObject):
     def __setstate__(self, state):
         return None
 
+    def execute(self, fp):
+        self.drawGlider()
 
 class RibFeature(BaseFeature):
     def __init__(self, obj, parent):
@@ -69,9 +72,6 @@ class RibFeature(BaseFeature):
                 rib.profile_2d = airfoil
         return glider
 
-    def execute(self, fp):
-        self.drawGlider()
-
 
 class BallooningFeature(BaseFeature):
     def __init__(self, obj, parent):
@@ -86,9 +86,6 @@ class BallooningFeature(BaseFeature):
             if i in self.obj.cells:
                 cell.ballooning = ballooning
         return glider
-
-    def execute(self, fp):
-        self.drawGlider()
 
 
 class SharkFeature(BaseFeature):
@@ -124,44 +121,20 @@ class SharkFeature(BaseFeature):
             rib.profile_2d = Profile2D(self.apply(rib.profile_2d._data, x1, x2, x3, y_add))
         return glider
 
-    def execute(self, fp, *args):
-        self.obj.ViewObject.Proxy.updateData()
-
 
 class SingleSkinRibFeature(BaseFeature):
     def __init__(self, obj, parent):
         super(SingleSkinRibFeature, self).__init__(obj, parent)
         obj.addProperty('App::PropertyIntegerList',
                         'ribs', 'not yet', 'docs')
-        obj.addProperty('App::PropertyFloat', 'height', 
-                        'not yet', 'docs').height = 0.5
-        obj.addProperty('App::PropertyFloat', 'att_dist', 
-                        'not yet', 'docs').att_dist = 0.1
-        obj.addProperty('App::PropertyInteger', 'num_points', 
-                        'accuracy', 'number of points').num_points = 20
-        obj.addProperty('App::PropertyBool', 'le_gap', 
-                        'not_yet', 'should the leading edge match the rib').le_gap = True
-        obj.addProperty('App::PropertyBool', 'te_gap', 
-                        'not_yet', 'should the trailing edge match the rib').te_gap = True
-        obj.addProperty('App::PropertyBool', 'double_first',
-                        'not yet', 'this is for double a lines').double_first = False
+        self.add_properties()
 
     def getGliderInstance(self):
         glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
         new_ribs = []
-        ##### backward compatibility
-        if not hasattr(self.obj, 'le_gap'):
-            self.obj.addProperty('App::PropertyBool', 'le_gap', 
-                                 'not_yet', 'should the leading edge match the rib').le_gap = True
-        if not hasattr(self.obj, 'te_gap'):
-            self.obj.addProperty('App::PropertyBool', 'te_gap', 
-                                 'not_yet', 'should the leading edge match the rib').te_gap = True
-        if not hasattr(self.obj, 'double_first'):
-            self.obj.addProperty('App::PropertyBool', 'double_first',
-                'not yet', 'this is for double a lines').double_first = False
-        ##### end backward compatibility
+        self.add_properties()
 
-        single_skin_par = {'att_dist': self.obj.att_dist, 
+        single_skin_par = {'att_dist': self.obj.att_dist,
                            'height': self.obj.height,
                            'num_points': self.obj.num_points,
                            'le_gap': self.obj.le_gap,
@@ -180,5 +153,47 @@ class SingleSkinRibFeature(BaseFeature):
         glider.replace_ribs(new_ribs)
         return glider
 
-    def execute(self, fp):
-        self.drawGlider()
+    def add_properties(self):
+        if not hasattr(self.obj, 'height'):
+            obj.addProperty('App::PropertyFloat', 'height', 
+                            'not yet', 'docs').height = 0.5
+        if not hasattr(self.obj, 'att_dist'):
+            obj.addProperty('App::PropertyFloat', 'att_dist', 
+                        'not yet', 'docs').att_dist = 0.1
+        if not hasattr(self.obj, 'num_points'):
+            obj.addProperty('App::PropertyInteger', 'num_points', 
+                        'accuracy', 'number of points').num_points = 20
+        if not hasattr(self.obj, 'le_gap'):
+            self.obj.addProperty('App::PropertyBool', 'le_gap', 
+                                 'not_yet', 'should the leading edge match the rib').le_gap = True
+        if not hasattr(self.obj, 'te_gap'):
+            self.obj.addProperty('App::PropertyBool', 'te_gap', 
+                                 'not_yet', 'should the leading edge match the rib').te_gap = True
+        if not hasattr(self.obj, 'double_first'):
+            self.obj.addProperty('App::PropertyBool', 'double_first',
+                'not yet', 'this is for double a lines').double_first = False
+
+
+class FlapFeature(BaseFeature):
+    def __init__(self, obj, parent):
+        super(FlapFeature, self).__init__(obj, parent)
+        self.add_properties()
+
+
+    def add_properties(self):
+        if not hasattr(self.obj, 'flap_begin'):
+            self.obj.addProperty('App::PropertyFloat', 'flap_begin',
+                'flap', 'where should the flapping effect start')
+            self.obj.flap_begin = 0.95
+        if not hasattr(self.obj, 'flap_amount'):
+            self.obj.addProperty('App::PropertyFloat', 'flap_amount', 'flap', 'how much flapping')
+            self.obj.flap_amount = 0.0
+
+    def getGliderInstance(self):
+        glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
+        new_ribs = []
+        self.add_properties()
+
+        for i, rib in enumerate(glider.ribs):
+            rib.profile_2d.set_flap(self.obj.flap_begin, self.obj.flap_amount)
+        return glider
