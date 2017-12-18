@@ -91,16 +91,12 @@ class BallooningFeature(BaseFeature):
 class SharkFeature(BaseFeature):
     def __init__(self, obj, parent):
         super(SharkFeature, self).__init__(obj, parent)
-        obj.addProperty('App::PropertyIntegerList', 'ribs', 'not yet', 'docs')
-        obj.addProperty('App::PropertyFloat', 'x1', 'shark-nose', 'distance')
-        obj.addProperty('App::PropertyFloat', 'x2', 'shark-nose', 'distance')
-        obj.addProperty('App::PropertyFloat', 'x3', 'shark-nose', 'distance')
-        obj.addProperty('App::PropertyFloat', 'y_add', 'shark-nose', 'amount')
-        obj.addProperty('App::PropertyInteger', 'type', 'not yet', '0-> linear, 1->quadratic')
-        obj.x1 = 0.1
-        obj.x2 = 0.11
-        obj.x3 = 0.5
-        obj.y_add = 0.1
+        self.addProperty('ribs', [], 'not_yet', 'docs', int)
+        self.addProperty('x1', 0.1, 'not_yet', 'distance')
+        self.addProperty('x2', 0.11, 'not_yet', 'distance')
+        self.addProperty('x3', 0.5, 'not_yet', 'distance')
+        self.addProperty('y_add', 0.1, 'not_yet', 'amount')
+        self.addProperty('type', False, 'not_yet', '0-> linear, 1->quadratic')
 
     def apply(self, airfoil_data, x1, x2, x3, y_add):
         data = []
@@ -127,12 +123,12 @@ class SingleSkinRibFeature(BaseFeature):
         super(SingleSkinRibFeature, self).__init__(obj, parent)
         obj.addProperty('App::PropertyIntegerList',
                         'ribs', 'not yet', 'docs')
-        self.add_properties()
+        self.addProperties()
 
     def getGliderInstance(self):
         glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
         new_ribs = []
-        self.add_properties()
+        self.addProperties()
 
         single_skin_par = {'att_dist': self.obj.att_dist,
                            'height': self.obj.height,
@@ -153,47 +149,31 @@ class SingleSkinRibFeature(BaseFeature):
         glider.replace_ribs(new_ribs)
         return glider
 
-    def add_properties(self):
-        if not hasattr(self.obj, 'height'):
-            obj.addProperty('App::PropertyFloat', 'height', 
-                            'not yet', 'docs').height = 0.5
-        if not hasattr(self.obj, 'att_dist'):
-            obj.addProperty('App::PropertyFloat', 'att_dist', 
-                        'not yet', 'docs').att_dist = 0.1
-        if not hasattr(self.obj, 'num_points'):
-            obj.addProperty('App::PropertyInteger', 'num_points', 
-                        'accuracy', 'number of points').num_points = 20
-        if not hasattr(self.obj, 'le_gap'):
-            self.obj.addProperty('App::PropertyBool', 'le_gap', 
-                                 'not_yet', 'should the leading edge match the rib').le_gap = True
-        if not hasattr(self.obj, 'te_gap'):
-            self.obj.addProperty('App::PropertyBool', 'te_gap', 
-                                 'not_yet', 'should the leading edge match the rib').te_gap = True
-        if not hasattr(self.obj, 'double_first'):
-            self.obj.addProperty('App::PropertyBool', 'double_first',
-                'not yet', 'this is for double a lines').double_first = False
+    def addProperties(self):
+        self.addProperty('height', 0.5, 'not yet', 'docs')
+        self.addProperty('att_dist', 0.1, 'not yet', 'docs')
+        self.addProperty('num_points', 20, 'accuracy', 'number of points')
+        self.addProperty('le_gap', 'not_yet', True, 'should the leading edge match the rib')
+        self.addProperty('te_gap', 'not_yet', True, 'should the leading edge match the rib')
+        self.addProperty('double_first', False, 'not yet', 'this is for double a lines')
 
 
 class FlapFeature(BaseFeature):
     def __init__(self, obj, parent):
         super(FlapFeature, self).__init__(obj, parent)
-        self.add_properties()
+        self.addProperties()
 
-
-    def add_properties(self):
-        if not hasattr(self.obj, 'flap_begin'):
-            self.obj.addProperty('App::PropertyFloat', 'flap_begin',
-                'flap', 'where should the flapping effect start')
-            self.obj.flap_begin = 0.95
-        if not hasattr(self.obj, 'flap_amount'):
-            self.obj.addProperty('App::PropertyFloat', 'flap_amount', 'flap', 'how much flapping')
-            self.obj.flap_amount = 0.0
+    def addProperties(self):
+        self.addProperty('flap_begin', 0.95, 'flap', 'where should the flapping effect start', float)
+        self.addProperty('flap_amount', 0.01, 'flap', 'how much flapping', float)
+        self.addProperty('flap_ribs', [], 'flap', 'which ribs get flapped', int)
 
     def getGliderInstance(self):
         glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
         new_ribs = []
-        self.add_properties()
+        self.addProperties()
 
         for i, rib in enumerate(glider.ribs):
-            rib.profile_2d.set_flap(self.obj.flap_begin, self.obj.flap_amount)
+            if i in self.obj.flap_ribs:
+                rib.profile_2d.set_flap(self.obj.flap_begin, self.obj.flap_amount)
         return glider

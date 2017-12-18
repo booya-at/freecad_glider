@@ -79,6 +79,42 @@ def mesh_sep(mesh, color, draw_lines=False):
         sep += [line_mat, line_set]
     return sep
 
+def _addProperty(obj, name, value, group, docs, p_type=None):
+    '''
+    property_list:
+    property_name property_value, property_group, property_docs
+    '''
+    if hasattr(obj, name):
+        return
+    type_dict = {
+        bool: 'App::PropertyBool',
+        int: 'App::PropertyInteger',
+        float: 'App::PropertyFloat',
+        str: 'App::PropertyString',
+        'link': 'App::PropertyLink'
+    }
+    list_types = {
+        bool: 'App::PropertyBoolList',
+        int: 'App::PropertyIntegerList',
+        float: 'App::PropertyFloatList',
+        str: 'App::PropertyStringList',
+        'link': 'App::PropertyLinkList'
+    }
+    p_type = p_type or type(value)
+    is_list = (type(value) == list)
+    if p_type == list:
+        is_list = True
+        p_type = type(value[0])
+        for i in value:
+            if type(i) != p_type:
+                raise(AttributeError('list must not have different elements'))
+    if is_list:
+        fc_type = list_types[p_type]
+    else:
+        fc_type = type_dict[p_type]
+    obj.addProperty(fc_type, name, group, docs)
+    setattr(obj, name, value)
+
 
 class OGBaseObject(object):
     def __init__(self, obj):
@@ -88,12 +124,18 @@ class OGBaseObject(object):
     def execute(self, fp):
         pass
 
+    def addProperty(self, name, value, group, docs, p_type=None):
+        _addProperty(self.obj, name, value, group, docs, p_type)
+
 
 class OGBaseVP(object):
     def __init__(self, view_obj):
         view_obj.Proxy = self
         self.view_obj = view_obj
         self.obj = view_obj.Object
+
+    def addProperty(self, name, value, group, docs, p_type=None):
+        _addProperty(self.obj, name, value, group, docs, p_type)        
 
     def attach(self, view_obj):
         self.view_obj = view_obj
