@@ -25,9 +25,7 @@ except TypeError:
 
     coin.SoSeparator = newSeparator
 
-import glider_metadata
-Dir = os.path.dirname(glider_metadata.__file__)
-
+Dir = os.path.dirname(__file__)
 Gui.addIconPath(Dir + "/icons")
 
 
@@ -72,7 +70,7 @@ class gliderWorkbench(Gui.Workbench):
         return "Gui::PythonWorkbench"
 
     def Initialize(self):
-        import tools
+        from . import tools
         global Dir
 
         Gui.addCommand('CreateGlider', tools.CreateGlider())
