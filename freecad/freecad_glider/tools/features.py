@@ -1,7 +1,7 @@
 from ._glider import OGBaseObject, OGGliderVP
 
 from openglider.airfoil.profile_2d import Profile2D
-from openglider.glider.rib import SingleSkinRib
+from openglider.glider.rib import SingleSkinRib, RibHole
 import numpy as np
 import copy
 
@@ -147,15 +147,26 @@ class SingleSkinRibFeature(BaseFeature):
             else:
                 new_ribs.append(rib)
         glider.replace_ribs(new_ribs)
+        hole_size = np.array([self.obj.hole_width, self.obj.hole_height])
+        if self.obj.holes:
+            for att_pnt in glider.lineset.attachment_points:
+                if isinstance(att_pnt.rib, SingleSkinRib):
+                    att_pnt.rib.holes.append(RibHole(att_pnt.rib_pos,
+                                                     size=hole_size,
+                                                     horizontal_shift=self.obj.horizontal_shift))
         return glider
 
     def addProperties(self):
         self.addProperty('height', 0.5, 'not yet', 'docs')
         self.addProperty('att_dist', 0.1, 'not yet', 'docs')
         self.addProperty('num_points', 20, 'accuracy', 'number of points')
-        self.addProperty('le_gap', 'not_yet', True, 'should the leading edge match the rib')
-        self.addProperty('te_gap', 'not_yet', True, 'should the leading edge match the rib')
+        self.addProperty('le_gap', True, 'not_yet', 'should the leading edge match the rib')
+        self.addProperty('te_gap', True, 'not_yet', 'should the leading edge match the rib')
         self.addProperty('double_first', False, 'not yet', 'this is for double a lines')
+        self.addProperty('holes', False, 'hole', 'create holes in the rib')
+        self.addProperty('hole_height', 0.7, 'hole', 'height of ellipse')
+        self.addProperty('hole_width', 0.3, 'hole', 'width of ellipse')
+        self.addProperty('horizontal_shift', 0.2, 'hole', 'relative horizontal shift')
 
 
 class FlapFeature(BaseFeature):
