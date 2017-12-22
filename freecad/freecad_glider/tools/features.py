@@ -154,19 +154,26 @@ class SingleSkinRibFeature(BaseFeature):
                     att_pnt.rib.holes.append(RibHole(att_pnt.rib_pos,
                                                      size=hole_size,
                                                      horizontal_shift=self.obj.horizontal_shift))
+        for i, rib in enumerate(glider.ribs):
+            rib.xrot = self.obj.xrot[i]
+
         return glider
 
     def addProperties(self):
-        self.addProperty('height', 0.5, 'not yet', 'docs')
-        self.addProperty('att_dist', 0.1, 'not yet', 'docs')
-        self.addProperty('num_points', 20, 'accuracy', 'number of points')
-        self.addProperty('le_gap', True, 'not_yet', 'should the leading edge match the rib')
-        self.addProperty('te_gap', True, 'not_yet', 'should the leading edge match the rib')
-        self.addProperty('double_first', False, 'not yet', 'this is for double a lines')
+        self.addProperty('height', 0.5, 'bows', 'docs')
+        self.addProperty('att_dist', 0.1, 'bows', 'docs')
+        self.addProperty('num_points', 20, 'bows', 'number of points')
+        self.addProperty('le_gap', True, 'bows', 'should the leading edge match the rib')
+        self.addProperty('te_gap', True, 'bows', 'should the leading edge match the rib')
+        self.addProperty('double_first', False, 'bows', 'this is for double a lines')
         self.addProperty('holes', False, 'hole', 'create holes in the rib')
         self.addProperty('hole_height', 0.7, 'hole', 'height of ellipse')
         self.addProperty('hole_width', 0.3, 'hole', 'width of ellipse')
         self.addProperty('horizontal_shift', 0.2, 'hole', 'relative horizontal shift')
+
+        glider = self.obj.parent.Proxy.getGliderInstance()
+        angle_list = [0. for _ in glider.ribs]
+        self.addProperty('xrot', angle_list, 'not_yet', 'set rib angles')
 
 
 class FlapFeature(BaseFeature):
