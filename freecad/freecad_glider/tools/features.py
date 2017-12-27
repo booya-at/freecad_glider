@@ -135,7 +135,9 @@ class SingleSkinRibFeature(BaseFeature):
                            'num_points': self.obj.num_points,
                            'le_gap': self.obj.le_gap,
                            'te_gap': self.obj.te_gap,
-                           'double_first': self.obj.double_first}
+                           'double_first': self.obj.double_first,
+                           'continued_min': self.obj.continued_min,
+                           'continued_min_end': self.obj.continued_min_end}
 
         for i, rib in enumerate(glider.ribs):
             if i in self.obj.ribs:
@@ -150,7 +152,9 @@ class SingleSkinRibFeature(BaseFeature):
         hole_size = np.array([self.obj.hole_width, self.obj.hole_height])
         if self.obj.holes:
             for att_pnt in glider.lineset.attachment_points:
-                if isinstance(att_pnt.rib, SingleSkinRib):
+                if (isinstance(att_pnt.rib, SingleSkinRib) and 
+                    att_pnt.rib_pos > self.obj.min_hole_pos and
+                    att_pnt.rib_pos < self.obj.max_hole_pos):
                     att_pnt.rib.holes.append(RibHole(att_pnt.rib_pos,
                                                      size=hole_size,
                                                      horizontal_shift=self.obj.horizontal_shift))
@@ -169,8 +173,11 @@ class SingleSkinRibFeature(BaseFeature):
         self.addProperty('holes', False, 'hole', 'create holes in the rib')
         self.addProperty('hole_height', 0.7, 'hole', 'height of ellipse')
         self.addProperty('hole_width', 0.3, 'hole', 'width of ellipse')
+        self.addProperty('max_hole_pos', 1., 'hole', 'maximal relative position of hole')
         self.addProperty('horizontal_shift', 0.2, 'hole', 'relative horizontal shift')
-
+        self.addProperty('min_hole_pos', 0.2, 'hole', 'minimal relative position of hole')
+        self.addProperty('continued_min', False, 'bows', 'add an offset to the airfoil')
+        self.addProperty('continued_min_end', 0.9, 'bows', 'no idea')
         glider = self.obj.parent.Proxy.getGliderInstance()
         angle_list = [0. for _ in glider.ribs]
         self.addProperty('xrot', angle_list, 'not_yet', 'set rib angles')

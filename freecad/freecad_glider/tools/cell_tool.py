@@ -126,9 +126,9 @@ class vector_table(base_table_widget):
         self.table.setHorizontalHeaderLabels(['left', 'right', 'ribs'])
 
     def get_from_ParametricGlider(self, ParametricGlider):
-        if 'straps' in ParametricGlider.elements:
-            straps = ParametricGlider.elements['straps']
-            for row, element in enumerate(straps):
+        if 'tension_lines' in ParametricGlider.elements:
+            tension_lines = ParametricGlider.elements['tension_lines']
+            for row, element in enumerate(tension_lines):
                 entries = [element['right'], element['left']]
                 entries.append(element['cells'])
                 self.table.setRow(row, entries)
@@ -136,7 +136,7 @@ class vector_table(base_table_widget):
     def apply_to_glider(self, ParametricGlider):
         num_rows = self.table.rowCount()
         # remove all diagonals from the glide_2d
-        ParametricGlider.elements['straps'] = []
+        ParametricGlider.elements['tension_lines'] = []
         for n_row in range(num_rows):
             row = self.get_row(n_row)
             if row:
@@ -144,7 +144,7 @@ class vector_table(base_table_widget):
                 strap['right'] = row[0]
                 strap['left'] = row[1]
                 strap['cells'] = row[2]
-                ParametricGlider.elements['straps'].append(strap)
+                ParametricGlider.elements['tension_lines'].append(strap)
 
     def get_row(self, n_row):
         str_row = [self.table.item(n_row, i).text() for i in range(3) if self.table.item(n_row, i)]
