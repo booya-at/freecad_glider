@@ -391,3 +391,14 @@ class GliderFlapFeatureCommand(GliderFeatureCommand):
         features.FlapFeature(feature, self.glider_obj)
         vp = glider.OGGliderVP(feature.ViewObject)
         vp.updateData()
+
+class GliderHoleFeatureCommand(GliderFeatureCommand):
+    def GetResources(self):
+        return {'Pixmap': 'singleskin_feature.svg' , 'MenuText': 'Features', 'ToolTip': 'hole feature'}
+
+    def Activated(self):
+        feature = FreeCAD.ActiveDocument.addObject('App::FeaturePython', 'holeFeature')
+        self.glider_obj.ViewObject.Visibility = False
+        features.HoleFeature(feature, self.glider_obj)
+        vp = glider.OGGliderVP(feature.ViewObject)
+        vp.updateData()
