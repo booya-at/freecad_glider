@@ -6,6 +6,7 @@ import FreeCAD as App
 
 from openglider import jsonify
 from openglider import mesh
+from openglider.glider import ParametricGlider
 from openglider.glider.cell.elements import TensionLine
 from . import pivy_primitives_new_new as prim
 from ._tools import coin, hex_to_rgb
@@ -136,6 +137,19 @@ class OGGlider(OGBaseObject):
         else:
             self.obj.ViewObject.Proxy.recompute = False
             self.obj.ViewObject.Proxy.updateData()
+
+    @classmethod
+    def load(cls, path):
+
+        if path.endswith(".json"):
+            with open(path, 'r') as importfile:
+                parametricglider = jsonify.load(importfile)["data"]
+        elif path.endswith(".ods"):
+            parametricglider = ParametricGlider.import_ods(path)
+        else:
+            raise ValueError
+
+        return cls(parametric_glider=parametricglider)
 
     def getGliderInstance(self):
         return self.obj.GliderInstance

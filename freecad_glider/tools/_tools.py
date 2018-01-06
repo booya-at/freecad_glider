@@ -56,9 +56,12 @@ def export_2d(glider):
         parent=None,
         caption='export glider',
         directory='~')
-    if filename[0] != '':
-        with open(filename[0], 'w') as exportfile:
-            dump(glider.ParametricGlider, exportfile)
+    if filename[0] != "":
+        if filename[0].endswith(".ods"):
+            glider.ParametricGlider.export_ods(filename[0])
+        else:
+            with open(filename[0], 'w') as exportfile:
+                dump(glider.ParametricGlider, exportfile)
 
 
 def import_2d(glider):
