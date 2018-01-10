@@ -1,5 +1,6 @@
 from ._glider import OGBaseObject, OGGliderVP
 
+import os
 from openglider.airfoil.profile_2d import Profile2D
 from openglider.glider.rib import SingleSkinRib, RibHole
 import numpy as np
@@ -72,6 +73,11 @@ class RibFeature(BaseFeature):
                 rib.profile_2d = airfoil
         return glider
 
+class VRibFeature(OGGliderVP):
+    def getIcon(self):
+        _dir = os.path.dirname(os.path.realpath(__file__))
+        return(_dir + "/../icons/rib_feature.svg")
+
 
 class BallooningFeature(BaseFeature):
     def __init__(self, obj, parent):
@@ -86,6 +92,12 @@ class BallooningFeature(BaseFeature):
             if i in self.obj.cells:
                 cell.ballooning = ballooning
         return glider
+
+
+class VBallooningFeature(OGGliderVP):
+    def getIcon(self):
+        _dir = os.path.dirname(os.path.realpath(__file__))
+        return(_dir + "/../icons/ballooning_feature.svg")
 
 
 class SharkFeature(BaseFeature):
@@ -116,6 +128,12 @@ class SharkFeature(BaseFeature):
         for rib in enumerate(glider.ribs):
             rib.profile_2d = Profile2D(self.apply(rib.profile_2d._data, x1, x2, x3, y_add))
         return glider
+
+
+class VSharkFeature(OGGliderVP):
+    def getIcon(self):
+        _dir = os.path.dirname(os.path.realpath(__file__))
+        return(_dir + "/../icons/shark_feature.svg")
 
 
 class SingleSkinRibFeature(BaseFeature):
@@ -183,6 +201,12 @@ class SingleSkinRibFeature(BaseFeature):
         self.addProperty('xrot', angle_list, 'not_yet', 'set rib angles')
 
 
+class VSingleSkinRibFeature(OGGliderVP):
+    def getIcon(self):
+        _dir = os.path.dirname(os.path.realpath(__file__))
+        return(_dir + "/../icons/singleskin_feature.svg")
+
+
 class FlapFeature(BaseFeature):
     def __init__(self, obj, parent):
         super(FlapFeature, self).__init__(obj, parent)
@@ -202,6 +226,12 @@ class FlapFeature(BaseFeature):
             if i in self.obj.flap_ribs:
                 rib.profile_2d.set_flap(self.obj.flap_begin, self.obj.flap_amount)
         return glider
+
+
+class VFlapFeature(OGGliderVP):
+    def getIcon(self):
+        _dir = os.path.dirname(os.path.realpath(__file__))
+        return(_dir + "/../icons/flap_feature.svg")
 
 
 class HoleFeature(BaseFeature):
@@ -238,3 +268,9 @@ class HoleFeature(BaseFeature):
         self.addProperty('horizontal_shift', 0.2, 'hole', 'relative horizontal shift')
         self.addProperty('min_hole_pos', 0.2, 'hole', 'minimal relative position of hole')
         self.addProperty('rotation', 0.0, 'hole', 'docs')
+
+
+class VHoleFeature(OGGliderVP):
+    def getIcon(self):
+        _dir = os.path.dirname(os.path.realpath(__file__))
+        return(_dir + "/../icons/hole_feature.svg")

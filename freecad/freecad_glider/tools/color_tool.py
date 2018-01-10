@@ -35,6 +35,12 @@ class ColorTool(BaseTool):
         self.Qcolore_select.clicked.connect(self.color_dialog.open)
         self.color_dialog.accepted.connect(self.set_color)
 
+        self.Qcolore_replace = QtGui.QPushButton('replace color')
+        self.layout.setWidget(1, input_field, self.Qcolore_replace)
+        self.color_replace_dialog = QtGui.QColorDialog()
+        self.Qcolore_replace.clicked.connect(self.color_replace_dialog.open)
+        self.color_replace_dialog.accepted.connect(self.replace_color)
+
     def setup_pivy(self):
         # get 2d shape properties
 
@@ -61,6 +67,14 @@ class ColorTool(BaseTool):
         color = self.color_dialog.currentColor().getRgbF()[:-1]
         for panel in self.selector.select_object:
             panel.set_color(color)
+
+    def replace_color(self):
+        assert len(self.selector.select_object) == 1
+        old_color = self.selector.select_object[0].std_col
+        color = self.color_replace_dialog.currentColor().getRgbF()[:-1]
+        for panel in self.selector.objects:
+            if panel.std_col == old_color:
+                panel.set_color(color)
 
     def accept(self):
         self.selector.unregister()

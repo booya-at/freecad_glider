@@ -343,7 +343,7 @@ class GliderRibFeatureCommand(GliderFeatureCommand):
         feature = FreeCAD.ActiveDocument.addObject('App::FeaturePython', 'ribFeature')
         self.feature.ViewObject.Visibility = False
         features.RibFeature(feature, self.glider_obj)
-        vp = glider.OGGliderVP(feature.ViewObject)
+        vp = features.VRibFeature(feature.ViewObject)
         vp.updateData()
 
 
@@ -355,7 +355,7 @@ class GliderBallooningFeatureCommand(GliderFeatureCommand):
         feature = FreeCAD.ActiveDocument.addObject('App::FeaturePython', 'ballooningFeature')
         self.glider_obj.ViewObject.Visibility = False
         features.BallooningFeature(feature, self.glider_obj)
-        vp = glider.OGGliderVP(feature.ViewObject)
+        vp = features.VBallooningFeature(feature.ViewObject)
         vp.updateData()
 
 
@@ -367,7 +367,7 @@ class GliderSharkFeatureCommand(GliderFeatureCommand):
         feature = FreeCAD.ActiveDocument.addObject('App::FeaturePython', 'sharkFeature')
         self.glider_obj.ViewObject.Visibility = False
         features.SharkFeature(feature, self.glider_obj)
-        vp = glider.OGGliderVP(feature.ViewObject)
+        vp = features.VSharkFeature(feature.ViewObject)
         vp.updateData()
 
 class GliderSingleSkinRibFeatureCommand(GliderFeatureCommand):
@@ -378,27 +378,27 @@ class GliderSingleSkinRibFeatureCommand(GliderFeatureCommand):
         feature = FreeCAD.ActiveDocument.addObject('App::FeaturePython', 'singleSkinRib')
         self.glider_obj.ViewObject.Visibility = False
         features.SingleSkinRibFeature(feature, self.glider_obj)
-        vp = glider.OGGliderVP(feature.ViewObject)
+        vp = features.VSingleSkinRibFeature(feature.ViewObject)
         vp.updateData()
 
 class GliderFlapFeatureCommand(GliderFeatureCommand):
     def GetResources(self):
-        return {'Pixmap': 'singleskin_feature.svg' , 'MenuText': 'Features', 'ToolTip': 'flap feature'}
+        return {'Pixmap': 'flap_feature.svg' , 'MenuText': 'Features', 'ToolTip': 'flap feature'}
 
     def Activated(self):
         feature = FreeCAD.ActiveDocument.addObject('App::FeaturePython', 'flapFeature')
         self.glider_obj.ViewObject.Visibility = False
         features.FlapFeature(feature, self.glider_obj)
-        vp = glider.OGGliderVP(feature.ViewObject)
+        vp = features.VFlapFeature(feature.ViewObject)
         vp.updateData()
 
 class GliderHoleFeatureCommand(GliderFeatureCommand):
     def GetResources(self):
-        return {'Pixmap': 'singleskin_feature.svg' , 'MenuText': 'Features', 'ToolTip': 'hole feature'}
+        return {'Pixmap': 'hole_feature.svg' , 'MenuText': 'Features', 'ToolTip': 'hole feature'}
 
     def Activated(self):
         feature = FreeCAD.ActiveDocument.addObject('App::FeaturePython', 'holeFeature')
         self.glider_obj.ViewObject.Visibility = False
         features.HoleFeature(feature, self.glider_obj)
-        vp = glider.OGGliderVP(feature.ViewObject)
+        vp = features.VHoleFeature(feature.ViewObject)
         vp.updateData()

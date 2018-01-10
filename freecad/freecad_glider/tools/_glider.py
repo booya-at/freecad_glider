@@ -354,7 +354,8 @@ class OGGliderVP(OGBaseVP):
         self._updateData(vp, prop)
 
     def getIcon(self):
-        return 'new_glider.svg'
+        _dir = os.path.dirname(os.path.realpath(__file__))
+        return(_dir + "/../icons/glider_workbench.svg")
 
     def __getstate__(self):
         return None
