@@ -224,15 +224,17 @@ class HoleFeature(BaseFeature):
                     att_pnt.rib_pos < self.obj.max_hole_pos):
                     att_pnt.rib.holes.append(RibHole(att_pnt.rib_pos,
                                                      size=hole_size,
-                                                     horizontal_shift=self.obj.horizontal_shift))
+                                                     horizontal_shift=self.obj.horizontal_shift,
+                                                     rotation=self.obj.rotation))
 
         return glider
 
     def addProperties(self):
-        self.addProperty('ribs', [], 'not yet', 'docs', int)
+        self.addProperty('ribs', [], 'hole', 'docs', int)
         self.addProperty('holes', False, 'hole', 'create holes in the rib')
         self.addProperty('hole_height', 0.7, 'hole', 'height of ellipse')
         self.addProperty('hole_width', 0.3, 'hole', 'width of ellipse')
         self.addProperty('max_hole_pos', 1., 'hole', 'maximal relative position of hole')
         self.addProperty('horizontal_shift', 0.2, 'hole', 'relative horizontal shift')
         self.addProperty('min_hole_pos', 0.2, 'hole', 'minimal relative position of hole')
+        self.addProperty('rotation', 0.0, 'hole', 'docs')

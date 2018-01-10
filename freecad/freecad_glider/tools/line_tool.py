@@ -10,14 +10,43 @@ import numpy as np
 import FreeCAD as App
 
 from ._tools import BaseTool, input_field, text_field
-from .pivy_primitives_new_new import coin, Line, Marker, Container, vector3D
+from .pivy_primitives_new_new import coin, Container, vector3D, Object3D
+from .pivy_primitives_new_new import Line as _Line
+from .pivy_primitives_new_new import Marker as _Marker
 from openglider.glider.parametric.lines import UpperNode2D, LowerNode2D, \
     BatchNode2D, Line2D, LineSet2D
 from openglider.lines.line_types import LineType
+import numpy as np
 
 
 def refresh():
     pass
+
+class Line(_Line):
+    def set_disabled(self):
+        super(Line, self).set_disabled()
+        points = np.array(self.points)
+        points.T[2] = -1
+        self.points = points
+
+    def set_enabled(self):
+        super(Line, self).set_enabled()
+        points = np.array(self.points)
+        points.T[2] = 0
+        self.points = points
+
+class Marker(_Marker):
+    def set_disabled(self):
+        super(Marker, self).set_disabled()
+        points = np.array(self.points)
+        points.T[2] = -1
+        self.points = points
+
+    def set_enabled(self):
+        super(Marker, self).set_enabled()
+        points = np.array(self.points)
+        points.T[2] = 0
+        self.points = points
 
 
 class LineContainer(Container):
@@ -68,6 +97,7 @@ class LineTool(BaseTool):
         self.front = _shape.front
         self.back = _shape.back
         self.xpos = self.parametric_glider.shape.rib_x_values
+        self.disabled_color = (0.5, 0.5, 0.5)
 
         # setup the GUI
         self.setup_widget()
@@ -106,6 +136,8 @@ class LineTool(BaseTool):
         self.layer_layout = QtGui.QFormLayout(self.layer_widget)
         self.layer_selection = LayerComboBox(self.layer_widget)
         self.layer_combobox = LayerComboBox(self.layer_widget)
+        self.layer_color_button = QtGui.QPushButton('select color')
+        self.layer_color_dialog = QtGui.QColorDialog()
 
         self.tool_widget.setWindowTitle('object properties')
         self.layer_widget.setWindowTitle('layers')
@@ -130,6 +162,7 @@ class LineTool(BaseTool):
         self.none_layout = QtGui.QFormLayout(self.none_widget)
 
         self.target_length = QtGui.QDoubleSpinBox()
+        self.target_length.setDecimals(5)
         self.line_layout.setWidget(
             0, text_field, QtGui.QLabel('target length: '))
         self.line_layout.setWidget(0, input_field, self.target_length)
@@ -209,6 +242,8 @@ class LineTool(BaseTool):
         self.layer_layout.setWidget(1, input_field, del_button)
         self.layer_layout.setWidget(2, text_field, QtGui.QLabel('setLayer'))
         self.layer_layout.setWidget(2, input_field, self.layer_selection)
+        self.layer_layout.setWidget(3, text_field, QtGui.QLabel('select color of disabled lines'))
+        self.layer_layout.setWidget(3, input_field, self.layer_color_button)
 
         # dialogs
         self.add_layer_dialog = QtGui.QInputDialog()
@@ -217,6 +252,15 @@ class LineTool(BaseTool):
         self.layer_combobox.currentIndexChanged.connect(self.show_layer)
         self.layer_selection.activated.connect(self.set_layer_by_current)
         self.layer_selection.setEnabled(False)
+        self.layer_color_button.clicked.connect(self.layer_color_dialog.open)
+        self.layer_color_dialog.accepted.connect(self.color_changed)
+
+    def color_changed(self):
+        color = self.layer_color_dialog.currentColor().getRgbF()[:-1]
+        for obj in self.shape.objects:
+            obj.disabled_col = color
+            if not obj.enabled:
+                obj.set_disabled()
 
     def line_name_changed(self, name):
         self.shape.select_object[0].name = name
@@ -230,6 +274,8 @@ class LineTool(BaseTool):
         self.set_layer(text=text)
         self.show_layer()
         self.update_layer_selection()
+        self.layer_combobox.model().sort(0)
+        self.layer_selection.model().sort(0)
 
     def delete_layer(self):
         current_layer = self.layer_combobox.currentText()
@@ -260,7 +306,10 @@ class LineTool(BaseTool):
         self.shape.deselect_all()
         for obj in self.shape.objects:
             if hasattr(obj, 'layer'):
-                if obj.layer != self.layer_combobox.currentText():
+                if self.layer_combobox.currentText() == '':
+                    if not obj.enabled:
+                        obj.set_enabled()
+                elif obj.layer != self.layer_combobox.currentText():
                     if obj.enabled:
                         obj.set_disabled()
                 else:
@@ -525,6 +574,8 @@ class LineTool(BaseTool):
             obj.layer = line.layer
             self.shape += [obj]
             self.layer_combobox.addItem(line.layer)
+        self.layer_combobox.model().sort(0)
+        self.layer_selection.model().sort(0)
         self.show_layer()
 
     def accept(self):

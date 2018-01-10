@@ -60,11 +60,17 @@ class Object3D(coin.SoSeparator):
         self.points = points
 
     def set_disabled(self):
-        self.color.diffuseColor = COLORS[self.disabled_col]
+        try:
+            self.color.diffuseColor = COLORS[self.disabled_col]
+        except KeyError:
+            self.color.diffuseColor = self.disabled_col
         self.enabled = False
 
     def set_enabled(self):
-        self.color.diffuseColor = COLORS[self.std_col]
+        try:
+            self.color.diffuseColor = COLORS[self.std_col]
+        except KeyError:
+            self.color.diffuseColor = self.std_col
         self.enabled = True
 
     def set_color(self, col):

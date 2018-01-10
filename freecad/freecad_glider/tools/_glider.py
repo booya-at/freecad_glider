@@ -210,12 +210,12 @@ class OGGlider(OGBaseObject):
 
     def onDocumentRestored(self, obj):
         self.obj = obj
-        self.obj.ViewObject.Proxy.addProperties(self.obj.ViewObject)
-        if not self.obj.ViewObject.Visibility:
-            self.obj.ViewObject.Proxy.recompute = True
-        else:
-            self.obj.ViewObject.Proxy.recompute = True
-            self.obj.ViewObject.Proxy.updateData(prop='Visibility')
+        # self.obj.ViewObject.Proxy.addProperties(self.obj.ViewObject)
+        # if not self.obj.ViewObject.Visibility:
+        #     self.obj.ViewObject.Proxy.recompute = True
+        # else:
+        #     self.obj.ViewObject.Proxy.recompute = True
+        #     self.obj.ViewObject.Proxy.updateData(prop='Visibility')
 
 
 class OGGliderVP(OGBaseVP):
@@ -361,6 +361,15 @@ class OGGliderVP(OGBaseVP):
 
     def __setstate__(self, state):
         return None
+
+
+def draw_lines(glider, line_num=2, vis_lines=None):
+    vis_lines = vis_lines or coin.SoSeparator()
+    glider.lineset.recalc()
+    for line in glider.lineset.lines:
+        points = line.get_line_points(numpoints=line_num)
+        vis_lines += [prim.Line(points, dynamic=False)]
+    return vis_lines
 
 
 def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,

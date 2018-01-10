@@ -2,7 +2,7 @@ from __future__ import division
 from PySide import QtGui
 
 from ._tools import BaseTool, input_field
-from ._glider import draw_glider
+from ._glider import draw_glider, draw_lines
 from .table import base_table_widget
 
 
@@ -31,12 +31,14 @@ class CellTool(BaseTool):
         self.update_button = QtGui.QPushButton('update glider')
         self.update_button.clicked.connect(self.update_glider)
         self.layout.setWidget(2, input_field, self.update_button)
-        draw_glider(self.parametric_glider.get_glider_3d(), self.task_separator, hull=None, ribs=True)
+        draw_glider(self.parametric_glider.get_glider_3d(), self.task_separator, hull=None, ribs=True, fill_ribs=False)
+        draw_lines(self.parametric_glider.get_glider_3d(), vis_lines=self.task_separator)
 
     def update_glider(self):
         self.task_separator.removeAllChildren()
         self.apply_elements()
-        draw_glider(self.parametric_glider.get_glider_3d(), self.task_separator, hull=None, ribs=True)
+        draw_glider(self.parametric_glider.get_glider_3d(), self.task_separator, hull=None, ribs=True, fill_ribs=False)
+        draw_lines(self.parametric_glider.get_glider_3d(), vis_lines=self.task_separator)
 
     def apply_elements(self):
         self.diagonals_table.apply_to_glider(self.parametric_glider)
