@@ -211,11 +211,11 @@ class OGGlider(OGBaseObject):
     def onDocumentRestored(self, obj):
         self.obj = obj
         # self.obj.ViewObject.Proxy.addProperties(self.obj.ViewObject)
-        # if not self.obj.ViewObject.Visibility:
-        #     self.obj.ViewObject.Proxy.recompute = True
-        # else:
-        #     self.obj.ViewObject.Proxy.recompute = True
-        #     self.obj.ViewObject.Proxy.updateData(prop='Visibility')
+        if not self.obj.ViewObject.Visibility:
+            self.obj.ViewObject.Proxy.recompute = True
+        else:
+            self.obj.ViewObject.Proxy.recompute = True
+            self.obj.ViewObject.Proxy.updateData(prop='Visibility')
 
 
 class OGGliderVP(OGBaseVP):
