@@ -167,6 +167,10 @@ class SingleSkinRibFeature(BaseFeature):
                     new_ribs.append(rib)
             else:
                 new_ribs.append(rib)
+        for rib, ss_rib in zip(glider.ribs, new_ribs):
+            if hasattr(rib, 'mirrored_rib') and rib.mirrored_rib:
+                nr = glider.ribs.index(rib.mirrored_rib)
+                ss_rib.mirrored_rib = new_ribs[nr]
         glider.replace_ribs(new_ribs)
         hole_size = np.array([self.obj.hole_width, self.obj.hole_height])
         if self.obj.holes:
