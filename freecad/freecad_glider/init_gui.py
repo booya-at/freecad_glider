@@ -63,8 +63,12 @@ class gliderWorkbench(Gui.Workbench):
         'PanelCommand',
         'PolarsCommand']
 
+    viewBox = [
+        'ViewCommand']
+
     devBox = [
         'RefreshCommand']
+
 
     def GetClassName(self):
         return 'Gui::PythonWorkbench'
@@ -101,16 +105,22 @@ class gliderWorkbench(Gui.Workbench):
         Gui.addCommand('GliderHoleFeatureCommand', tools.GliderHoleFeatureCommand())
         Gui.addCommand('GliderFlapFeatureCommand', tools.GliderFlapFeatureCommand())
 
+        Gui.addCommand('ViewCommand', tools.ViewCommand())
+
         Gui.addCommand('RefreshCommand', tools.RefreshCommand())
 
         self.appendToolbar('GliderTools', self.toolBox)
         self.appendToolbar('Production', self.productionBox)
         self.appendToolbar('Feature', self.featureBox)
+        self.appendToolbar('GliderView', self.viewBox)
         self.appendToolbar('Develop', self.devBox)
 
         self.appendMenu('GliderTools', self.toolBox)
         self.appendMenu('Production', self.productionBox)
         self.appendMenu('Feature', self.featureBox)
+        self.appendToolbar('GliderView', self.viewBox)
+        self.appendToolbar('Develop', self.devBox)
+
 
         Gui.addPreferencePage(Dir + '/ui/preferences.ui', 'Display')
 

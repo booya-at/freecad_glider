@@ -155,7 +155,8 @@ class SingleSkinRibFeature(BaseFeature):
                            'te_gap': self.obj.te_gap,
                            'double_first': self.obj.double_first,
                            'continued_min': self.obj.continued_min,
-                           'continued_min_end': self.obj.continued_min_end}
+                           'continued_min_end': self.obj.continued_min_end,
+                           'continued_min_angle': self.obj.continued_min_angle}
 
         for i, rib in enumerate(glider.ribs):
             if i in self.obj.ribs:
@@ -196,6 +197,7 @@ class SingleSkinRibFeature(BaseFeature):
         self.addProperty('min_hole_pos', 0.2, 'hole', 'minimal relative position of hole')
         self.addProperty('continued_min', False, 'bows', 'add an offset to the airfoil')
         self.addProperty('continued_min_end', 0.9, 'bows', 'no idea')
+        self.addProperty('continued_min_angle', 0., 'bows', 'no idea')
         glider = self.obj.parent.Proxy.getGliderInstance()
         angle_list = [0. for _ in glider.ribs]
         self.addProperty('xrot', angle_list, 'not_yet', 'set rib angles')

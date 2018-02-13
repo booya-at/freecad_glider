@@ -71,6 +71,21 @@ class BaseCommand(object):
         return tools.BaseTool(obj)
 
 
+class ViewCommand(object):
+    def GetResources(self):
+        return {'Pixmap': 'cell_command.svg',
+                'MenuText': 'edit cells',
+                'ToolTip': 'edit cells'}
+
+    def IsActive(self):
+        return True
+
+    def Activated(self):
+        Gui.activeDocument().activeView().setCameraType("Perspective")
+        cam = Gui.ActiveDocument.ActiveView.getCameraNode()
+        cam.heightAngle = 0.4
+
+
 class CellCommand(BaseCommand):
     def tool(self, obj):
         return cell_tool.CellTool(obj)

@@ -71,6 +71,7 @@ class DesignTool(BaseTool):
         self.QPointPos.setMinimum(0)
         self.QPointPos.setMaximum(1)
         self.QPointPos.setSingleStep(0.01)
+        self.QPointPos.setDecimals(5)
         self.QPointPos.valueChanged.connect(self.point_pos_changed)
 
         self.tool_layout.setWidget(1, text_field, QtGui.QLabel('point position'))
