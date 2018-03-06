@@ -343,9 +343,14 @@ class OGGliderVP(OGBaseVP):
 
     def update_lines(self, num=3):
         self.vis_lines.removeAllChildren()
-        if num < 2:
+        if num < 1:
             return
-        self.glider.lineset.recalc()
+        elif num == 1:
+            self.glider.lineset.recalc(calculate_sag=False)
+            num += 1
+        else:
+            self.glider.lineset.recalc(calculate_sag=True)
+
         for line in self.glider.lineset.lines:
             points = line.get_line_points(numpoints=num)
             self.vis_lines += [prim.Line(points, dynamic=False)]
