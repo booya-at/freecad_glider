@@ -65,6 +65,9 @@ def number_input(number):
 
 
 class diagonals_table(base_table_widget):
+    name = "diagonals"
+    keyword = "diagonals"
+
     def __init__(self):
         super(diagonals_table, self).__init__(name='diagonals')
         self.table.setRowCount(10)
@@ -95,7 +98,7 @@ class diagonals_table(base_table_widget):
     def apply_to_glider(self, ParametricGlider):
         num_rows = self.table.rowCount()
         # remove all diagonals from the glide_2d
-        ParametricGlider.elements['diagonals'] = []
+        ParametricGlider.elements[self.keyword] = []
         for n_row in range(num_rows):
             row = self.get_row(n_row)
             if row:

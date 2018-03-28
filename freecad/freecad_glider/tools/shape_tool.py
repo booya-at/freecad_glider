@@ -2,6 +2,7 @@ from __future__ import division
 
 import time
 
+from openglider.vector.polygon import CirclePart
 from pivy import coin
 from PySide import QtGui, QtCore
 
@@ -49,6 +50,9 @@ class ShapeTool(BaseTool):
         self.Qaspect_ratio_fixed = QtGui.QRadioButton(self.base_widget)
         self.Qspan = QtGui.QDoubleSpinBox(self.base_widget)
         self.Qspan_fixed = QtGui.QRadioButton(self.base_widget)
+
+        self.circle_front = coin.SoSeparator()
+        self.circle_back = coin.SoSeparator()
 
         self.setup_widget()
         self.setup_pivy()
@@ -150,6 +154,7 @@ class ShapeTool(BaseTool):
         # setting on drag behavior
         self.front_cpc.on_drag.append(self.update_data_back)
         self.back_cpc.on_drag.append(self.update_data_front)
+
         def update_shape_preview(*arg):
             self.update_shape(True)
         self.cell_dist_cpc.on_drag.append(update_shape_preview)
@@ -159,7 +164,8 @@ class ShapeTool(BaseTool):
         self.task_separator.addChild(self.front_cpc)
         self.task_separator.addChild(self.back_cpc)
         self.task_separator.addChild(self.cell_dist_cpc)
-        self.update_shape()
+        self.task_separator.addChild(self.circle_front)
+        self.task_separator.addChild(self.circle_back)
 
         # set drag_release callbacks
         self.front_cpc.drag_release.append(self.update_shape)
@@ -170,6 +176,8 @@ class ShapeTool(BaseTool):
         self.front_cpc.drag_release.append(self.auto_update_const_dist)
         self.back_cpc.drag_release.append(self.auto_update_const_dist)
         self.cell_dist_cpc.drag_release.append(self.update_shape)
+
+        self.update_shape()
 
     def line_edit(self):
         self.front_cpc.set_edit_mode(self.view)
@@ -286,11 +294,20 @@ class ShapeTool(BaseTool):
         self.shape.addChild(Line(back, width=2).object)
         self.shape.addChild(Line([back.data[0], front.data[0]], width=2).object)
         self.shape.addChild(Line([back.data[-1], front.data[-1]], width=2).object)
+
         points = list(map(vector3D, self.parametric_glider.shape.front_curve.data))
         self.shape.addChild(Line(points, color='grey').object)
         points = list(map(vector3D, self.parametric_glider.shape.back_curve.data))
         self.shape.addChild(Line(points, color='grey').object)
         self.shape.addChild(Line(dist_line, color='red', width=2).object)
+
+        self.circle_front.removeAllChildren()
+        self.circle_back.removeAllChildren()
+        circle_front = CirclePart(*self.parametric_glider.shape.front_curve.get_sequence(3))
+        circle_back = CirclePart(*self.parametric_glider.shape.back_curve.get_sequence(3))
+        self.circle_front.addChild(Line(circle_front.get_sequence(), color="red").object)
+        self.circle_back.addChild(Line(circle_back.get_sequence(), color="red").object)
+
         if not preview:
             for rib in ribs:
                 width = 1
