@@ -38,6 +38,7 @@ class ZrotTool(BaseTool):
 
         self.setup_widget()
         self.setup_pivy()
+        self.update_num()
 
     @property
     def spline(self):
@@ -46,10 +47,10 @@ class ZrotTool(BaseTool):
     @property
     def scale(self):
         return numpy.array([1., 1.])
-    
 
     def setup_pivy(self):
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
+
             self.parametric_glider.shape.span, pos[1], pos[2]]
         childs = [self.aoa_cpc, self.shape, self.aoa_spline.object, 
                   self.coords, self.grid]

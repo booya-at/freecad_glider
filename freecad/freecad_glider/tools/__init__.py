@@ -1,3 +1,5 @@
+import os
+
 import FreeCAD
 import FreeCAD as App
 import FreeCADGui as Gui
@@ -129,7 +131,26 @@ class CreateGlider(BaseCommand):
         return True
 
     def Activated(self):
-        CreateGlider.create_glider()
+        CreateGlider._load_default()
+
+
+class ImportGlider(CreateGlider):
+    def GetResources(self):
+        return {'Pixmap': 'import_glider.svg',
+                'MenuText': 'import glider',
+                'ToolTip': 'import glider'}
+
+    @property
+    def glider_obj(self):
+        return True
+
+    def Activated(self):
+        file_name = QtGui.QFileDialog.getOpenFileName(
+            parent=None,
+            caption="import glider",
+            directory='~')[0]
+        if not file_name == "":
+            self._load(file_name)
 
 
 class PatternCommand(BaseCommand):

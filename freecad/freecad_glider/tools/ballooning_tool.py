@@ -13,6 +13,7 @@ def refresh():
 
 class BallooningTool(BaseTool):
     widget_name = 'Selection'
+    scale_y = 5
 
     def __init__(self, obj):
         super(BallooningTool, self).__init__(obj)
@@ -48,8 +49,8 @@ class BallooningTool(BaseTool):
 
         # selection widget
         self.layout.addWidget(self.QList_View)
-        for ballooning in self.parametric_glider.balloonings:
-            self.QList_View.addItem(QBalooning(ballooning))
+        for ballooning in self.ParametricGlider.balloonings:
+            self.QList_View.addItem(QBalooning(ballooning, scale_y=self.scale_y))
         self.QList_View.setMaximumHeight(100)
         self.QList_View.setCurrentRow(0)
         self.layout.addWidget(self.Qnew_button)
@@ -66,7 +67,6 @@ class BallooningTool(BaseTool):
         self.spline_select = spline_select([], self.update_degree)
         self.layout.addWidget(self.spline_select)
 
-
     def setup_pivy(self):
         self.task_separator += [self.ballooning_sep, self.spline_sep]
         self.update_selection()
@@ -78,16 +78,18 @@ class BallooningTool(BaseTool):
 
     def _update_grid(self, grid_x=None, grid_y=None):
         grid_x = grid_x or numpy.linspace(0., 1., int(20 + 1))
-        grid_y = grid_y or numpy.linspace(-0.1, 0.1, int(20 + 1))
+        grid_y = grid_y or numpy.linspace(-0.1*self.scale_y, 0.1*self.scale_y, int(20 + 1))
         self.grid.removeAllChildren()
         x_points_lower = [[x, grid_y[0], -0.001] for x in grid_x]
         x_points_upper = [[x, grid_y[-1], -0.001] for x in grid_x]
-        y_points_lower = [[grid_x[0], y, -0.001] for y in grid_y]
+        y_points_lower = [[grid_x[0], y, -0.001] for y in grid_y if y != 0]
         y_points_upper = [[grid_x[-1], y, -0.001] for y in grid_y]
         for l in zip(x_points_lower, x_points_upper):
             self.grid += [Line(l, color='grey').object]
         for l in zip(y_points_lower, y_points_upper):
             self.grid += [Line(l, color='grey').object]
+
+        self.grid += (Line([[0, 0, -0.001], [1,0,-0.001]], color="red").object, )
         for l in y_points_upper[::10]:
             textsep = coin.SoSeparator()
             text = coin.SoText2()
@@ -103,8 +105,8 @@ class BallooningTool(BaseTool):
             if 'ballooning' in name:
                 j += 1
         ballooning = BallooningBezier()
-        ballooning.name = 'ballooning' + str(j)
-        new_item = QBalooning(ballooning)
+        ballooning.name = "ballooning" + str(j)
+        new_item = QBalooning(ballooning, scale_y=self.scale_y)
         self.QList_View.addItem(new_item)
         self.QList_View.setCurrentItem(new_item)
 
@@ -259,29 +261,29 @@ class BallooningTool(BaseTool):
 
 
 class QBalooning(QtGui.QListWidgetItem):
-    def __init__(self, ballooning):
+    def __init__(self, ballooning, scale_y=10):
         self.ballooning = ballooning
         super(QBalooning, self).__init__()
         self.setText(self.ballooning.name)
-        self.upper_controlpoints = self.ballooning.upper_spline.controlpoints
-        self.lower_controlpoints = numpy.array(
-            [1, -1]) * self.ballooning.lower_spline.controlpoints
+        self.scale_y = scale_y
+        self.upper_controlpoints = numpy.array([1, self.scale_y]) * self.ballooning.upper_spline.controlpoints
+        self.lower_controlpoints = numpy.array([1, -self.scale_y]) * self.ballooning.lower_spline.controlpoints
 
     def get_expl_lower_spline(self, num):
-        self.ballooning.lower_spline.controlpoints = numpy.array(
-            [1, -1]) * self.lower_controlpoints
+        self.apply_splines()
         seq = self.ballooning.lower_spline.get_sequence(num)
-        return seq * numpy.array([1, -1])
+        return seq * numpy.array([1, -self.scale_y])
 
     def get_expl_upper_spline(self, num):
-        self.ballooning.upper_spline.controlpoints = self.upper_controlpoints
+        self.apply_splines()
         seq = self.ballooning.upper_spline.get_sequence(num)
-        return seq
+        return seq * numpy.array([1, self.scale_y])
 
     def apply_splines(self):
         self.ballooning.controlpoints = [
-            self.upper_controlpoints,
-            numpy.array([1, -1]) * self.lower_controlpoints]
+            numpy.array([1, 1./self.scale_y])*self.upper_controlpoints,
+            numpy.array([1, -1./self.scale_y])*self.lower_controlpoints
+        ]
 
 def insert_point(points, insert_point):
     forward = points[-1][0] > points[0][0]
@@ -290,5 +292,5 @@ def insert_point(points, insert_point):
             pass
         else:
             break
-    points.insert(i, insert_point)
+        points.insert(i, insert_point)
     return points

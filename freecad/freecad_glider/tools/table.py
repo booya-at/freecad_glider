@@ -27,6 +27,7 @@ class base_table_widget(QtGui.QWidget):
     '''a table which is shown infront of the mainwindow'''
     instances = []
     _last_pos = None
+    name = "test"
 
     @classmethod
     def hide_all(cls):
