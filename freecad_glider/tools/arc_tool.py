@@ -1,3 +1,4 @@
+from openglider.vector.polygon import CirclePart
 from pivy import coin
 from PySide import QtGui
 
@@ -22,8 +23,10 @@ class ArcTool(BaseTool):
         self.Qnum_arc = QtGui.QSpinBox(self.base_widget)
         self.spline_select = spline_select(
             [self.ParametricGlider.arc.curve], self.update_spline_type, self.base_widget)
-        self.shape = coin.SoSeparator()
+        self.shape = coin.SoSeparator()#
+        self.circle = coin.SoSeparator()
         self.task_separator.addChild(self.shape)
+        self.task_separator.addChild(self.circle)
 
         self.setup_widget()
         self.setup_pivy()
@@ -58,6 +61,13 @@ class ArcTool(BaseTool):
         self.shape.removeAllChildren()
         self.ParametricGlider.arc.curve.controlpoints = [vector2D(i) for i in self.arc_cpc.control_pos]
         self.shape.addChild(Line(self.ParametricGlider.arc.curve.get_sequence(num=30), color="grey").object)
+        self.draw_circle()
+
+    def draw_circle(self):
+        self.circle.removeAllChildren()
+        p1, p2, p3 = self.ParametricGlider.arc.curve.get_sequence(num=3)
+        circle = CirclePart(p1, p2, p3)
+        self.circle.addChild(Line(circle.get_sequence(), color="blue").object)
 
     def update_spline_type(self):
         self.arc_cpc.control_pos = self.ParametricGlider.arc.curve.controlpoints

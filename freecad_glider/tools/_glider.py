@@ -218,7 +218,7 @@ class OGGliderVP(OGBaseVP):
 
     def update_glider(self, view_obj):
         view_obj.Object.ParametricGlider.num_profile = view_obj.profile_num
-        glider = view_obj.Object.ParametricGlider.get_glider_3d()
+        glider = view_obj.Object.ParametricGlider.get_glider_3d(num_profile=view_obj.profile_num)
         if not view_obj.half_glider:
             self.glider = glider.copy_complete()
         else:

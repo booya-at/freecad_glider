@@ -2,6 +2,7 @@ from __future__ import division
 
 import time
 
+from openglider.vector.polygon import CirclePart
 from pivy import coin
 from PySide import QtGui, QtCore
 
@@ -49,6 +50,9 @@ class ShapeTool(BaseTool):
         self.Qaspect_ratio_fixed = QtGui.QRadioButton(self.base_widget)
         self.Qspan = QtGui.QDoubleSpinBox(self.base_widget)
         self.Qspan_fixed = QtGui.QRadioButton(self.base_widget)
+
+        self.circle_front = coin.SoSeparator()
+        self.circle_back = coin.SoSeparator()
 
         self.setup_widget()
         self.setup_pivy()
@@ -168,6 +172,8 @@ class ShapeTool(BaseTool):
         self.task_separator.addChild(self.front_cpc)
         self.task_separator.addChild(self.back_cpc)
         self.task_separator.addChild(self.cell_dist_cpc)
+        self.task_separator.addChild(self.circle_front)
+        self.task_separator.addChild(self.circle_back)
 
         # set drag_release callbacks
         self.front_cpc.drag_release.append(self.update_shape)
@@ -301,6 +307,15 @@ class ShapeTool(BaseTool):
         points = list(map(vector3D, self.ParametricGlider.shape.back_curve.data))
         self.shape.addChild(Line(points, color="grey").object)
         self.shape.addChild(Line(dist_line, color="red", width=2).object)
+
+        self.circle_front.removeAllChildren()
+        self.circle_back.removeAllChildren()
+        circle_front = CirclePart(*self.ParametricGlider.shape.front_curve.get_sequence(3))
+        circle_back = CirclePart(*self.ParametricGlider.shape.back_curve.get_sequence(3))
+        self.circle_front.addChild(Line(circle_front.get_sequence(), color="red").object)
+        self.circle_back.addChild(Line(circle_back.get_sequence(), color="red").object)
+
+
         if not preview:
             for rib in ribs:
                 width = 1
