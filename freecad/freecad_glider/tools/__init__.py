@@ -126,12 +126,13 @@ class CreateGlider(BaseCommand):
         Gui.SendMsgToActiveView('ViewFit')
         return glider_object
 
+
     @property
     def glider_obj(self):
         return True
 
     def Activated(self):
-        CreateGlider._load_default()
+        CreateGlider.create_glider()
 
 
 class ImportGlider(CreateGlider):
