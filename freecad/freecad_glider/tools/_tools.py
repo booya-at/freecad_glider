@@ -11,12 +11,30 @@ from openglider.vector.spline import BernsteinBase, BSplineBase
 from openglider.glider import ParametricGlider
 
 # as long as this isn't part of std pivy:
+########################################################################################
 def SoGroup__iadd__(self, other):
-    if not isinstance(other, list):
-        raise(AttributeError('rhs must be list'))
-    for other_i in other:
-        self.addChild(other_i)
-    return self
+    if isinstance(other, (list, tuple)):
+        for other_i in other:
+            self.__iadd__(other_i)
+        return self
+    else:
+        try:
+            self.addChild(other)
+            return self
+        except TypeError as e:
+            raise TypeError(str(self.__class__) + " accepts only objects of type pivy.coin.SoNode")
+
+def SoGroup__isub__(self, other):
+    if isinstance(other, (list, tuple)):
+        for other_i in other:
+            self.__iadd__(other_i)
+        return self
+    else:
+        try:
+            self.removeChild(other)
+            return self
+        except TypeError as e:
+            raise TypeError(str(self.__class__) + " can't remove child of type " + str(type(other)))
 
 
 def SoGroup_getByName(self, name):
@@ -27,7 +45,9 @@ def SoGroup_getByName(self, name):
 
 
 coin.SoGroup.__iadd__ = SoGroup__iadd__
+coin.SoGroup.__isub__ = SoGroup__isub__
 coin.SoGroup.getByName = SoGroup_getByName
+########################################################################################
 
 
 def hex_to_rgb(hex_string):
