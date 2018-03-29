@@ -266,23 +266,25 @@ class QBalooning(QtGui.QListWidgetItem):
         super(QBalooning, self).__init__()
         self.setText(self.ballooning.name)
         self.scale_y = scale_y
-        self.upper_controlpoints = numpy.array([1, self.scale_y]) * self.ballooning.upper_spline.controlpoints
-        self.lower_controlpoints = numpy.array([1, -self.scale_y]) * self.ballooning.lower_spline.controlpoints
+        self.upper_controlpoints = numpy.array([1., self.scale_y]) * self.ballooning.upper_spline.controlpoints
+        self.lower_controlpoints = numpy.array([1., -self.scale_y]) * self.ballooning.lower_spline.controlpoints
 
     def get_expl_lower_spline(self, num):
-        self.apply_splines()
+        # self.apply_splines()
+        self.ballooning.lower_spline.controlpoints = self.lower_controlpoints * numpy.array([1., -1./self.scale_y])
         seq = self.ballooning.lower_spline.get_sequence(num)
-        return seq * numpy.array([1, -self.scale_y])
+        return seq * numpy.array([1., -self.scale_y])
 
     def get_expl_upper_spline(self, num):
-        self.apply_splines()
+        # self.apply_splines()
+        self.ballooning.upper_spline.controlpoints = self.upper_controlpoints * numpy.array([1., 1./self.scale_y])
         seq = self.ballooning.upper_spline.get_sequence(num)
-        return seq * numpy.array([1, self.scale_y])
+        return seq * numpy.array([1., self.scale_y])
 
     def apply_splines(self):
         self.ballooning.controlpoints = [
-            numpy.array([1, 1./self.scale_y])*self.upper_controlpoints,
-            numpy.array([1, -1./self.scale_y])*self.lower_controlpoints
+            numpy.array([1., 1./self.scale_y])*self.upper_controlpoints,
+            numpy.array([1., -1./self.scale_y])*self.lower_controlpoints
         ]
 
 def insert_point(points, insert_point):
