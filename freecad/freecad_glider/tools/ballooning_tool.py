@@ -49,7 +49,7 @@ class BallooningTool(BaseTool):
 
         # selection widget
         self.layout.addWidget(self.QList_View)
-        for ballooning in self.ParametricGlider.balloonings:
+        for ballooning in self.parametric_glider.balloonings:
             self.QList_View.addItem(QBalooning(ballooning, scale_y=self.scale_y))
         self.QList_View.setMaximumHeight(100)
         self.QList_View.setCurrentRow(0)
@@ -83,7 +83,7 @@ class BallooningTool(BaseTool):
         x_points_lower = [[x, grid_y[0], -0.001] for x in grid_x]
         x_points_upper = [[x, grid_y[-1], -0.001] for x in grid_x]
         y_points_lower = [[grid_x[0], y, -0.001] for y in grid_y if y != 0]
-        y_points_upper = [[grid_x[-1], y, -0.001] for y in grid_y]
+        y_points_upper = [[grid_x[-1], y, -0.001] for y in grid_y if y != 0]
         for l in zip(x_points_lower, x_points_upper):
             self.grid += [Line(l, color='grey').object]
         for l in zip(y_points_lower, y_points_upper):
