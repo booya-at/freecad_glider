@@ -228,11 +228,13 @@ class BallooningTool(BaseTool):
                 pos = list(self.view.getPoint(*event.getPosition()))[0:2]
                 self.unset_edit_mode()
                 if pos[1] > 0:
-                    self.current_ballooning.upper_controlpoints = insert_point(
-                        self.current_ballooning.upper_controlpoints, pos)
+                    insert_point(self.current_ballooning.upper_controlpoints, pos)
+                    # self.current_ballooning.upper_controlpoints = insert_point(
+                    #     self.current_ballooning.upper_controlpoints, pos)
                 else:
-                    self.current_ballooning.lower_controlpoints = insert_point(
-                        self.current_ballooning.lower_controlpoints, pos)
+                    insert_point(self.current_ballooning.upper_controlpoints, pos)
+                    # self.current_ballooning.lower_controlpoints = insert_point(
+                    #     self.current_ballooning.lower_controlpoints, pos)
                 self.current_ballooning.apply_splines()
                 self.set_edit_mode()
 
@@ -294,5 +296,5 @@ def insert_point(points, insert_point):
             pass
         else:
             break
-        points.insert(i, insert_point)
+    points.insert(i, insert_point)
     return points
