@@ -70,7 +70,7 @@ class diagonals_table(base_table_widget):
 
     def __init__(self):
         super(diagonals_table, self).__init__(name='diagonals')
-        self.table.setRowCount(10)
+        self.table.setRowCount(200)
         self.table.setColumnCount(9)
         self.table.setHorizontalHeaderLabels([
             'right\nfront',
@@ -114,7 +114,6 @@ class diagonals_table(base_table_widget):
         str_row = [self.table.item(n_row, i).text() for i in range(9) if self.table.item(n_row, i)]
         str_row = [item for item in str_row if item != '']
         if len(str_row) != 9:
-            print('something wrong with row ' + str(n_row))
             return None
         try:
             return list(map(float, str_row[:-1]) + [map(int, str_row[-1].split(','))])
@@ -126,7 +125,7 @@ class diagonals_table(base_table_widget):
 class vector_table(base_table_widget):
     def __init__(self):
         super(vector_table, self).__init__(name='vector straps')
-        self.table.setRowCount(10)
+        self.table.setRowCount(200)
         self.table.setColumnCount(3)
         self.table.setHorizontalHeaderLabels(['left', 'right', 'ribs'])
 
@@ -156,7 +155,6 @@ class vector_table(base_table_widget):
 
         str_row = [item for item in str_row if item != '']
         if len(str_row) != 3:
-            print('something wrong with row ' + str(n_row))
             return None
         try:
             return list(map(float, str_row[:-1]) + [map(int, str_row[-1].split(','))])
