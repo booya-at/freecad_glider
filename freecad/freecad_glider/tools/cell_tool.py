@@ -81,7 +81,7 @@ class diagonals_table(base_table_widget):
             'lb\nheight',
             'left\nfront',
             'lf\nheight',
-            'ribs'])
+            'cells'])
 
     def get_from_ParametricGlider(self, ParametricGlider):
         if 'diagonals' in ParametricGlider.elements:
@@ -127,7 +127,7 @@ class vector_table(base_table_widget):
         super(vector_table, self).__init__(name='vector straps')
         self.table.setRowCount(200)
         self.table.setColumnCount(3)
-        self.table.setHorizontalHeaderLabels(['left', 'right', 'ribs'])
+        self.table.setHorizontalHeaderLabels(['left', 'right', 'cells'])
 
     def get_from_ParametricGlider(self, ParametricGlider):
         if 'tension_lines' in ParametricGlider.elements:
