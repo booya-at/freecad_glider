@@ -340,6 +340,7 @@ class ColorCommand(BaseCommand):
 
 
 class RefreshCommand():
+    NOT_RELOAD = ["freecad.freecad_glider.init_gui"]
     def GetResources(self):
         return {'Pixmap': 'refresh_command.svg', 'MenuText': 'Refresh', 'ToolTip': 'Refresh'}
 
@@ -347,13 +348,13 @@ class RefreshCommand():
         return True
 
     def Activated(self):
-        from types import ModuleType
-        DONOTRELOAD = ['FreeCAD', 'FreeCADGui']
-        vals = globals().values()
-        for val in vals:
-            if type(val) is ModuleType and val.__name__ not in DONOTRELOAD:
-                reload(val)
-        App.Console.PrintLog('reload everything')
+        import sys
+        for name, mod in sys.modules.items():
+            if "freecad.freecad_glider" in name:
+                if mod and name not in self.NOT_RELOAD:
+                    print('reload {}'.format(name))
+                    reload(mod)
+
 
 
 class GliderFeatureCommand(BaseCommand):
