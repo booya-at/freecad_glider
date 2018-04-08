@@ -22,3 +22,9 @@ install dependencies:
 Install freecad_glider:
 
 Refer to https://github.com/looooo/FCGear
+
+![flow-computation](paraBEM.png)
+
+![jupyter-notebook integration](ipython_freecad.png)   
+
+![show case](bezier_showcase.gif)  
