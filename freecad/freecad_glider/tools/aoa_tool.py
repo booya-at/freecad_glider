@@ -48,7 +48,7 @@ class ZrotTool(BaseTool):
         self.aoa_cpc.control_points[-1].constraint = lambda pos: [
 
             self.parametric_glider.shape.span, pos[1], pos[2]]
-        childs = [self.aoa_cpc, self.shape, self.aoa_spline.object, 
+        childs = [self.aoa_cpc, self.shape, self.aoa_spline.object,
                   self.coords, self.grid]
         self.task_separator += childs
         self.update_aoa()
@@ -96,17 +96,18 @@ class ZrotTool(BaseTool):
         max_y = max([i[1] for i in pts])
         min_y = min([i[1] for i in pts])
 
-        self.coords += [
-            pp.Arrow([[0, 0], [0., max_y * self.scale[1] + 2 * self._grid_y_diff]]).object]
-        self.coords += [
-            pp.Arrow([[0, 0], [max_x * 1.3, 0.]]).object]
         # transform to scale + transform to degree
         # if min_y > 0 miny = 0
         min_y = (min_y < 0) * min_y
         # create range
-        _min_y = (min_y // self._grid_y_diff) * self._grid_y_diff
-        _max_y = ((max_y // self._grid_y_diff) + 1.5) * self._grid_y_diff
-        y_grid = np.arange(_min_y * self.scale[1], _max_y * self.scale[1], self._grid_y_diff * self.scale[1])
+        min_y = (min_y // self._grid_y_diff) * self._grid_y_diff
+        max_y = ((max_y // self._grid_y_diff) + 1.5) * self._grid_y_diff
+        self.coords += [
+            pp.Arrow([[0, 0], [0., max_y * self.scale[1] + self._grid_y_diff]]).object]
+        self.coords += [
+            pp.Arrow([[0, 0], [max_x * 1.3, 0.]]).object]
+
+        y_grid = np.arange(min_y * self.scale[1], max_y * self.scale[1], self._grid_y_diff * self.scale[1])
 
         self._update_grid(self.x_grid, y_grid)
 

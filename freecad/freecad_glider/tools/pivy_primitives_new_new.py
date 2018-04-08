@@ -317,7 +317,7 @@ class Container(coin.SoSeparator):
         event = event_callback.getEvent()
         if ((type(event) == coin.SoMouseButtonEvent and
                 event.getState() == coin.SoMouseButtonEvent.DOWN
-                and event.getButton() == coin.SoMouseButtonEvent.BUTTON1) or 
+                and event.getButton() == coin.SoMouseButtonEvent.BUTTON1) or
                 force):
             self.register(self.view)
             if self.drag:
