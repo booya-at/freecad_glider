@@ -1,14 +1,14 @@
 import numpy
 from pivy import coin
-from PySide import QtGui
+from PySide import QtGui, QtCore
+from copy import deepcopy
 
 import FreeCADGui as Gui
 
 from openglider.airfoil import BezierProfile2D
 from openglider.vector import normalize, norm
 from ._tools import BaseTool
-from .pivy_primitives import Line, vector3D, ControlPointContainer
-
+from . import pivy_primitives as pp
 
 def refresh():
     pass
@@ -22,6 +22,7 @@ class AirfoilTool(BaseTool):
         self.QList_View = QtGui.QListWidget(self.base_widget)
         self.Qdelete_button = QtGui.QPushButton('delete', self.base_widget)
         self.Qnew_button = QtGui.QPushButton('new', self.base_widget)
+        self.Qcopy_button = QtGui.QPushButton('copy', self.base_widget)
         self.Qairfoil_name = QtGui.QLineEdit()
 
         self.Qairfoil_widget = QtGui.QWidget()
@@ -75,7 +76,9 @@ class AirfoilTool(BaseTool):
         self.QList_View.setCurrentRow(0)
         self.layout.addWidget(self.Qnew_button)
         self.layout.addWidget(self.Qdelete_button)
+        self.layout.addWidget(self.Qcopy_button)
         self.QList_View.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
+        self.QList_View.currentTextChanged.connect(self.change_text)
 
         # connections
         self.Qimport_button.clicked.connect(self.import_file_dialog)
@@ -84,6 +87,7 @@ class AirfoilTool(BaseTool):
         self.QList_View.currentRowChanged.connect(self.update_selection)
         self.Qairfoil_name.textChanged.connect(self.update_name)
         self.Qfit_button.clicked.connect(self.spline_edit)
+        self.Qcopy_button.clicked.connect(self.copy_airfoil)
 
     def setup_pivy(self):
         self.task_separator += [self.airfoil_sep, self.spline_sep]
@@ -101,6 +105,14 @@ class AirfoilTool(BaseTool):
             self.QList_View.addItem(
                 QAirfoil_item(
                     BezierProfile2D.import_from_dat(filename[0])))
+
+    def copy_airfoil(self):
+        self.QList_View.addItem(
+            QAirfoil_item(
+                deepcopy(self.current_airfoil)))
+
+    def change_text(self):
+        self.QList_View.currentItem().rename()
 
     def create_airfoil(self):
         j = 0
@@ -144,7 +156,7 @@ class AirfoilTool(BaseTool):
 
     def update_airfoil(self, *args):
         self.airfoil_sep.removeAllChildren()
-        self.airfoil_sep += [Line(vector3D(self.current_airfoil), width=2).object]
+        self.airfoil_sep += [pp.Line(pp.vector3D(self.current_airfoil), width=2).object]
 
     def spline_edit(self):
         if self.is_edit:
@@ -167,9 +179,9 @@ class AirfoilTool(BaseTool):
             self.Qnum_points_lower.setDisabled(False)
             self.airfoil_sep.removeAllChildren()
             self.spline_sep.removeAllChildren()
-            self.airfoil_sep += [Line(self.current_airfoil.data).object]
-            self.upper_cpc = ControlPointContainer(view=self.view)
-            self.lower_cpc = ControlPointContainer(view=self.view)
+            self.airfoil_sep += [pp.Line(self.current_airfoil.data).object]
+            self.upper_cpc = pp.ControlPointContainer(view=self.view)
+            self.lower_cpc = pp.ControlPointContainer(view=self.view)
             self.upper_cpc.control_pos = airfoil.upper_spline.controlpoints
             self.lower_cpc.control_pos = airfoil.lower_spline.controlpoints
             self.upper_cpc.control_points[-1].fix = True
@@ -211,17 +223,17 @@ class AirfoilTool(BaseTool):
 
     def draw_upper_spline(self, num):
         self.upper_spline += [
-            Line(self.upper_control_line, color='grey').object]
+            pp.Line(self.upper_control_line, color='grey').object]
         self.upper_spline += [
-            Line(vector3D(
+            pp.Line(pp.vector3D(
                 self.current_airfoil.upper_spline.get_sequence(num)),
                 width=2).object]
 
     def draw_lower_spline(self, num):
         self.lower_spline += [
-            Line(self.lower_control_line, color='grey').object]
+            pp.Line(self.lower_control_line, color='grey').object]
         self.lower_spline += [
-            Line(vector3D(
+            pp.Line(pp.vector3D(
                 self.current_airfoil.lower_spline.get_sequence(num)),
                 width=2).object]
 
@@ -256,7 +268,7 @@ class AirfoilTool(BaseTool):
         if self.is_edit:
             self.current_airfoil.apply_splines()
             self.current_airfoil.upper_spline = self.current_airfoil.fit_upper(control_num=num)
-            self.upper_cpc.control_pos = vector3D(self.current_airfoil.upper_spline.controlpoints)
+            self.upper_cpc.control_pos = pp.vector3D(self.current_airfoil.upper_spline.controlpoints)
             self.upper_cpc.control_points[-1].fix = True
             self.upper_cpc.control_points[0].fix = True
             self._update_upper_spline()
@@ -265,7 +277,7 @@ class AirfoilTool(BaseTool):
         if self.is_edit:
             self.current_airfoil.apply_splines()
             self.current_airfoil.lower_spline = self.current_airfoil.fit_lower(control_num=num)
-            self.lower_cpc.control_pos = vector3D(self.current_airfoil.lower_spline.controlpoints)
+            self.lower_cpc.control_pos = pp.vector3D(self.current_airfoil.lower_spline.controlpoints)
             self.lower_cpc.control_points[-1].fix = True
             self.lower_cpc.control_points[0].fix = True
             self._update_lower_spline()
@@ -291,3 +303,7 @@ class QAirfoil_item(QtGui.QListWidgetItem):
         self.airfoil = airfoil
         super(QAirfoil_item, self).__init__()
         self.setText(self.airfoil.name)
+        self.setFlags(self.flags() | QtCore.Qt.ItemIsEditable)
+
+    def rename(self):
+        self.airfoil.name = self.text()

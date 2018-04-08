@@ -14,17 +14,17 @@ except ImportError:
 
 from . import _glider as glider
 from . import _tools as tools
-from . import airfoil_tool as airfoil_tool
-from . import shape_tool as shape_tool
-from . import arc_tool as arc_tool
-from . import aoa_tool as aoa_tool
-from . import ballooning_tool as ballooning_tool
-from . import line_tool as line_tool
-from . import merge_tool as merge_tool
+from . import airfoil_tool
+from . import shape_tool
+from . import arc_tool
+from . import aoa_tool
+from . import ballooning_tool
+from . import line_tool
+from . import merge_tool
 from . import panel_method as pm
-from . import cell_tool as cell_tool
-from . import design_tool as design_tool
-from . import color_tool as color_tool
+from . import cell_tool
+from . import design_tool
+from . import color_tool
 from . import features
 import openglider
 
@@ -341,6 +341,7 @@ class ColorCommand(BaseCommand):
 
 class RefreshCommand():
     NOT_RELOAD = ["freecad.freecad_glider.init_gui"]
+    RELOAD = ["pivy.coin", "freecad.freecad_glider"]
     def GetResources(self):
         return {'Pixmap': 'refresh_command.svg', 'MenuText': 'Refresh', 'ToolTip': 'Refresh'}
 
@@ -350,10 +351,12 @@ class RefreshCommand():
     def Activated(self):
         import sys
         for name, mod in sys.modules.items():
-            if "freecad.freecad_glider" in name:
-                if mod and name not in self.NOT_RELOAD:
-                    print('reload {}'.format(name))
-                    reload(mod)
+            for rld in self.RELOAD:
+                if rld in name:
+                    if mod and name not in self.NOT_RELOAD:
+                        print('reload {}'.format(name))
+                        reload(mod)
+        from pivy import coin
 
 
 

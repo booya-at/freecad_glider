@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 
 from pivy import coin
 import FreeCAD as App
@@ -206,6 +206,14 @@ class Line(object):
         self.data.point.deleteValues(0)
         self.data.point.setValues(0, len(self.points), self.points)
 
+    @property
+    def pos(self):
+        return self.data.point.values
+
+    @pos.setter
+    def pos(self, value):
+        self.update(value)
+
 class Line1(coin.SoSeparator):
     def __init__(self, points, color='black'):
         self.ls = coin.SoLineSet()
@@ -248,12 +256,38 @@ class Marker(coin.SoSeparator):
 
     @property
     def pos(self):
-        return self.data.point.values()
+        return self.data.point.values
 
     @pos.setter
     def pos(self, value):
         self.update(value)
 
+class Arrow(Line):
+    def __init__(self, points, color="black", arrow_size=0.04, length=2):
+        super(Arrow, self).__init__(points, color)
+        self.arrow_sep = coin.SoSeparator()
+        self.arrow_rot = coin.SoRotation()
+        self.arrow_scale = coin.SoScale()
+        self.arrow_translate = coin.SoTranslation()
+        self.arrow_scale.scaleFactor = (arrow_size, arrow_size, arrow_size)
+        self.cone = coin.SoCone()
+        arrow_length = coin.SoScale()
+        arrow_length.scaleFactor = (1, length, 1)
+        arrow_origin = coin.SoTranslation()
+        arrow_origin.translation = (0, -1, 0)
+        self.arrow_sep += [self.arrow_translate, self.arrow_rot, self.arrow_scale]
+        self.arrow_sep += [arrow_length, arrow_origin, self.cone]
+        self.object += [self.arrow_sep]
+        self.set_arrow_direction()
+
+    def set_arrow_direction(self):
+        pts = np.array(self.pos)
+        self.arrow_translate.translation = tuple(pts[-1])
+        direction = pts[-1] - pts[-2]
+        direction /= np.linalg.norm(direction)
+        _rot = coin.SbRotation()
+        _rot.setValue(coin.SbVec3f(0, 1, 0), coin.SbVec3f(*direction))
+        self.arrow_rot.rotation.setValue(_rot)
 
 
 class Spline(Line):
