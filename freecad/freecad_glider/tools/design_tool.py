@@ -6,7 +6,7 @@ import FreeCAD as App
 from openglider.glider.cell.elements import Panel
 
 from ._tools import BaseTool, input_field, text_field, coin
-from .pivy_primitives_new_new import Line, Marker, Container, vector3D
+from .pivy_primitives_new import Line, Marker, Container, vector3D
 
 
 def refresh():

@@ -5,7 +5,7 @@ import numpy as np
 import FreeCAD as App
 
 from ._tools import BaseTool, input_field, text_field, coin, hex_to_rgb, rgb_to_hex
-from .pivy_primitives_new_new import Polygon, Container, vector3D
+from .pivy_primitives_new import Polygon, Container, vector3D
 
 
 def refresh():

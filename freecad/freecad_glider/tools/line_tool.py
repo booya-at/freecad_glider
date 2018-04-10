@@ -10,9 +10,9 @@ import numpy as np
 import FreeCAD as App
 
 from ._tools import BaseTool, input_field, text_field
-from .pivy_primitives_new_new import coin, Container, vector3D, Object3D
-from .pivy_primitives_new_new import Line as _Line
-from .pivy_primitives_new_new import Marker as _Marker
+from .pivy_primitives_new import coin, Container, vector3D, Object3D
+from .pivy_primitives_new import Line as _Line
+from .pivy_primitives_new import Marker as _Marker
 from openglider.glider.parametric.lines import UpperNode2D, LowerNode2D, \
     BatchNode2D, Line2D, LineSet2D
 from openglider.lines.line_types import LineType

@@ -8,7 +8,7 @@ from openglider import jsonify
 from openglider import mesh
 from openglider.glider import ParametricGlider
 from openglider.glider.cell.elements import TensionLine
-from . import pivy_primitives_new_new as prim
+from . import pivy_primitives_new as prim
 from ._tools import coin, hex_to_rgb
 
 

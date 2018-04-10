@@ -6,6 +6,7 @@ from PySide import QtGui
 
 from ._tools import BaseTool, text_field, input_field, spline_select
 from . import pivy_primitives as pp
+from . import pivy_primitives_new as ppn
 
 class ZrotTool(BaseTool):
     num_on_drag = 80
@@ -52,7 +53,7 @@ class ZrotTool(BaseTool):
                   self.coords, self.grid]
         self.task_separator += childs
         self.update_aoa()
-        self.update_grid()
+        self.update_grid(drag_release=True)
         self.draw_shape()
 
     def setup_widget(self):
@@ -66,7 +67,12 @@ class ZrotTool(BaseTool):
         self.Qnum_aoa.setMinimum(2)
         self.Qnum_aoa.valueChanged.connect(self.update_num)
         self.aoa_cpc.on_drag.append(self.update_aoa)
-        self.aoa_cpc.drag_release.append(self.update_grid)
+        def _update_1(*arg):
+            self.update_grid(drag_release=True)
+        def _update_2(*arg):
+            self.update_grid(drag_release=False)
+        self.aoa_cpc.on_drag.append(_update_2)
+        self.aoa_cpc.drag_release.append(_update_1)
 
     def draw_shape(self):
         self.shape.removeAllChildren()
@@ -88,7 +94,7 @@ class ZrotTool(BaseTool):
             self.parametric_glider.shape.span, pos[1], pos[2]]
         self.update_aoa()
 
-    def update_grid(self):
+    def update_grid(self, drag_release=False):
         self.coords.removeAllChildren()
         pts = self.spline.get_sequence(num=self.num_on_drag)
         self.aoa_spline.update(pts * self.scale)
@@ -102,14 +108,12 @@ class ZrotTool(BaseTool):
         # create range
         min_y = (min_y // self._grid_y_diff) * self._grid_y_diff
         max_y = ((max_y // self._grid_y_diff) + 1.5) * self._grid_y_diff
-        self.coords += [
-            pp.Arrow([[0, 0], [0., max_y * self.scale[1] + self._grid_y_diff]]).object]
-        self.coords += [
-            pp.Arrow([[0, 0], [max_x * 1.3, 0.]]).object]
+        self.coords += [ppn.Arrow([[0, 0, 0], [0., max_y * self.scale[1] + self._grid_y_diff, 0]])]
+        self.coords += [ppn.Arrow([[0, 0, 0], [max_x * 1.3, 0., 0]])]
 
         y_grid = np.arange(min_y * self.scale[1], max_y * self.scale[1], self._grid_y_diff * self.scale[1])
 
-        self._update_grid(self.x_grid, y_grid)
+        self._update_grid(self.x_grid, y_grid, drag_release)
 
     def accept(self):
         self.aoa_cpc.remove_callbacks()
@@ -123,7 +127,7 @@ class ZrotTool(BaseTool):
     def grid_points(self, grid_x, grid_y):
         return [[x, y] for y in grid_y for x in grid_x]
 
-    def _update_grid(self, grid_x, grid_y):
+    def _update_grid(self, grid_x, grid_y, drag_release=False):
         self.grid.removeAllChildren()
         x_points_lower = [[x, grid_y[0], -0.001] for x in grid_x]
         x_points_upper = [[x, grid_y[-1], -0.001] for x in grid_x]
@@ -144,21 +148,22 @@ class ZrotTool(BaseTool):
             textsep += [color, trans, text]
             self.grid += [textsep]
         interpolation = self.spline.interpolation(50)
-        for i in self.back:
-            color = coin.SoMaterial()
-            color.diffuseColor = [0, 0, 0]
-            textsep = coin.SoSeparator()
-            scale = coin.SoScale()
-            text = coin.SoAsciiText()
-            trans = coin.SoTranslation()
-            rot = coin.SoRotationXYZ()
-            rot.axis = coin.SoRotationXYZ.Z
-            rot.angle.setValue(np.pi / 2)
-            scale.scaleFactor = (self.text_scale, self.text_scale, self.text_scale)
-            trans.translation = (i[0], i[1], 0.001)
-            text.string = self.text_repr(interpolation(i[0]) * self.value_scale * self.scale[1])
-            textsep += [color, trans, scale, rot, text]
-            self.grid += [textsep]
+        if drag_release:
+            for i in self.back:
+                color = coin.SoMaterial()
+                color.diffuseColor = [0, 0, 0]
+                textsep = coin.SoSeparator()
+                scale = coin.SoScale()
+                text = coin.SoAsciiText()
+                trans = coin.SoTranslation()
+                rot = coin.SoRotationXYZ()
+                rot.axis = coin.SoRotationXYZ.Z
+                rot.angle.setValue(np.pi / 2)
+                scale.scaleFactor = (self.text_scale, self.text_scale, self.text_scale)
+                trans.translation = (i[0], i[1], 0.001)
+                text.string = self.text_repr(interpolation(i[0]) * self.value_scale * self.scale[1])
+                textsep += [color, trans, scale, rot, text]
+                self.grid += [textsep]
 
     def text_repr(self, value):
         return str(round(value / self.scale[1], 2))

@@ -168,14 +168,14 @@ class ShapeTool(BaseTool):
         self.task_separator.addChild(self.circle_back)
 
         # set drag_release callbacks
-        self.front_cpc.drag_release.append(self.update_shape)
-        self.back_cpc.drag_release.append(self.update_shape)
-        self.front_cpc.drag_release.append(self.update_properties)
-        self.back_cpc.drag_release.append(self.update_properties)
-        self.cell_dist_cpc.drag_release.append(self.update_properties)
+        self.front_cpc.on_drag.append(self.update_shape)
+        self.back_cpc.on_drag.append(self.update_shape)
+        self.front_cpc.on_drag.append(self.update_properties)
+        self.back_cpc.on_drag.append(self.update_properties)
+        self.cell_dist_cpc.on_drag.append(self.update_properties)
         self.front_cpc.drag_release.append(self.auto_update_const_dist)
         self.back_cpc.drag_release.append(self.auto_update_const_dist)
-        self.cell_dist_cpc.drag_release.append(self.update_shape)
+        self.cell_dist_cpc.on_drag.append(self.update_shape)
 
         self.update_shape()
 

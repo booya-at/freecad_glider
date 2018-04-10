@@ -9,7 +9,7 @@ from copy import deepcopy
 from openglider.glider.in_out.export_3d import paraBEM_Panels
 from openglider.utils.distribution import Distribution
 from ._tools import BaseTool, input_field, text_field
-from .pivy_primitives_new_new import Container, Marker, coin, Line, COLORS
+from .pivy_primitives_new import Container, Marker, coin, Line, COLORS
 
 
 ### idea for polars
