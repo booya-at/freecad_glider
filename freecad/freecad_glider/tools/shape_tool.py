@@ -285,21 +285,32 @@ class ShapeTool(BaseTool):
         self.parametric_glider.shape.back_curve.controlpoints = list(map(vector2D, self.back_cpc.control_pos))
         self.parametric_glider.shape.rib_dist_controlpoints = list(map(vector2D, self.cell_dist_cpc.control_pos))
         self.shape.removeAllChildren()
-        _shape = self.parametric_glider.shape.get_shape()
+        mirrored_sep = coin.SoSeparator()
+        sep = coin.SoSeparator()
+        self.shape += mirrored_sep, sep
+        mirror = coin.SoMatrixTransform()
+        mirror.matrix.setValue(-1, 0, 0, 0,
+                                0, 1, 0, 0,
+                                0, 0, 1, 0,
+                                0, 0, 0, 1)
+        mirrored_sep += mirror, sep
+        _shape = self.parametric_glider.shape.get_half_shape()
         ribs = _shape.ribs
         front = _shape.front
         back = _shape.back
-        dist_line = self.parametric_glider.shape.rib_dist_interpolation
-        self.shape.addChild(Line(front, width=2).object)
-        self.shape.addChild(Line(back, width=2).object)
-        self.shape.addChild(Line([back.data[0], front.data[0]], width=2).object)
-        self.shape.addChild(Line([back.data[-1], front.data[-1]], width=2).object)
+        front[0, 0] = 0
+        back[0, 0] = 0
+        dist_line = self.parametric_glider.shape.fast_interpolation
+        sep += (Line(front, width=2).object)
+        sep += (Line(back, width=2).object)
+        # sep += (Line([back.data[0], front.data[0]], width=2).object)
+        sep += (Line([back.data[-1], front.data[-1]], width=2).object)
 
         points = list(map(vector3D, self.parametric_glider.shape.front_curve.data))
-        self.shape.addChild(Line(points, color='grey').object)
+        sep += (Line(points, color='grey').object)
         points = list(map(vector3D, self.parametric_glider.shape.back_curve.data))
-        self.shape.addChild(Line(points, color='grey').object)
-        self.shape.addChild(Line(dist_line, color='red', width=2).object)
+        sep += (Line(points, color='grey').object)
+        self.shape += (Line(dist_line, color='red', width=2).object)
 
         self.circle_front.removeAllChildren()
         self.circle_back.removeAllChildren()
@@ -315,7 +326,7 @@ class ShapeTool(BaseTool):
                 if list(rib) in (ribs[0], ribs[-1]):
                     width = 2
                     col = 'black'
-                self.shape.addChild(Line(rib, color=col, width=width).object)
+                sep += Line(rib, color=col, width=width).object
             for i in dist_line:
-                self.shape.addChild(Line([[0, i[1]], i, [i[0], 0]], color='grey').object)
+                sep += Line([[0, i[1]], i, [i[0], 0]], color='grey').object
 

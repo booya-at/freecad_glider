@@ -291,7 +291,11 @@ class OGGliderVP(OGBaseVP):
         self.material.setName('material')
         self.seperator.setName('baseseperator')
         self.material.diffuseColor = (.7, .7, .7)
-        self.seperator += [self.vis_glider, self.vis_lines]
+        _rot = coin.SbRotation()
+        _rot.setValue(coin.SbVec3f(0, 1, 0), coin.SbVec3f(1, 0, 0))
+        rot = coin.SoRotation()
+        rot.rotation.setValue(_rot)
+        self.seperator += [rot, self.vis_glider, self.vis_lines]
         pick_style = coin.SoPickStyle()
         pick_style.style.setValue(coin.SoPickStyle.BOUNDING_BOX)
         self.vis_glider += [pick_style]
