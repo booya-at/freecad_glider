@@ -72,16 +72,20 @@ input_field = QtGui.QFormLayout.FieldRole
 
 
 def export_2d(glider):
+    file_types = "OpenOffice (*.ods);;JSON (*json)"
     filename = QtGui.QFileDialog.getSaveFileName(
         parent=None,
         caption='export glider',
-        directory='~')
+        directory='~',
+        filter=file_types)
     if filename[0] != "":
         if filename[0].endswith(".ods"):
             glider.ParametricGlider.export_ods(filename[0])
-        else:
+        elif filename[0].endswith('.json'):
             with open(filename[0], 'w') as exportfile:
                 dump(glider.ParametricGlider, exportfile)
+        else:
+            FreeCAD.Console.PrintError('\nonly .ods and .json are supported')
 
 
 def import_2d(glider):
@@ -89,18 +93,17 @@ def import_2d(glider):
         parent=None,
         caption='import glider',
         directory='~')
-    if file_name[0] != '':
-        file_name = file_name[0]
-        file_type = file_name.split('.')[1]
-        if file_type == 'json':
-            with open(file_name, 'r') as importfile:
-                glider.ParametricGlider = load(importfile)['data']
-                glider.ParametricGlider.get_glider_3d(glider.GliderInstance)
-                glider.ViewObject.Proxy.updateData()
-        elif file_type == 'ods':
-            glider.ParametricGlider = ParametricGlider.import_ods(file_name)
+    if filename[0].endswith('.json'):
+        with open(file_name, 'r') as importfile:
+            glider.ParametricGlider = load(importfile)['data']
             glider.ParametricGlider.get_glider_3d(glider.GliderInstance)
             glider.ViewObject.Proxy.updateData()
+    elif file_name.endswith('ods'):
+        glider.ParametricGlider = ParametricGlider.import_ods(file_name)
+        glider.ParametricGlider.get_glider_3d(glider.GliderInstance)
+        glider.ViewObject.Proxy.updateData()
+    else:
+        FreeCAD.Console.PrintError('\nonly .ods and .json are supported')
 
 
 class spline_select(QtGui.QComboBox):

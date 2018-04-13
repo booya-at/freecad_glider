@@ -190,14 +190,13 @@ class ImportGlider(BaseCommand):
             parent=None,
             caption='import glider',
             directory='~')
-        if not file_name[0] == '':
-            file_name = file_name[0]
-            file_type = file_name.split('.')[1]
-            if file_type == 'json':
-                CreateGlider.create_glider(import_path=file_name)
-            elif file_type == 'ods':
-                par_glider = openglider.glider.ParametricGlider.import_ods(file_name)
-                CreateGlider.create_glider(parametric_glider=par_glider)
+        if file_name[0].endswith('.json'):
+            CreateGlider.create_glider(import_path=file_name[0])
+        elif file_name[0].endswith('ods'):
+            par_glider = openglider.glider.ParametricGlider.import_ods(file_name[0])
+            CreateGlider.create_glider(parametric_glider=par_glider)
+        else:
+            FreeCAD.Console.PrintError('\nonly .ods and .json are supported')
 
     def GetResources(self):
         return {'Pixmap': 'import_glider.svg',
