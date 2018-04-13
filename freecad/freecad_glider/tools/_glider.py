@@ -38,14 +38,6 @@ def get_parameter(name):
         return glider_defaults.GetInt(name, preference_table[name][1])
 
 
-def refresh():
-    print('reloading')
-    reload(coin)
-    reload(jsonify)
-    reload(mesh)
-    reload(prim)
-
-
 def mesh_sep(mesh, color, draw_lines=False):
     vertices, polygons_grouped, _ = mesh.get_indexed()
     polygons = sum(polygons_grouped.values(), [])
@@ -361,17 +353,7 @@ class OGGliderVP(OGBaseVP):
 
     def update_lines(self, num=3):
         self.vis_lines.removeAllChildren()
-        if num < 1:
-            return
-        elif num == 1:
-            self.glider.lineset.recalc(calculate_sag=False)
-            num += 1
-        else:
-            self.glider.lineset.recalc(calculate_sag=True)
-
-        for line in self.glider.lineset.lines:
-            points = line.get_line_points(numpoints=num)
-            self.vis_lines += [prim.Line(points, dynamic=False)]
+        draw_lines(self.glider, num, self.vis_lines)
 
     def onChanged(self, vp, prop):
         self._updateData(vp, prop)
@@ -389,7 +371,14 @@ class OGGliderVP(OGBaseVP):
 
 def draw_lines(glider, line_num=2, vis_lines=None):
     vis_lines = vis_lines or coin.SoSeparator()
-    glider.lineset.recalc()
+    if line_num < 1:
+        return
+    elif line_num == 1:
+        glider.lineset.recalc(calculate_sag=False)
+        line_num += 1
+    else:
+        glider.lineset.recalc(calculate_sag=True)
+
     for line in glider.lineset.lines:
         points = line.get_line_points(numpoints=line_num)
         vis_lines += [prim.Line(points, dynamic=False)]
@@ -406,6 +395,8 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
         hull_sep = coin_SoSwitch(vis_glider, 'hull')
     else:
         hull_sep = vis_glider.getByName('hull')
+
+    draw_aoa(glider, vis_glider)
 
     draw_ribs = not vis_glider.getByName('ribs')
     draw_panels = not hull_sep.getByName('panels')
@@ -490,3 +481,11 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
     else:
         if hasattr(rib_sep, 'whichChild'):
             rib_sep.whichChild = coin.SO_SWITCH_NONE
+
+def draw_aoa(glider, sep):
+    glide = glider.glide
+    vec = np.array([glide, 0, 1.])
+    vec /= np.linalg.norm(vec)
+    p1 = np.zeros(3)
+    p0 = p1 - vec
+    sep += prim.Arrow([p0, p1])

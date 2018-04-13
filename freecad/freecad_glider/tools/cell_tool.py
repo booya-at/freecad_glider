@@ -1,5 +1,6 @@
 from __future__ import division
 from PySide import QtGui
+from pivy import coin
 
 from ._tools import BaseTool, input_field
 from ._glider import draw_glider, draw_lines
@@ -31,14 +32,23 @@ class CellTool(BaseTool):
         self.update_button = QtGui.QPushButton('update glider')
         self.update_button.clicked.connect(self.update_glider)
         self.layout.setWidget(2, input_field, self.update_button)
-        draw_glider(self.parametric_glider.get_glider_3d(), self.task_separator, hull=None, ribs=True, fill_ribs=False)
-        draw_lines(self.parametric_glider.get_glider_3d(), vis_lines=self.task_separator)
+        self.draw_glider()
+
+    def draw_glider(self):
+        _rot = coin.SbRotation()
+        _rot.setValue(coin.SbVec3f(0, 1, 0), coin.SbVec3f(1, 0, 0))
+        rot = coin.SoRotation()
+        rot.rotation.setValue(_rot)
+        self.task_separator += rot
+        draw_glider(self.parametric_glider.get_glider_3d(), 
+                    self.task_separator, hull=None, ribs=True, 
+                    fill_ribs=False)
+        draw_lines(self.parametric_glider.get_glider_3d(), vis_lines=self.task_separator, line_num=1)
 
     def update_glider(self):
         self.task_separator.removeAllChildren()
         self.apply_elements()
-        draw_glider(self.parametric_glider.get_glider_3d(), self.task_separator, hull=None, ribs=True, fill_ribs=False)
-        draw_lines(self.parametric_glider.get_glider_3d(), vis_lines=self.task_separator)
+        self.draw_glider()
 
     def apply_elements(self):
         self.diagonals_table.apply_to_glider(self.parametric_glider)
