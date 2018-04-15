@@ -195,12 +195,12 @@ class Arrow(Line):
 
 
 
-class Container(coin.SoSeparator):
+class InteractionSeparator(coin.SoSeparator):
     def __init__(self):
-        super(Container, self).__init__()
+        super(InteractionSeparator, self).__init__()
         self.objects = []
         self.static_objects = []
-        self.select_object = []
+        self.selected_objects = []
         self.drag_objects = []
         self.over_object = None
         self.start_pos = None
@@ -211,7 +211,7 @@ class Container(coin.SoSeparator):
         self._direction = None
 
     def addChild(self, child):
-        super(Container, self).addChild(child)
+        super(InteractionSeparator, self).addChild(child)
         if hasattr(child, 'dynamic'):
             if child.dynamic:
                 self.objects.append(child)
@@ -232,14 +232,14 @@ class Container(coin.SoSeparator):
 
     def Select(self, obj, multi=False):
         if not multi:
-            for o in self.select_object:
+            for o in self.selected_objects:
                 o.unselect()
-            self.select_object = []
+            self.selected_objects = []
         if obj:
-            if obj in self.select_object:
-                self.select_object.remove(obj)
+            if obj in self.selected_objects:
+                self.selected_objects.remove(obj)
             else:
-                self.select_object.append(obj)
+                self.selected_objects.append(obj)
         self.ColorSelected()
         self.selection_changed()
 
@@ -247,7 +247,7 @@ class Container(coin.SoSeparator):
         pass
 
     def ColorSelected(self):
-        for obj in self.select_object:
+        for obj in self.selected_objects:
             obj.select()
 
     def cursor_pos(self, event):
@@ -295,22 +295,22 @@ class Container(coin.SoSeparator):
         event = event_callback.getEvent()
         if (event.getKey() == ord('a')):
             if event.getState() == event.DOWN:
-                if self.select_object:
-                    for o in self.select_object:
+                if self.selected_objects:
+                    for o in self.selected_objects:
                         o.unselect()
-                    self.select_object = []
+                    self.selected_objects = []
                 else:
                     for obj in self.objects:
                         if obj.dynamic:
-                            self.select_object.append(obj)
+                            self.selected_objects.append(obj)
                 self.ColorSelected()
                 self.selection_changed()
 
     def deselect_all(self):
-        if self.select_object:
-            for o in self.select_object:
+        if self.selected_objects:
+            for o in self.selected_objects:
                 o.unselect()
-            self.select_object = []
+            self.selected_objects = []
 
 
     def drag_cb(self, event_callback, force=False):
@@ -371,7 +371,7 @@ class Container(coin.SoSeparator):
         # but the eventhandler is not allowed to call the drag twice on an object
         if event.getKey() == ord('g') or force:
             self.drag_objects = set()
-            for i in self.select_object:
+            for i in self.selected_objects:
                 for j in i.drag_objects:
                     self.drag_objects.add(j)
             # check if something is selected
@@ -421,14 +421,14 @@ class Container(coin.SoSeparator):
 
     def removeSelected(self):
         temp = []
-        for i in self.select_object:
+        for i in self.selected_objects:
             i.delete()
         for i in self.objects + self.static_objects:
             i.check_dependency()    #dependency length max = 1
         for i in self.objects + self.static_objects:
             if i._delete:
                 temp.append(i)
-        self.select_object = []
+        self.selected_objects = []
         self.over_object = None
         for i in temp:
             if i in self.objects:
@@ -443,7 +443,7 @@ class Container(coin.SoSeparator):
             i.delete()
         self.objects = []
         self.static_objects = []
-        super(Container, self).removeAllChildren()
+        super(InteractionSeparator, self).removeAllChildren()
 
     def constrained_vector(self, vector):
         if self._direction is None:

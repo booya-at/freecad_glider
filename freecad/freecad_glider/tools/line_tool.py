@@ -8,11 +8,15 @@ from PySide import QtGui, QtCore
 import traceback
 import numpy as np
 import FreeCAD as App
+import FreeCADGui as Gui
 
 from ._tools import BaseTool, input_field, text_field
-from .pivy_primitives_new import coin, Container, vector3D, Object3D
+from pivy import coin
+from .pivy_primitives_new import vector3D
+from .pivy_primitives_new import InteractionSeparator, Object3D
 from .pivy_primitives_new import Line as _Line
 from .pivy_primitives_new import Marker as _Marker
+
 from openglider.glider.parametric.lines import UpperNode2D, LowerNode2D, \
     BatchNode2D, Line2D, LineSet2D
 from openglider.lines.line_types import LineType
@@ -35,6 +39,7 @@ class Line(_Line):
         points.T[2] = 0
         self.points = points
 
+
 class Marker(_Marker):
     def set_disabled(self):
         super(Marker, self).set_disabled()
@@ -49,17 +54,17 @@ class Marker(_Marker):
         self.points = points
 
 
-class LineContainer(Container):
+class LineContainer(InteractionSeparator):
     def Select(self, obj, multi=False):
         if not multi:
-            for o in self.select_object:
+            for o in self.selected_objects:
                 o.unselect()
-            self.select_object = []
+            self.selected_objects = []
         if obj:
-            if obj in self.select_object:
-                self.select_object.remove(obj)
+            if obj in self.selected_objects:
+                self.selected_objects.remove(obj)
             elif obj.enabled:
-                self.select_object.append(obj)
+                self.selected_objects.append(obj)
         self.ColorSelected()
         self.selection_changed()
 
@@ -67,14 +72,14 @@ class LineContainer(Container):
         event = event_callback.getEvent()
         if (event.getKey() == ord('a')):
             if event.getState() == event.DOWN:
-                if self.select_object:
-                    for o in self.select_object:
+                if self.selected_objects:
+                    for o in self.selected_objects:
                         o.unselect()
-                    self.select_object = []
+                    self.selected_objects = []
                 else:
                     for obj in self.objects:
                         if obj.dynamic and obj.enabled:
-                            self.select_object.append(obj)
+                            self.selected_objects.append(obj)
                 self.ColorSelected()
                 self.selection_changed()
 
@@ -263,7 +268,7 @@ class LineTool(BaseTool):
                 obj.set_disabled()
 
     def line_name_changed(self, name):
-        self.shape.select_object[0].name = name
+        self.shape.selected_objects[0].name = name
 
     def add_new_layer(self):
         self.add_layer_dialog.exec_()
@@ -296,7 +301,7 @@ class LineTool(BaseTool):
 
     def set_layer(self, text=None, objects=None, from_layer=None):
         text = text or self.layer_selection.currentText()
-        objects = objects or self.shape.select_object
+        objects = objects or self.shape.selected_objects
         for obj in objects:
             if hasattr(obj, 'layer'):
                 if from_layer is None or from_layer == obj.layer:
@@ -370,7 +375,7 @@ class LineTool(BaseTool):
         event = event_callback.getEvent()
         if (event.getKey() == ord('l') and
             event.getState() == 1):
-            objs = self.shape.select_object
+            objs = self.shape.selected_objects
             if len(objs) == 2:
                 if (isinstance(objs[0], NodeMarker) and
                     isinstance(objs[1], NodeMarker)):
@@ -391,7 +396,7 @@ class LineTool(BaseTool):
         event = event_callback.getEvent()
         if ((event.getKey() == ord('i') or force) and
             (event.getState() == 1)):
-            objs = self.shape.select_object
+            objs = self.shape.selected_objects
             if len(objs) == 1 and (isinstance(objs[0], Lower_Att_Marker)):
                 node = objs[0].node
                 point = Lower_Att_Marker(node, self.parametric_glider)
@@ -421,7 +426,7 @@ class LineTool(BaseTool):
         if ((event.getKey() == ord('c')) and
             (event.getState() == 1)):
             # get selection
-            objs = self.shape.select_object
+            objs = self.shape.selected_objects
             if len(objs) == 1 and (isinstance(objs[0], Upper_Att_Marker)):
                 node = objs[0].node
                 ap = Upper_Att_Marker(node, self.parametric_glider)
@@ -466,7 +471,7 @@ class LineTool(BaseTool):
                     return False
             return True
 
-        selected_objs = self.shape.select_object
+        selected_objs = self.shape.selected_objects
         if selected_objs:
             self.layer_selection.setEnabled(True)
             self.target_length.setEnabled(True)
@@ -512,31 +517,31 @@ class LineTool(BaseTool):
 
     def update_target_length(self, *args):
         l = float(self.target_length.value())
-        for obj in self.shape.select_object:
+        for obj in self.shape.selected_objects:
             obj.target_length = l
 
     def update_line_type(self, *args):
-        for obj in self.shape.select_object:
+        for obj in self.shape.selected_objects:
             obj.line_type = self.Qline_list.currentItem().line_type.name
 
     def update_lw_att_pos(self, *args):
         x = self.attach_x_val.value()
         y = self.attach_y_val.value()
         z = self.attach_z_val.value()
-        for obj in self.shape.select_object:
+        for obj in self.shape.selected_objects:
             obj.pos_3D = [x, y, z]
 
     def update_up_att_force(self, *args):
-        for obj in self.shape.select_object:
+        for obj in self.shape.selected_objects:
             obj.force = self.up_att_force.value()
 
     def update_up_att_rib(self, *args):
-        for obj in self.shape.select_object:
+        for obj in self.shape.selected_objects:
             obj.rib_nr = self.up_att_rib.value()
 
     def update_up_att_pos(self, *args):
         # print('update pos')
-        for obj in self.shape.select_object:
+        for obj in self.shape.selected_objects:
             obj.rib_pos = self.up_att_pos.value()
 
     def draw_shape(self):

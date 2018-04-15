@@ -6,7 +6,7 @@ import FreeCAD as App
 from openglider.glider.cell.elements import Panel
 
 from ._tools import BaseTool, input_field, text_field, coin
-from .pivy_primitives_new import Line, Marker, Container, vector3D
+from .pivy_primitives_new import Line, Marker, InteractionSeparator, vector3D
 
 
 def refresh():
@@ -85,11 +85,11 @@ class DesignTool(BaseTool):
         '''set up the scene'''
         self.shape = coin.SoSeparator()
         self.task_separator += [self.shape]
-        self.add_separator = Container()
+        self.add_separator = InteractionSeparator()
         self.shape += [self.add_separator]
         self.draw_shape()
         self.drag_separator = coin.SoSeparator()
-        self.event_separator = Container()
+        self.event_separator = InteractionSeparator()
         self.event_separator.selection_changed = self.selection_changed
         self.event_separator.register(self.view)
         self.toggle_side()
@@ -99,7 +99,7 @@ class DesignTool(BaseTool):
     def selection_changed(self):
         points = set()
         lines = []
-        for element in self.event_separator.select_object:
+        for element in self.event_separator.selected_objects:
             if isinstance(element, CutPoint):
                 points.add(element)
             elif isinstance(element, CutLine):
@@ -123,7 +123,7 @@ class DesignTool(BaseTool):
 
 
     def cut_type_changed(self):
-        for element in self.event_separator.select_object:
+        for element in self.event_separator.selected_objects:
             if isinstance(element, CutLine):
                 element.cut_type = self.Qcut_type.currentText()
 
@@ -131,7 +131,7 @@ class DesignTool(BaseTool):
         points = set()
         lines = set()
         sign = 2. * (self.side != 'upper') - 1.
-        for element in self.event_separator.select_object:
+        for element in self.event_separator.selected_objects:
             if isinstance(element, CutPoint):
                 points.add(element)
             elif isinstance(element, CutLine):
@@ -158,7 +158,7 @@ class DesignTool(BaseTool):
         self.event_separator.Select(None)
         self.event_separator.unregister()
         self.drag_separator.removeAllChildren()
-        self.event_separator = Container()
+        self.event_separator = InteractionSeparator()
         self.event_separator.selection_changed = self.selection_changed
         if self.side == 'upper':
             self.side = 'lower'
@@ -184,7 +184,7 @@ class DesignTool(BaseTool):
             print(1)
             self._add_mode = True
             # first we check if nothing is selected:
-            select_obj = self.event_separator.select_object
+            select_obj = self.event_separator.selected_objects
             num_of_obj = len(select_obj)
             action = None
             add_event = None
@@ -293,7 +293,7 @@ class DesignTool(BaseTool):
 
     def add_neighbour(self, event_callback=None):
         event = event_callback.getEvent()
-        select_obj = self.event_separator.select_object[0]
+        select_obj = self.event_separator.selected_objects[0]
         rib_nr = select_obj.rib_nr
         try:
             min1 = self.parametric_glider.shape[rib_nr - 1, 1.][1]

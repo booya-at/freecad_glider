@@ -5,7 +5,7 @@ import numpy as np
 import FreeCAD as App
 
 from ._tools import BaseTool, input_field, text_field, coin, hex_to_rgb, rgb_to_hex
-from .pivy_primitives_new import Polygon, Container, vector3D
+from .pivy_primitives_new import Polygon, InteractionSeparator, vector3D
 
 
 def refresh():
@@ -44,7 +44,7 @@ class ColorTool(BaseTool):
     def setup_pivy(self):
         # get 2d shape properties
 
-        self.selector = Container()
+        self.selector = InteractionSeparator()
         self.task_separator += [self.selector]
         x_values = self.parametric_glider.shape.rib_x_values
         if self.parametric_glider.shape.has_center_cell:
@@ -65,12 +65,12 @@ class ColorTool(BaseTool):
 
     def set_color(self):
         color = self.color_dialog.currentColor().getRgbF()[:-1]
-        for panel in self.selector.select_object:
+        for panel in self.selector.selected_objects:
             panel.set_color(color)
 
     def replace_color(self):
-        assert len(self.selector.select_object) == 1
-        old_color = self.selector.select_object[0].std_col
+        assert len(self.selector.selected_objects) == 1
+        old_color = self.selector.selected_objects[0].std_col
         color = self.color_replace_dialog.currentColor().getRgbF()[:-1]
         for panel in self.selector.objects:
             if panel.std_col == old_color:
@@ -95,7 +95,7 @@ class ColorTool(BaseTool):
         super(ColorTool, self).reject()
 
 
-class ColorContainer(Container):
+class ColorContainer(InteractionSeparator):
     def register(self, view):
         self.view = view
         self.mouse_over = self.view.addEventCallbackPivy(

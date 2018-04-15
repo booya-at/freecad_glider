@@ -9,7 +9,7 @@ from copy import deepcopy
 from openglider.glider.in_out.export_3d import paraBEM_Panels
 from openglider.utils.distribution import Distribution
 from ._tools import BaseTool, input_field, text_field
-from .pivy_primitives_new import Container, Marker, coin, Line, COLORS
+from .pivy_primitives_new import InteractionSeparator, Marker, coin, Line, COLORS
 
 
 ### idea for polars
@@ -187,7 +187,7 @@ class PanelTool(BaseTool):
             self.Qstream_num = QtGui.QSpinBox()
             self.Qmax_val = QtGui.QDoubleSpinBox()
             self.Qmin_val = QtGui.QDoubleSpinBox()
-            self.cpc = Container()
+            self.cpc = InteractionSeparator()
             self.stream = coin.SoSeparator()
             self.glider_result = coin.SoSeparator()
             self.marker = Marker([[0, 0, 0]], dynamic=True)
