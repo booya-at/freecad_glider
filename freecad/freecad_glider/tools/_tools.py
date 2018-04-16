@@ -1,6 +1,7 @@
 from __future__ import division
 
 from copy import deepcopy
+import FreeCAD
 
 from PySide import QtGui
 from pivy import coin
