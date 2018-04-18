@@ -40,16 +40,6 @@ class BaseFeature(OGBaseObject):
         '''return the root freecad obj'''
         return self.obj.parent.Proxy.getRoot()
 
-    def onDocumentRestored(self, obj):
-        self.obj = obj
-        self.obj.parent.Proxy.onDocumentRestored(self.obj.parent)
-        self.obj.ViewObject.Proxy.addProperties(self.obj.ViewObject)
-        if not self.obj.ViewObject.Visibility:
-            self.obj.ViewObject.Proxy.recompute = True
-        else:
-            self.obj.ViewObject.Proxy.recompute = True
-            self.obj.ViewObject.Proxy.updateData(prop='Visibility')
-
     def __getstate__(self):
         return None
 
@@ -58,6 +48,23 @@ class BaseFeature(OGBaseObject):
 
     def execute(self, fp):
         self.drawGlider()
+
+################# this function belongs to the gui and should be implemented in another way
+    def onDocumentRestored(self, obj):
+        if not hasattr(self, 'obj'):
+            self.obj = obj
+            self.obj.parent.Proxy.onDocumentRestored(self.obj.parent)
+            
+            # backward compatibility (remove this)
+            self.obj.ViewObject.Proxy.addProperties(self.obj.ViewObject)
+
+            # we have blocked the automatic update mechanism. so now we have to call it manually
+            if self.obj.ViewObject.Visibility:
+                print(self)
+                print("updating the view")
+                self.obj.ViewObject.Proxy.recompute = True
+                self.obj.ViewObject.Proxy.updateData(prop='Visibility')
+#########################################################################################
 
 class RibFeature(BaseFeature):
     def __init__(self, obj, parent):

@@ -160,6 +160,7 @@ class LineTool(BaseTool):
         self.Qline_list = QtGui.QListWidget()
         for _type in LineType.types.values():
             self.Qline_list.addItem(QLineType_item(_type))
+        self.Qline_list.sortItems()
 
         self.up_att_lay = QtGui.QFormLayout(self.up_att_wid)
         self.lw_att_lay = QtGui.QFormLayout(self.lw_att_wid)

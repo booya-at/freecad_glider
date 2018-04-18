@@ -209,19 +209,43 @@ class OGGlider(OGBaseObject):
         return out
 
     def __setstate__(self, state):
+        print("OBJECT!!!!!!!!!!!!")
+        # seld.obj is not yet available! 
         obj = App.ActiveDocument.getObject(state['name'])
         obj.ParametricGlider = jsonify.loads(state['ParametricGlider'])['data']
         obj.GliderInstance = obj.ParametricGlider.get_glider_3d()
         return None
 
+#########################################  gui!!! ################################
     def onDocumentRestored(self, obj):
-        self.obj = obj
-        # self.obj.ViewObject.Proxy.addProperties(self.obj.ViewObject)
-        if not self.obj.ViewObject.Visibility:
-            self.obj.ViewObject.Proxy.recompute = True
-        else:
-            self.obj.ViewObject.Proxy.recompute = True
-            self.obj.ViewObject.Proxy.updateData(prop='Visibility')
+        if not hasattr(self, 'obj'):  # make sure this function is only run once
+            self.obj = obj
+
+            # backward compatibility (remove this)
+            self.obj.ViewObject.Proxy.addProperties(self.obj.ViewObject)
+
+            # we have blocked the automatic update mechanism. so now we have to call it manually
+            if self.obj.ViewObject.Visibility:
+                self.obj.ViewObject.Proxy.recompute = True
+                self.obj.ViewObject.Proxy.updateData(prop='Visibility')
+##################################################################################
+
+# the update system on file-open of freecad is difficult.
+# from some exploration it seems to work like this:
+# 1. the c++ document object is restored
+# 2. the c++ gui-object is restored (ViewProvider)
+# 3. the Proxies are restored
+# 4. the properties are restored -> triggering of update function
+#     -> so somehow one has to avoid the updating for incomplete properties
+#     -> this is done by setting the Proxy.obj at the time when everything is restord
+#     -> onDocumentRestored. But now a manual call to the update function has to be made
+
+# the problem with opening a document modified in no gui mode:
+#
+# this is not possible as a fc-file saved in no-gui mode removes the view-provider from the 
+# file. This way a default VP-without a proxy is added if the file is again opened in fc-gui.
+# see here: https://forum.freecadweb.org/viewtopic.php?f=22&t=28200
+
 
 
 class OGGliderVP(OGBaseVP):
@@ -265,7 +289,7 @@ class OGGliderVP(OGBaseVP):
             self.view_obj.fill_ribs = False
 
 
-    def getGliderInstance(self, view_obj):
+    def getGliderInstance(self):
         try:
             return self.obj.Proxy.getGliderInstance()
         except AttributeError as e:
@@ -298,7 +322,7 @@ class OGGliderVP(OGBaseVP):
         self._updateData(self.view_obj, prop)
 
     def _updateData(self, fp, prop='all'):
-        if not self.getGliderInstance(fp):
+        if not self.getGliderInstance():
             return
         if not hasattr(fp, 'Visibility') or not fp.Visibility:
             return
@@ -311,9 +335,9 @@ class OGGliderVP(OGBaseVP):
             return # don't do anything if profile_num is smaller than 20
         if not hasattr(self, 'glider'):
             if not fp.half_glider:
-                self.glider = self.getGliderInstance(fp).copy_complete()
+                self.glider = self.getGliderInstance().copy_complete()
             else:
-                self.glider = self.getGliderInstance(fp).copy()
+                self.glider = self.getGliderInstance().copy()
         if hasattr(fp, 'ribs'):      # check for last attribute to be restored
             if prop in ['all', 'profile_num', 'num_ribs', 'half_glider']:
                 self.vis_glider.removeChild(self.vis_glider.getByName('hull'))
@@ -328,9 +352,9 @@ class OGGliderVP(OGBaseVP):
                 glider_changed = (prop in ['half_glider', 'profile_num', 'all'])
                 if glider_changed:
                     if not fp.half_glider:
-                        self.glider = self.getGliderInstance(fp).copy_complete()
+                        self.glider = self.getGliderInstance().copy_complete()
                     else:
-                        self.glider = self.getGliderInstance(fp).copy()
+                        self.glider = self.getGliderInstance().copy()
 
                 self.update_glider(midribs=fp.num_ribs,
                                    profile_numpoints=numpoints,
@@ -363,11 +387,14 @@ class OGGliderVP(OGBaseVP):
         return(_dir + "/../icons/glider_workbench.svg")
 
     def __getstate__(self):
-        return None
+        return {"name": self.view_obj.Object.Name}
 
     def __setstate__(self, state):
-        return None
-
+        print("VIEWPROVIDER!!!!!!!!!!!!!!!!!!!!!!!!")
+        self.recompute = False
+        obj = App.ActiveDocument.getObject(state['name'])
+        view_obj = obj.ViewObject
+        self.addProperties(view_obj)
 
 def draw_lines(glider, line_num=2, vis_lines=None):
     vis_lines = vis_lines or coin.SoSeparator()
