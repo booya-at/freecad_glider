@@ -11,11 +11,11 @@ import FreeCAD as App
 import FreeCADGui as Gui
 
 from ._tools import BaseTool, input_field, text_field
-from pivy import coin
 from .pivy_primitives_new import vector3D
 from .pivy_primitives_new import InteractionSeparator, Object3D
 from .pivy_primitives_new import Line as _Line
 from .pivy_primitives_new import Marker as _Marker
+from .pivy_primitives_new import coin
 
 from openglider.glider.parametric.lines import UpperNode2D, LowerNode2D, \
     BatchNode2D, Line2D, LineSet2D
@@ -476,7 +476,9 @@ class LineTool(BaseTool):
             self.layer_selection.setEnabled(True)
             self.target_length.setEnabled(True)
             self.layer_selection.setItemByText(selected_objs[0].layer)
-            self.layer_combobox.setItemByText(selected_objs[0].layer)
+            # self.layer_combobox.blockSignals(True)
+            # self.layer_combobox.setItemByText(selected_objs[0].layer)
+            # self.layer_combobox.blockSignals(False)
             if show_line_widget(selected_objs):
                 self.tool_widget.setCurrentWidget(self.line_widget)
                 if has_uppermost_line(selected_objs):
@@ -489,8 +491,10 @@ class LineTool(BaseTool):
                 if len(selected_objs) != 1:
                     self.QLineName.setDisabled(True)
                 else:
-                    self.QLineName.setEnabled(True)
+                    self.QLineName.blockSignals(True)
                     self.QLineName.setText(selected_objs[0].name)
+                    self.QLineName.blockSignals(False)
+                    self.QLineName.setEnabled(True)
             elif show_lower_att_widget(selected_objs):
                 self.tool_widget.setCurrentWidget(self.lw_att_wid)
                 x, y, z = selected_objs[0].pos_3D
