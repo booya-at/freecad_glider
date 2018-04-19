@@ -22,6 +22,9 @@
    </property>
    <item>
     <layout class="QFormLayout" name="formLayout">
+     <property name="fieldGrowthPolicy">
+      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+     </property>
      <item row="0" column="0">
       <widget class="QLabel" name="text_half_glider">
        <property name="text">
@@ -35,13 +38,13 @@
         <bool>true</bool>
        </property>
        <property name="toolTip">
-        <string>check this if you want to use the color/linewidth from the toolbar as default</string>
+        <string>check this if you want to show only the half glider by default</string>
        </property>
        <property name="text">
         <string/>
        </property>
        <property name="checked">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <property name="prefEntry" stdset="0">
         <cstring>default_show_half_glider</cstring>
@@ -58,6 +61,31 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="1">
+      <widget class="Gui::PrefCheckBox" name="gui::prefcheckbox">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>check this if panels should be shown by default (else no design is shown)</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+       <property name="tristate">
+        <bool>false</bool>
+       </property>
+       <property name="prefEntry" stdset="0">
+        <cstring>default_show_panels</cstring>
+       </property>
+       <property name="prefPath" stdset="0">
+        <cstring>Mod/glider</cstring>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="0">
       <widget class="QLabel" name="text_prof_num_points">
        <property name="text">
@@ -65,10 +93,51 @@
        </property>
       </widget>
      </item>
+     <item row="2" column="1">
+      <widget class="Gui::PrefSpinBox" name="gui::prefspinbox">
+       <property name="toolTip">
+        <string>resolution of profiles</string>
+       </property>
+       <property name="minimum">
+        <number>20</number>
+       </property>
+       <property name="maximum">
+        <number>200</number>
+       </property>
+       <property name="value">
+        <number>30</number>
+       </property>
+       <property name="prefEntry" stdset="0">
+        <cstring>default_num_prof_points</cstring>
+       </property>
+       <property name="prefPath" stdset="0">
+        <cstring>Mod/glider</cstring>
+       </property>
+      </widget>
+     </item>
      <item row="3" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
         <string>number of cell points</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="Gui::PrefSpinBox" name="gui::prefspinbox_2">
+       <property name="toolTip">
+        <string>resolution of cell in spanwise direction</string>
+       </property>
+       <property name="maximum">
+        <number>10</number>
+       </property>
+       <property name="value">
+        <number>2</number>
+       </property>
+       <property name="prefEntry" stdset="0">
+        <cstring>default_num_cell_points</cstring>
+       </property>
+       <property name="prefPath" stdset="0">
+        <cstring>Mod/glider</cstring>
        </property>
       </widget>
      </item>
@@ -86,63 +155,22 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="Gui::PrefCheckBox" name="gui::prefcheckbox">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+     <item row="5" column="1">
+      <widget class="Gui::PrefSpinBox" name="gui::prefspinbox_4">
        <property name="toolTip">
-        <string>check this if you want to use the color/linewidth from the toolbar as default</string>
+        <string>resolution of hole-points</string>
        </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-       <property name="tristate">
-        <bool>false</bool>
-       </property>
-       <property name="prefEntry" stdset="0">
-        <cstring>default_show_panels</cstring>
-       </property>
-       <property name="prefPath" stdset="0">
-        <cstring>Mod/glider</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="Gui::PrefSpinBox" name="gui::prefspinbox">
-       <property name="toolTip">
-        <string>the default linewidth for new objects</string>
+       <property name="minimum">
+        <number>5</number>
        </property>
        <property name="maximum">
-        <number>200</number>
+        <number>20</number>
        </property>
        <property name="value">
-        <number>25</number>
-       </property>
-       <property name="prefEntry" stdset="0">
-        <cstring>default_num_prof_points</cstring>
-       </property>
-       <property name="prefPath" stdset="0">
-        <cstring>Mod/glider</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="Gui::PrefSpinBox" name="gui::prefspinbox_2">
-       <property name="toolTip">
-        <string>the default linewidth for new objects</string>
-       </property>
-       <property name="maximum">
         <number>10</number>
        </property>
-       <property name="value">
-        <number>0</number>
-       </property>
        <property name="prefEntry" stdset="0">
-        <cstring>default_num_cell_points</cstring>
+        <cstring>default_num_hole_points</cstring>
        </property>
        <property name="prefPath" stdset="0">
         <cstring>Mod/glider</cstring>
@@ -152,32 +180,16 @@
      <item row="4" column="1">
       <widget class="Gui::PrefSpinBox" name="gui::prefspinbox_3">
        <property name="toolTip">
-        <string>the default linewidth for new objects</string>
+        <string>resolution of lines</string>
+       </property>
+       <property name="maximum">
+        <number>10</number>
        </property>
        <property name="value">
-        <number>2</number>
+        <number>1</number>
        </property>
        <property name="prefEntry" stdset="0">
         <cstring>default_num_line_points</cstring>
-       </property>
-       <property name="prefPath" stdset="0">
-        <cstring>Mod/glider</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="Gui::PrefSpinBox" name="gui::prefspinbox_4">
-       <property name="toolTip">
-        <string>the default linewidth for new objects</string>
-       </property>
-       <property name="minimum">
-        <number>5</number>
-       </property>
-       <property name="value">
-        <number>10</number>
-       </property>
-       <property name="prefEntry" stdset="0">
-        <cstring>default_num_hole_points</cstring>
        </property>
        <property name="prefPath" stdset="0">
         <cstring>Mod/glider</cstring>
