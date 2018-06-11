@@ -17,10 +17,9 @@ from . import _tools as tools
 from . import airfoil_tool
 from . import shape_tool
 from . import arc_tool
-from . import aoa_tool
+from . import span_mapping
 from . import ballooning_tool
 from . import line_tool
-from . import merge_tool
 from . import panel_method as pm
 from . import cell_tool
 from . import design_tool
@@ -238,7 +237,7 @@ class AoaCommand(BaseCommand):
                 'ToolTip': 'aoa'}
 
     def tool(self, obj):
-        return aoa_tool.AoaTool(obj)
+        return span_mapping.AoaTool(obj)
 
 
 class ZrotCommand(BaseCommand):
@@ -248,7 +247,7 @@ class ZrotCommand(BaseCommand):
                 'ToolTip': 'zrot'}
 
     def tool(self, obj):
-        return aoa_tool.ZrotTool(obj)
+        return span_mapping.ZrotTool(obj)
 
 
 class AirfoilCommand(BaseCommand):
@@ -268,7 +267,7 @@ class AirfoilMergeCommand(BaseCommand):
                 'ToolTip': 'airfoil merge'}
 
     def tool(self, obj):
-        return merge_tool.AirfoilMergeTool(obj)
+        return span_mapping.AirfoilMergeTool(obj)
 
 
 class BallooningCommand(BaseCommand):
@@ -288,7 +287,7 @@ class BallooningMergCommand(BaseCommand):
                 'ToolTip': 'ballooning merge'}
 
     def tool(self, obj):
-        return merge_tool.BallooningMergeTool(obj)
+        return span_mapping.BallooningMergeTool(obj)
 
 
 class LineCommand(BaseCommand):
