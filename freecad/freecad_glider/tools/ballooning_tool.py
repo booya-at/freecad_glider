@@ -1,5 +1,6 @@
 from __future__ import division
 
+from PySide import QtGui, QtCore
 import numpy
 import FreeCADGui as Gui
 from ._tools import BaseTool, QtGui, spline_select
@@ -270,6 +271,7 @@ class QBalooning(QtGui.QListWidgetItem):
         self.scale_y = scale_y
         self.upper_controlpoints = numpy.array([1., self.scale_y]) * self.ballooning.upper_spline.controlpoints
         self.lower_controlpoints = numpy.array([1., -self.scale_y]) * self.ballooning.lower_spline.controlpoints
+        self.setFlags(self.flags() | QtCore.Qt.ItemIsEditable)
 
     def get_expl_lower_spline(self, num):
         # self.apply_splines()

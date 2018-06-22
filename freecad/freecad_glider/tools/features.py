@@ -161,6 +161,7 @@ class SingleSkinRibFeature(BaseFeature):
                            'le_gap': self.obj.le_gap,
                            'te_gap': self.obj.te_gap,
                            'double_first': self.obj.double_first,
+                           'straight_te': self.obj.straight_te,
                            'continued_min': self.obj.continued_min,
                            'continued_min_end': self.obj.continued_min_end,
                            'continued_min_angle': self.obj.continued_min_angle,
@@ -200,7 +201,8 @@ class SingleSkinRibFeature(BaseFeature):
         self.addProperty('att_dist', 0.1, 'bows', 'docs')
         self.addProperty('num_points', 20, 'bows', 'number of points')
         self.addProperty('le_gap', True, 'bows', 'should the leading edge match the rib')
-        self.addProperty('te_gap', True, 'bows', 'should the leading edge match the rib')
+        self.addProperty('te_gap', True, 'bows', 'should the trailing edge match the rib')
+        self.addProperty('straight_te', True, 'bows', 'straight last bow')
         self.addProperty('double_first', False, 'bows', 'this is for double a lines')
         self.addProperty('holes', False, 'hole', 'create holes in the rib')
         self.addProperty('hole_height', 0.7, 'hole', 'height of ellipse')

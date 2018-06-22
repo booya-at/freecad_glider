@@ -8,16 +8,16 @@ from ._tools import BaseTool, text_field, input_field, spline_select
 from . import pivy_primitives as pp
 from . import pivy_primitives_new as ppn
 
-class ZrotTool(BaseTool):
+class SpanMappingTool(BaseTool):
     num_on_drag = 80
     num_release = 200
-    widget_name = 'Z rotation'
+    widget_name = 'span mapping'
     scale = np.array([1., 1.])
-    grid_y_diff = 0.2
+    grid_y_diff = 1.
     value_scale = 1.
 
     def __init__(self, obj):
-        super(ZrotTool, self).__init__(obj)
+        super(SpanMappingTool, self).__init__(obj)
         self._grid_y_diff = self.grid_y_diff / self.value_scale
         pts = np.array(self.spline.controlpoints) * self.scale
         pts = list(map(pp.vector3D, pts))
@@ -43,6 +43,9 @@ class ZrotTool(BaseTool):
 
     @property
     def spline(self):
+        '''
+        overwrite this function!!!
+        '''
         return self.parametric_glider.zrot
 
     def setup_pivy(self):
@@ -117,12 +120,12 @@ class ZrotTool(BaseTool):
 
     def accept(self):
         self.aoa_cpc.remove_callbacks()
-        super(ZrotTool, self).accept()
+        super(SpanMappingTool, self).accept()
         self.update_view_glider()
 
     def reject(self):
         self.aoa_cpc.remove_callbacks()
-        super(ZrotTool, self).reject()
+        super(SpanMappingTool, self).reject()
 
     def grid_points(self, grid_x, grid_y):
         return [[x, y] for y in grid_y for x in grid_x]
@@ -176,10 +179,11 @@ class ZrotTool(BaseTool):
         self.update_aoa()
 
 
-class AoaTool(ZrotTool):
+class AoaTool(SpanMappingTool):
     value_scale = 180. / np.pi
     scale = np.array([1., 10.])
     grid_y_diff = 1
+    widget_name = 'AoA'
 
     @property
     def spline(self):
@@ -198,3 +202,32 @@ class AoaTool(ZrotTool):
 
     def text_repr(self, value):
         return "{} °".format(str(round(value / self.scale[1], 2)))
+
+
+class ZrotTool(SpanMappingTool):
+    widget_name = 'Z rotation'
+    scale = np.array([1., 1.])
+    grid_y_diff = 0.2
+    value_scale = 1.
+
+
+class AirfoilMergeTool(SpanMappingTool):
+    value_scale = 1
+    scale = np.array([1., 1.])
+    grid_y_diff = 1.
+    widget_name = 'airfoil span mapping'
+
+    @property
+    def spline(self):
+        return self.parametric_glider.profile_merge_curve
+
+
+class BallooningMergeTool(SpanMappingTool):
+    value_scale = 1
+    scale = np.array([1., 1.])
+    grid_y_diff = 1.
+    widget_name = 'ballooning span mapping'
+
+    @property
+    def spline(self):
+        return self.parametric_glider.ballooning_merge_curve

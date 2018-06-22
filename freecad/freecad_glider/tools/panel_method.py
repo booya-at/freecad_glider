@@ -41,7 +41,7 @@ class Polars():
 
     def __init__(self, obj):
         self.obj = obj
-        self.parametric_glider = deepcopy(self.obj.ParametricGlider)
+        self.parametric_glider = deepcopy(self.obj.Proxy.getParametricGlider())
         self.create_potential_table()
         self.solve_const_vert_Force()
 
@@ -91,7 +91,7 @@ class Polars():
         mass = 90
         g = 9.81
         area = self.parametric_glider.shape.area
-        cDl = self.obj.GliderInstance.lineset.get_normalized_drag() / area * 2
+        cDl = self.obj.Proxy.getGliderInstance().lineset.get_normalized_drag() / area * 2
         print(cDl)
         alpha = self.alpha
         cL = self.cL
