@@ -28,6 +28,7 @@ class AirfoilTool(BaseTool):
         self.Qairfoil_widget = QtGui.QWidget()
         self.Qairfoil_layout = QtGui.QFormLayout(self.Qairfoil_widget)
         self.Qimport_button = QtGui.QPushButton('import airfoil')
+        self.Qexport_button = QtGui.QPushButton('export airfoil')
         self.Qfit_button = QtGui.QPushButton('modify with handles')
         self.Qnum_points_upper = QtGui.QSpinBox(self.base_widget)
         self.Qnum_points_lower = QtGui.QSpinBox(self.base_widget)
@@ -53,6 +54,7 @@ class AirfoilTool(BaseTool):
         self.Qairfoil_widget.setWindowTitle('airfoil')
         self.Qairfoil_layout.addWidget(self.Qairfoil_name)
         self.Qairfoil_layout.addWidget(self.Qimport_button)
+        self.Qairfoil_layout.addWidget(self.Qexport_button)
         self.Qairfoil_layout.addWidget(self.Qfit_button)
         self.Qairfoil_layout.addWidget(self.Qnum_points_upper)
         self.Qairfoil_layout.addWidget(self.Qnum_points_lower)
@@ -82,6 +84,7 @@ class AirfoilTool(BaseTool):
 
         # connections
         self.Qimport_button.clicked.connect(self.import_file_dialog)
+        self.Qexport_button.clicked.connect(self.export_file_dialog)
         self.Qnew_button.clicked.connect(self.create_airfoil)
         self.Qdelete_button.clicked.connect(self.delete_airfoil)
         self.QList_View.currentRowChanged.connect(self.update_selection)
@@ -105,6 +108,16 @@ class AirfoilTool(BaseTool):
             self.QList_View.addItem(
                 QAirfoil_item(
                     BezierProfile2D.import_from_dat(filename[0])))
+
+    def export_file_dialog(self):
+        filename = QtGui.QFileDialog.getSaveFileName(
+            parent=None,
+            caption='import airfoil',
+            directory='~',
+            filter='*.dat',
+            selectedFilter='*.dat')
+        if filename[0] != '':
+            self.current_airfoil.export_dat(filename[0] + filename[1][1:])
 
     def copy_airfoil(self):
         self.QList_View.addItem(
