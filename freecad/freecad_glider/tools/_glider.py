@@ -45,10 +45,11 @@ def mesh_sep(mesh, color, draw_lines=False):
     _polygons = []
     _lines = []
     for i in polygons:
-        _polygons += i
+        if len(i) > 2:
+            _polygons += i
+            _polygons.append(-1)
         _lines += i
         _lines.append(i[0])
-        _polygons.append(-1)
         _lines.append(-1)
 
     sep = coin.SoSeparator()
@@ -224,9 +225,9 @@ class OGGlider(OGBaseObject):
             # backward compatibility (remove this)
             self.obj.ViewObject.Proxy.addProperties(self.obj.ViewObject)
 
+            self.obj.ViewObject.Proxy.recompute = True
             # we have blocked the automatic update mechanism. so now we have to call it manually
             if self.obj.ViewObject.Visibility:
-                self.obj.ViewObject.Proxy.recompute = True
                 self.obj.ViewObject.Proxy.updateData(prop='Visibility')
 ##################################################################################
 

@@ -58,11 +58,11 @@ class BaseFeature(OGBaseObject):
             # backward compatibility (remove this)
             self.obj.ViewObject.Proxy.addProperties(self.obj.ViewObject)
 
+            self.obj.ViewObject.Proxy.recompute = True
             # we have blocked the automatic update mechanism. so now we have to call it manually
             if self.obj.ViewObject.Visibility:
                 print(self)
                 print("updating the view")
-                self.obj.ViewObject.Proxy.recompute = True
                 self.obj.ViewObject.Proxy.updateData(prop='Visibility')
 #########################################################################################
 

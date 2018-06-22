@@ -12,19 +12,7 @@ from ._tools import BaseTool, input_field, text_field
 from .pivy_primitives_new import InteractionSeparator, Marker, coin, Line, COLORS
 
 
-### idea for polars
-
-# create a polar object:
-#   properties: glider_obj, alpha_min, alpha_max, c0, c2, 
-
-
-
-# import matplotlib
-# matplotlib.use('Qt4Agg')
-# matplotlib.rcParams['backend.qt4']='PySide'
-
-# from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 def refresh():
     pass
@@ -43,7 +31,7 @@ def refresh():
 #         self.axes.plot(*args, **kwargs)
 
 
-class polars():
+class Polars():
     try:
         paraBEM = __import__('paraBEM')
         pan3d = __import__('paraBEM.pan3d', globals(), locals(), ['abc'])
@@ -93,23 +81,12 @@ class polars():
             self.cDi = np.array(self.cDi)
             self.cPi = np.array(self.cPi)
 
-    # def potentialPlot(self):
-    #     self.canvas = MplCanvas()
-    #     self.canvas.plot(cD, cL, label='Drag $c_D * 10$')
-    #     self.canvas.plot(cP, cL, label='Pitch -$c_P$')
-    #     self.canvas.axes.xaxis.set_label('$\\alpha$')
-    #     self.canvas.axes.legend()
-    #     self.canvas.axes.grid()
-    #     self.canvas.draw()
-    #     self.canvas.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-    #     self.canvas.show()
-
     def solve_const_vert_Force(self):
         from scipy.optimize import newton_krylov
         # constants:
         c0 = 0.010       # const profile drag
         c2 = 0.01        # c2 * alpha**2 + c0 = cDpr
-        cDpi = 0.01    # drag cooefficient of pilot
+        cDpi = 0.01      # drag cooefficient of pilot
         rho = 1.2
         mass = 90
         g = 9.81
@@ -144,14 +121,12 @@ class polars():
 
         phi = newton_krylov(minimize, np.ones_like(self.alpha)) 
         a_p = [find_zeros(vel(phi), phi), find_zeros(gz(), phi)]
-        canvas = MplCanvas()
-        canvas.plot(vel(phi), gz())
-        canvas.plot(a_p[0], a_p[1], marker='o')
-        canvas.plot()
-        canvas.axes.grid()
-        canvas.draw()
-        canvas.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-        canvas.show()
+        plt.plot(vel(phi), gz())
+        plt.plot(a_p[0], a_p[1], marker='o')
+        plt.plot()
+        plt.grid()
+        plt.draw()
+        plt.show()
 
     def accept(self):
         Gui.Control.closeDialog()
@@ -400,3 +375,7 @@ def create_fem_dict(par_glider):
     self.case.farfield = 5
     self.case.create_wake(9999, 10)
     self.case.run()
+
+
+class VelCalculator(QtGui.QDialog):
+    pass

@@ -320,7 +320,7 @@ class PolarsCommand(BaseCommand):
         return {'Pixmap': 'polar.svg', 'MenuText': 'polars', 'ToolTip': 'polars'}
 
     def tool(self, obj):
-        return pm.polars(obj)
+        return pm.Polars(obj)
 
 
 class CutCommand(BaseCommand):
