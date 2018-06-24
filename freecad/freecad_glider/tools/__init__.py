@@ -300,6 +300,16 @@ class LineCommand(BaseCommand):
         return line_tool.LineTool(obj)
 
 
+class LineObserveCommand(BaseCommand):
+    def GetResources(self):
+        return {'Pixmap': 'line_command.svg',
+                'MenuText': 'line observe',
+                'ToolTip': 'line observe'}
+
+    def tool(self, obj):
+        return line_tool.LineObserveTool(obj)
+
+
 def check_glider(obj):
     if hasattr(obj, 'Proxy') and hasattr(obj.Proxy, 'getGliderInstance'):
         return True

@@ -11,6 +11,7 @@ import FreeCAD as App
 import FreeCADGui as Gui
 
 from ._tools import BaseTool, input_field, text_field
+from ._glider import draw_glider
 from .pivy_primitives_new import vector3D
 from .pivy_primitives_new import InteractionSeparator, Object3D
 from .pivy_primitives_new import Line as _Line
@@ -807,3 +808,81 @@ class LayerComboBox(QtGui.QComboBox):
         item = self.findText(text)
         if item != -1:
             self.setCurrentIndex(item)
+
+
+class LineSelectionSeperator(InteractionSeparator):
+    def register(self, view, observer_tool):
+        self.view = view
+        self.observer_tool = observer_tool
+        self.mouse_over = self.view.addEventCallbackPivy(
+            coin.SoLocation2Event.getClassTypeId(), self.mouse_over_cb)
+        self.select = self.view.addEventCallbackPivy(
+            coin.SoMouseButtonEvent.getClassTypeId(), self.select_cb)
+        self.select_all = self.view.addEventCallbackPivy(
+            coin.SoKeyboardEvent.getClassTypeId(), self.select_all_cb)
+
+    def unregister(self):
+        self.view.removeEventCallbackPivy(
+            coin.SoLocation2Event.getClassTypeId(), self.mouse_over)
+        self.view.removeEventCallbackPivy(
+            coin.SoMouseButtonEvent.getClassTypeId(), self.select)
+        self.view.removeEventCallbackPivy(
+            coin.SoKeyboardEvent.getClassTypeId(), self.select_all)
+
+    def selection_changed(self):
+        self.observer_tool.selection_changed(self.get_force())
+
+    def get_force(self):
+        force = np.array([0, 0, 0], dtype=float)
+        for line in self.selected_objects:
+            force += line.line.force * line.line.diff_vector
+        return force
+
+
+class GliderLine(Line):
+    def __init__(self, line):
+        super(Line, self).__init__([[0., 0., 0.], [0., 0., 1.]], dynamic=True)
+        self.line = line
+        points = self.line.get_line_points(sag=False, numpoints=2)
+        self.points = points
+
+
+class LineObserveTool(BaseTool):
+    widget_name = 'line observe tool'
+    def __init__(self, obj):
+        super(LineObserveTool, self).__init__(obj)
+        self.draw_glider()
+        self.setup_qt()
+
+    def setup_qt(self):
+        self.x_force = QtGui.QLabel("0")
+        self.y_force = QtGui.QLabel("0")
+        self.z_force = QtGui.QLabel("0")
+
+        self.layout.setWidget(0, text_field, QtGui.QLabel("x-value"))
+        self.layout.setWidget(1, text_field, QtGui.QLabel("y-value"))
+        self.layout.setWidget(2, text_field, QtGui.QLabel("z-value"))
+
+        self.layout.setWidget(0, input_field, self.x_force)
+        self.layout.setWidget(1, input_field, self.y_force)
+        self.layout.setWidget(2, input_field, self.z_force)
+
+
+    def draw_glider(self):
+        _rot = coin.SbRotation()
+        _rot.setValue(coin.SbVec3f(0, 1, 0), coin.SbVec3f(1, 0, 0))
+        rot = coin.SoRotation()
+        rot.rotation.setValue(_rot)
+        self.task_separator += rot
+        g3d = self.parametric_glider.get_glider_3d()
+        draw_glider(g3d, self.task_separator, hull=None, ribs=True, fill_ribs=True)
+        self.line_sep = LineSelectionSeperator()
+        self.task_separator += self.line_sep
+        for line in g3d.lineset.lines:
+            self.line_sep += GliderLine(line)
+        self.line_sep.register(self.view, self)
+
+    def selection_changed(self, force):
+        self.x_force.setText(str(force[0]))
+        self.y_force.setText(str(force[1]))
+        self.z_force.setText(str(force[2]))

@@ -10,44 +10,42 @@ from pivy import coin
 
 # as long as this isn't part of std pivy:
 ########################################################################################
-if not hasattr(coin.SoGroup, "__iadd__"):
-    def SoGroup__iadd__(self, other):
-        if isinstance(other, (list, tuple)):
-            for other_i in other:
-                self.__iadd__(other_i)
+def SoGroup__iadd__(self, other):
+    if isinstance(other, (list, tuple)):
+        for other_i in other:
+            self.__iadd__(other_i)
+        return self
+    else:
+        try:
+            self.addChild(other)
             return self
-        else:
-            try:
-                self.addChild(other)
-                return self
-            except TypeError as e:
-                raise TypeError(str(self.__class__) + " accepts only objects of type pivy.coin.SoNode")
+        except TypeError as e:
+            raise TypeError(str(self.__class__) + " accepts only objects of type pivy.coin.SoNode")
 
-    coin.SoGroup.__iadd__ = SoGroup__iadd__
-
-if not hasattr(coin.SoGroup, "__isub__"):
-    def SoGroup__isub__(self, other):
-        if isinstance(other, (list, tuple)):
-            for other_i in other:
-                self.__iadd__(other_i)
+def SoGroup__isub__(self, other):
+    if isinstance(other, (list, tuple)):
+        for other_i in other:
+            self.__isub__(other_i)
+        return self
+    else:
+        try:
+            self.removeChild(other)
             return self
-        else:
-            try:
-                self.removeChild(other)
-                return self
-            except TypeError as e:
-                raise TypeError(str(self.__class__) + " can't remove child of type " + str(type(other)))
-    coin.SoGroup.__isub__ = SoGroup__isub__
+        except TypeError as e:
+            raise TypeError(str(self.__class__) + " can't remove child of type " + str(type(other)))
 
-if not hasattr(coin.SoGroup, "getByName"):
-    def SoGroup_getByName(self, name):
-        for child in self:
-            if name == child.getName():
-                return child
-        return None
-    coin.SoGroup.getByName = SoGroup_getByName
+
+def SoGroup_getByName(self, name):
+    for child in self:
+        if name == child.getName():
+            return child
+    return None
+
+
+coin.SoGroup.__iadd__ = SoGroup__iadd__
+coin.SoGroup.__isub__ = SoGroup__isub__
+coin.SoGroup.getByName = SoGroup_getByName
 ########################################################################################
-
 
 Dir = os.path.abspath(os.path.dirname(__file__))
 Gui.addIconPath(os.path.join(Dir, 'icons'))
@@ -70,6 +68,7 @@ class gliderWorkbench(Gui.Workbench):
         'BallooningMergeCommand',
         'CellCommand',
         'LineCommand',
+        'LineObserveCommand',
         'CutCommand',
         'ColorCommand',
         'Gl2dExport']
@@ -108,6 +107,7 @@ class gliderWorkbench(Gui.Workbench):
         Gui.addCommand('AoaCommand', tools.AoaCommand())
         Gui.addCommand('BallooningCommand', tools.BallooningCommand())
         Gui.addCommand('LineCommand', tools.LineCommand())
+        Gui.addCommand('LineObserveCommand', tools.LineObserveCommand())
 
         Gui.addCommand('ImportGlider', tools.ImportGlider())
         Gui.addCommand('Gl2dExport', tools.Gl2dExport())
