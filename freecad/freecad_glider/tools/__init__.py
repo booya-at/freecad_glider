@@ -26,6 +26,7 @@ from . import design_tool
 from . import color_tool
 from . import features
 import openglider
+from openglider import jsonify
 
 
 #   -import export                                          -?
@@ -126,31 +127,11 @@ class CreateGlider(BaseCommand):
         return glider_object
 
 
-    @property
-    def glider_obj(self):
-        return True
+    def IsActive(self):
+        return (FreeCAD.ActiveDocument is not None)
 
     def Activated(self):
         CreateGlider.create_glider()
-
-
-class ImportGlider(CreateGlider):
-    def GetResources(self):
-        return {'Pixmap': 'import_glider.svg',
-                'MenuText': 'import glider',
-                'ToolTip': 'import glider'}
-
-    @property
-    def glider_obj(self):
-        return True
-
-    def Activated(self):
-        file_name = QtGui.QFileDialog.getOpenFileName(
-            parent=None,
-            caption="import glider",
-            directory='~')[0]
-        if not file_name == "":
-            self._load(file_name)
 
 
 class PatternCommand(BaseCommand):
@@ -183,17 +164,27 @@ class PatternCommand(BaseCommand):
 
 
 class ImportGlider(BaseCommand):
-    @staticmethod
-    def create_glider_with_dialog():
+    def create_glider_with_dialog(self):
         file_name = QtGui.QFileDialog.getOpenFileName(
             parent=None,
             caption='import glider',
             directory='~')
         if file_name[0].endswith('.json'):
-            CreateGlider.create_glider(import_path=file_name[0])
+            if self.glider_obj:
+                # replace current active par-glider with the imported par-glider
+                with open(file_name[0], 'r') as importfile:
+                    self.glider_obj.Proxy.setParametricGlider(jsonify.load(importfile)['data'])
+            else:
+                # no active glider: create a new one
+                CreateGlider.create_glider(import_path=file_name[0])
         elif file_name[0].endswith('ods'):
             par_glider = openglider.glider.ParametricGlider.import_ods(file_name[0])
-            CreateGlider.create_glider(parametric_glider=par_glider)
+            if self.glider_obj:
+                # replace current active par-glider with the imported par-glider
+                self.glider_obj.Proxy.setParametricGlider(par_glider)
+            else:
+                # no active glider: create a new one
+                CreateGlider.create_glider(parametric_glider=par_glider)
         else:
             FreeCAD.Console.PrintError('\nonly .ods and .json are supported')
 
@@ -202,9 +193,8 @@ class ImportGlider(BaseCommand):
                 'MenuText': 'import glider',
                 'ToolTip': 'import glider'}
 
-    @property
-    def glider_obj(self):
-        return True
+    def IsActive(self):
+        return (FreeCAD.ActiveDocument is not None)
 
     def Activated(self):
         self.create_glider_with_dialog()
@@ -329,7 +319,7 @@ class PolarsCommand(BaseCommand):
         return {'Pixmap': 'polar.svg', 'MenuText': 'polars', 'ToolTip': 'polars'}
 
     def tool(self, obj):
-        return pm.polars(obj)
+        return pm.Polars(obj)
 
 
 class CutCommand(BaseCommand):
