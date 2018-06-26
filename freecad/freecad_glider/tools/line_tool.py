@@ -830,13 +830,17 @@ class LineSelectionSeperator(InteractionSeparator):
             coin.SoKeyboardEvent.getClassTypeId(), self.select_all)
 
     def selection_changed(self):
-        self.observer_tool.selection_changed(self.get_force())
+        self.observer_tool.selection_changed(*self.get_data())
 
-    def get_force(self):
+    def get_data(self):
         force = np.array([0, 0, 0], dtype=float)
+        line_length = np.array([0, 0, 0], dtype=float)
         for line in self.selected_objects:
             force += line.line.force * line.line.diff_vector
-        return force
+            line_length[0] += line.line.length_no_sag
+            line_length[1] += line.line.length_with_sag
+            line_length[2] += line.line.get_stretched_length()
+        return force, line_length
 
 
 class GliderLine(Line):
@@ -855,17 +859,22 @@ class LineObserveTool(BaseTool):
         self.setup_qt()
 
     def setup_qt(self):
-        self.x_force = QtGui.QLabel("0")
-        self.y_force = QtGui.QLabel("0")
-        self.z_force = QtGui.QLabel("0")
+        self.force = QtGui.QLabel("x: {:5.1f} N\n"\
+                                  "y: {:5.1f} N\n"\
+                                  "z: {:5.1f} N".format(0, 0, 0))
+        self.length = QtGui.QLabel("length without sag: {:5.3f} m\n"\
+                                   "length with sag:    {:5.3f} m\n"\
+                                   "stretched lengths   {:5.3f} m".format(0, 0, 0))
+        self.length_with_sag = QtGui.QLabel("0")
 
-        self.layout.setWidget(0, text_field, QtGui.QLabel("x-value"))
-        self.layout.setWidget(1, text_field, QtGui.QLabel("y-value"))
-        self.layout.setWidget(2, text_field, QtGui.QLabel("z-value"))
+        self.layout.setWidget(0, text_field, QtGui.QLabel("force"))
+        self.layout.setWidget(0, input_field, self.force)
 
-        self.layout.setWidget(0, input_field, self.x_force)
-        self.layout.setWidget(1, input_field, self.y_force)
-        self.layout.setWidget(2, input_field, self.z_force)
+        self.layout.setWidget(1, text_field, QtGui.QLabel("length"))
+        self.layout.setWidget(1, input_field, self.length)
+
+        self.layout.setWidget(1, text_field, QtGui.QLabel("length_with_sag"))
+        self.layout.setWidget(1, input_field, self.length_with_sag)
 
 
     def draw_glider(self):
@@ -882,7 +891,18 @@ class LineObserveTool(BaseTool):
             self.line_sep += GliderLine(line)
         self.line_sep.register(self.view, self)
 
-    def selection_changed(self, force):
-        self.x_force.setText(str(force[0]))
-        self.y_force.setText(str(force[1]))
-        self.z_force.setText(str(force[2]))
+    def selection_changed(self, force, length):
+        self.force.setText("x: {:5.1f} N\n"\
+                           "y: {:5.1f} N\n"\
+                           "z: {:5.1f} N".format(*force))
+        self.length.setText("length without sag: {:5.3f} m\n"\
+                            "length with sag:    {:5.3f} m\n"\
+                            "stretched lengths   {:5.3f} m".format(*length))
+
+    def accept(self):
+        super(LineObserveTool, self).accept()
+        self.line_sep.unregister()
+
+    def reject(self):
+        super(LineObserveTool, self).accept()
+        self.line_sep.unregister()

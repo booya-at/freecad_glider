@@ -292,7 +292,7 @@ class LineCommand(BaseCommand):
 
 class LineObserveCommand(BaseCommand):
     def GetResources(self):
-        return {'Pixmap': 'line_command.svg',
+        return {'Pixmap': 'line_observe.svg',
                 'MenuText': 'line observe',
                 'ToolTip': 'line observe'}
 
