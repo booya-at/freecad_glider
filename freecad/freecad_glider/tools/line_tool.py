@@ -13,7 +13,7 @@ import FreeCADGui as Gui
 from ._tools import BaseTool, input_field, text_field
 from ._glider import draw_glider
 from .pivy_primitives_new import vector3D
-from .pivy_primitives_new import InteractionSeparator, Object3D
+from .pivy_primitives_new import InteractionSeparator, Object3D, Arrow
 from .pivy_primitives_new import Line as _Line
 from .pivy_primitives_new import Marker as _Marker
 from .pivy_primitives_new import coin
@@ -833,22 +833,24 @@ class LineSelectionSeperator(InteractionSeparator):
         self.observer_tool.selection_changed(*self.get_data())
 
     def get_data(self):
-        force = np.array([0, 0, 0], dtype=float)
-        line_length = np.array([0, 0, 0], dtype=float)
-        for line in self.selected_objects:
-            force += line.line.force * line.line.diff_vector
-            line_length[0] += line.line.length_no_sag
-            line_length[1] += line.line.length_with_sag
-            line_length[2] += line.line.get_stretched_length()
-        return force, line_length
+        line_force = np.zeros(3)
+        line_length = np.zeros(3)
+        node_force = np.zeros(3)
+        for obj in self.selected_objects:
+            if isinstance(obj, GliderLine):
+                line_force += obj.line.force * obj.line.diff_vector
+                line_length[0] += obj.line.length_no_sag
+                line_length[1] += obj.line.length_with_sag
+                line_length[2] += obj.line.get_stretched_length()
+        return line_force, line_length
 
 
 class GliderLine(Line):
     def __init__(self, line):
-        super(Line, self).__init__([[0., 0., 0.], [0., 0., 1.]], dynamic=True)
+        points = line.get_line_points(sag=False, numpoints=2)
+        super(Line, self).__init__(points, dynamic=True)
         self.line = line
-        points = self.line.get_line_points(sag=False, numpoints=2)
-        self.points = points
+
 
 
 class LineObserveTool(BaseTool):
@@ -865,16 +867,12 @@ class LineObserveTool(BaseTool):
         self.length = QtGui.QLabel("length without sag: {:5.3f} m\n"\
                                    "length with sag:    {:5.3f} m\n"\
                                    "stretched lengths   {:5.3f} m".format(0, 0, 0))
-        self.length_with_sag = QtGui.QLabel("0")
 
         self.layout.setWidget(0, text_field, QtGui.QLabel("force"))
         self.layout.setWidget(0, input_field, self.force)
 
         self.layout.setWidget(1, text_field, QtGui.QLabel("length"))
         self.layout.setWidget(1, input_field, self.length)
-
-        self.layout.setWidget(1, text_field, QtGui.QLabel("length_with_sag"))
-        self.layout.setWidget(1, input_field, self.length_with_sag)
 
 
     def draw_glider(self):
@@ -884,12 +882,30 @@ class LineObserveTool(BaseTool):
         rot.rotation.setValue(_rot)
         self.task_separator += rot
         g3d = self.parametric_glider.get_glider_3d()
+        g3d.lineset.recalc(calculate_sag=False)
+        g3d.lineset.recalc(calculate_sag=False)
+        g3d.lineset.recalc(calculate_sag=False)
+        g3d.lineset.recalc(calculate_sag=False)
         draw_glider(g3d, self.task_separator, hull=None, ribs=True, fill_ribs=True)
         self.line_sep = LineSelectionSeperator()
-        self.task_separator += self.line_sep
+        self.arrows = coin.SoSeparator()
+        self.task_separator += self.line_sep, self.arrows
         for line in g3d.lineset.lines:
             self.line_sep += GliderLine(line)
         self.line_sep.register(self.view, self)
+        self.draw_residual_forces()
+
+    def draw_residual_forces(self):
+        self.arrows.removeAllChildren()
+        factor = 0.1
+        g3d = self.parametric_glider.get_glider_3d()
+        for node in g3d.lineset.nodes:
+            if node.type == 1:
+                point = node.vec
+                force = g3d.lineset.get_residual_force(node)
+                arrow = Line([point, point - force * factor])
+                arrow.set_color("red")
+                self.arrows += arrow
 
     def selection_changed(self, force, length):
         self.force.setText("x: {:5.1f} N\n"\
