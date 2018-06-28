@@ -840,14 +840,17 @@ class LineSelectionSeperator(InteractionSeparator):
             if isinstance(obj, GliderLine):
                 line_force += obj.line.force * obj.line.diff_vector
                 line_length[0] += obj.line.length_no_sag
-                line_length[1] += obj.line.length_with_sag
-                line_length[2] += obj.line.get_stretched_length()
+                try:
+                    line_length[1] += obj.line.length_with_sag
+                    line_length[2] += obj.line.get_stretched_length()
+                except ValueError:
+                    pass
         return line_force, line_length
 
 
 class GliderLine(Line):
     def __init__(self, line):
-        points = line.get_line_points(sag=False, numpoints=2)
+        points = [line.lower_node.vec, line.upper_node.vec]
         super(Line, self).__init__(points, dynamic=True)
         self.line = line
 
@@ -857,6 +860,7 @@ class LineObserveTool(BaseTool):
     widget_name = 'line observe tool'
     def __init__(self, obj):
         super(LineObserveTool, self).__init__(obj)
+        self.g3d = self.parametric_glider.get_glider_3d()
         self.draw_glider()
         self.setup_qt()
 
@@ -868,11 +872,21 @@ class LineObserveTool(BaseTool):
                                    "length with sag:    {:5.3f} m\n"\
                                    "stretched lengths   {:5.3f} m".format(0, 0, 0))
 
+        self.force_factor = QtGui.QSlider(QtCore.Qt.Orientation.Horizontal)
+        self.force_factor.setTickInterval(10)
+        self.force_factor.setMinimum(1)
+        self.force_factor.setValue(10)
+
         self.layout.setWidget(0, text_field, QtGui.QLabel("force"))
         self.layout.setWidget(0, input_field, self.force)
 
         self.layout.setWidget(1, text_field, QtGui.QLabel("length"))
         self.layout.setWidget(1, input_field, self.length)
+
+        self.layout.setWidget(2, text_field, QtGui.QLabel("force-factor"))
+        self.layout.setWidget(2, input_field, self.force_factor)
+
+        self.force_factor.sliderReleased.connect(self.draw_residual_forces)
 
 
     def draw_glider(self):
@@ -881,31 +895,29 @@ class LineObserveTool(BaseTool):
         rot = coin.SoRotation()
         rot.rotation.setValue(_rot)
         self.task_separator += rot
-        g3d = self.parametric_glider.get_glider_3d()
-        g3d.lineset.recalc(calculate_sag=False)
-        g3d.lineset.recalc(calculate_sag=False)
-        g3d.lineset.recalc(calculate_sag=False)
-        g3d.lineset.recalc(calculate_sag=False)
-        draw_glider(g3d, self.task_separator, hull=None, ribs=True, fill_ribs=True)
+        for _ in range(10):
+            self.g3d.lineset.recalc(calculate_sag=False)
+        self.g3d.lineset.recalc(calculate_sag=True)
+        # draw_glider(self.g3d, self.task_separator, hull=None, ribs=True, fill_ribs=True)
         self.line_sep = LineSelectionSeperator()
         self.arrows = coin.SoSeparator()
         self.task_separator += self.line_sep, self.arrows
-        for line in g3d.lineset.lines:
+        for line in self.g3d.lineset.lines:
             self.line_sep += GliderLine(line)
         self.line_sep.register(self.view, self)
-        self.draw_residual_forces()
+        self.draw_residual_forces(factor=10)
 
-    def draw_residual_forces(self):
+    def draw_residual_forces(self, factor=None):
         self.arrows.removeAllChildren()
-        factor = 0.1
-        g3d = self.parametric_glider.get_glider_3d()
-        for node in g3d.lineset.nodes:
-            if node.type == 1:
+        factor = (factor or self.force_factor.value()) * 1e-3
+        for node in self.g3d.lineset.nodes:
+            if True: #node.type == 1:
                 point = node.vec
-                force = g3d.lineset.get_residual_force(node)
-                arrow = Line([point, point - force * factor])
-                arrow.set_color("red")
-                self.arrows += arrow
+                force = self.g3d.lineset.get_residual_force(node) * factor
+                if np.linalg.norm(force) > 1e-4:
+                    arrow = Arrow([point, point - force], arrow_size=0.05 * np.linalg.norm(force))
+                    arrow.set_color("red")
+                    self.arrows += arrow
 
     def selection_changed(self, force, length):
         self.force.setText("x: {:5.1f} N\n"\
