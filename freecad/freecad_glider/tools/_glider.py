@@ -510,10 +510,12 @@ def draw_glider(glider, vis_glider=None, midribs=0, hole_num=10, profile_num=20,
         if hasattr(rib_sep, 'whichChild'):
             rib_sep.whichChild = coin.SO_SWITCH_NONE
 
-def draw_aoa(glider, sep):
+def draw_aoa(glider, sep=None):
+    sep = sep or coin.SoSeparator()
     glide = glider.glide
     vec = np.array([glide, 0, 1.])
     vec /= np.linalg.norm(vec)
     p1 = np.zeros(3)
     p0 = p1 - vec
     sep += prim.Arrow([p0, p1])
+    return sep

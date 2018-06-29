@@ -11,7 +11,7 @@ import FreeCAD as App
 import FreeCADGui as Gui
 
 from ._tools import BaseTool, input_field, text_field
-from ._glider import draw_glider
+from ._glider import draw_glider, draw_lines
 from .pivy_primitives_new import vector3D
 from .pivy_primitives_new import InteractionSeparator, Object3D, Arrow
 from .pivy_primitives_new import Line as _Line
@@ -851,6 +851,7 @@ class LineSelectionSeperator(InteractionSeparator):
 class GliderLine(Line):
     def __init__(self, line):
         points = [line.lower_node.vec, line.upper_node.vec]
+        points = line.get_line_points(2)
         super(Line, self).__init__(points, dynamic=True)
         self.line = line
 
@@ -858,9 +859,10 @@ class GliderLine(Line):
 
 class LineObserveTool(BaseTool):
     widget_name = 'line observe tool'
+    turn = False
     def __init__(self, obj):
         super(LineObserveTool, self).__init__(obj)
-        self.g3d = self.parametric_glider.get_glider_3d()
+        self.g3d = self.obj.Proxy.getGliderInstance()
         self.draw_glider()
         self.setup_qt()
 
@@ -870,7 +872,7 @@ class LineObserveTool(BaseTool):
                                   "z: {:5.1f} N".format(0, 0, 0))
         self.length = QtGui.QLabel("length without sag: {:5.3f} m\n"\
                                    "length with sag:    {:5.3f} m\n"\
-                                   "stretched lengths   {:5.3f} m".format(0, 0, 0))
+                                   "stretched lengths:  {:5.3f} m".format(0, 0, 0))
 
         self.force_factor = QtGui.QSlider(QtCore.Qt.Orientation.Horizontal)
         self.force_factor.setTickInterval(10)
@@ -894,11 +896,13 @@ class LineObserveTool(BaseTool):
         _rot.setValue(coin.SbVec3f(0, 1, 0), coin.SbVec3f(1, 0, 0))
         rot = coin.SoRotation()
         rot.rotation.setValue(_rot)
-        self.task_separator += rot
+        self.task_separator += rot        
+        draw_glider(self.g3d, self.task_separator, profile_num=100, hull=None, ribs=True, fill_ribs=False)
+        
         for _ in range(10):
             self.g3d.lineset.recalc(calculate_sag=False)
         self.g3d.lineset.recalc(calculate_sag=True)
-        # draw_glider(self.g3d, self.task_separator, hull=None, ribs=True, fill_ribs=True)
+
         self.line_sep = LineSelectionSeperator()
         self.arrows = coin.SoSeparator()
         self.task_separator += self.line_sep, self.arrows

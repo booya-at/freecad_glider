@@ -124,7 +124,7 @@ class BaseTool(object):
             self.view.viewTop()
 
         # disable the rotation function
-        # first get the widget where the scene ives in
+        # first get the widget where the scene lives in
 
         # form is the widget that appears in the task panel
         self.form = []
