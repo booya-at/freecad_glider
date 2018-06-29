@@ -897,8 +897,7 @@ class LineObserveTool(BaseTool):
         rot = coin.SoRotation()
         rot.rotation.setValue(_rot)
         self.task_separator += rot        
-        draw_glider(self.g3d, self.task_separator, profile_num=100, hull=None, ribs=True, fill_ribs=False)
-        
+        draw_glider(self.g3d, self.task_separator, profile_num=50, hull=None, ribs=True, fill_ribs=False)
         for _ in range(10):
             self.g3d.lineset.recalc(calculate_sag=False)
         self.g3d.lineset.recalc(calculate_sag=True)

@@ -121,6 +121,11 @@ class OGBaseObject(object):
     def addProperty(self, name, value, group, docs, p_type=None):
         _addProperty(self.obj, name, value, group, docs, p_type)
 
+    def restore_view_provider(self):
+        # adding the Proxy to the ViewObject (FeaturePython)
+        # this is necessary if the glider was modified outside of FreeCAD
+        OGGliderVP(self.obj.ViewObject)
+
 
 class OGBaseVP(object):
     def __init__(self, view_obj):
@@ -223,8 +228,10 @@ class OGGlider(OGBaseObject):
             self.obj = obj
 
             # backward compatibility (remove this)
-            self.obj.ViewObject.Proxy.addProperties(self.obj.ViewObject)
+            # self.obj.ViewObject.Proxy.addProperties(self.obj.ViewObject)
 
+            if App.GuiUp and not self.obj.ViewObject.Proxy:
+                self.restore_view_provider()
             self.obj.ViewObject.Proxy.recompute = True
             # we have blocked the automatic update mechanism. so now we have to call it manually
             if self.obj.ViewObject.Visibility:

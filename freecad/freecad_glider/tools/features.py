@@ -1,10 +1,12 @@
 from ._glider import OGBaseObject, OGGliderVP
 
 import os
+import copy
+import numpy as np
+import FreeCAD as App
 from openglider.airfoil.profile_2d import Profile2D
 from openglider.glider.rib import SingleSkinRib, RibHole
-import numpy as np
-import copy
+
 
 class BaseFeature(OGBaseObject):
     def __init__(self, obj, parent):
@@ -53,10 +55,14 @@ class BaseFeature(OGBaseObject):
     def onDocumentRestored(self, obj):
         if not hasattr(self, 'obj'):
             self.obj = obj
+            if self.obj.parent.ViewObject.Visibility:
+                self.obj.parent.ViewObject.Visibility = False
             self.obj.parent.Proxy.onDocumentRestored(self.obj.parent)
-            
+
+            if App.GuiUp and not self.obj.ViewObject.Proxy:
+                self.restore_view_provider()  # defined in parent class
             # backward compatibility (remove this)
-            self.obj.ViewObject.Proxy.addProperties(self.obj.ViewObject)
+            # self.obj.ViewObject.Proxy.addProperties(self.obj.ViewObject)
 
             self.obj.ViewObject.Proxy.recompute = True
             # we have blocked the automatic update mechanism. so now we have to call it manually
