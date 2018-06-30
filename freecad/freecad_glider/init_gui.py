@@ -79,7 +79,8 @@ class gliderWorkbench(Gui.Workbench):
         'GliderSharkFeatureCommand',
         'GliderSingleSkinRibFeatureCommand',
         'GliderHoleFeatureCommand',
-        'GliderFlapFeatureCommand']
+        'GliderFlapFeatureCommand',
+        'GliderScaleFeatureCommand']
 
     productionBox = [
         'PatternCommand',
@@ -128,6 +129,7 @@ class gliderWorkbench(Gui.Workbench):
         Gui.addCommand('GliderSingleSkinRibFeatureCommand', tools.GliderSingleSkinRibFeatureCommand())
         Gui.addCommand('GliderHoleFeatureCommand', tools.GliderHoleFeatureCommand())
         Gui.addCommand('GliderFlapFeatureCommand', tools.GliderFlapFeatureCommand())
+        Gui.addCommand('GliderScaleFeatureCommand', tools.GliderScaleFeatureCommand())
 
         Gui.addCommand('ViewCommand', tools.ViewCommand())
 

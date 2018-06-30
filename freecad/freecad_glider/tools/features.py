@@ -299,3 +299,17 @@ class VHoleFeature(OGGliderVP):
     def getIcon(self):
         _dir = os.path.dirname(os.path.realpath(__file__))
         return(_dir + "/../icons/hole_feature.svg")
+
+
+class ScaleFeature(BaseFeature):
+    def __init__(self, obj, parent):
+        super(ScaleFeature, self).__init__(obj, parent)
+        self.addProperties()
+
+    def addProperties(self):
+        self.addProperty('scale', 1.0, 'scale', 'scales the glider')
+
+    def getGliderInstance(self):
+        glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
+        glider.scale(self.obj.scale)
+        return glider

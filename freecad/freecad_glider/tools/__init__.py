@@ -441,3 +441,14 @@ class GliderHoleFeatureCommand(GliderFeatureCommand):
         features.HoleFeature(feature, self.glider_obj)
         vp = features.VHoleFeature(feature.ViewObject)
         vp.updateData()
+
+class GliderScaleFeatureCommand(GliderFeatureCommand):
+    def GetResources(self):
+        return {'Pixmap': 'scale_feature.svg' , 'MenuText': 'Features', 'ToolTip': 'scale feature'}
+
+    def Activated(self):
+        feature = FreeCAD.ActiveDocument.addObject('App::FeaturePython', 'scaleFeature')
+        self.glider_obj.ViewObject.Visibility = False
+        features.ScaleFeature(feature, self.glider_obj)
+        vp = glider.OGGliderVP(feature.ViewObject)
+        vp.updateData()

@@ -134,7 +134,7 @@ class OGBaseVP(object):
         self.obj = view_obj.Object
 
     def addProperty(self, name, value, group, docs, p_type=None):
-        _addProperty(self.obj, name, value, group, docs, p_type)        
+        _addProperty(self.view_obj, name, value, group, docs, p_type)        
 
     def attach(self, view_obj):
         self.view_obj = view_obj
@@ -291,10 +291,10 @@ class OGGliderVP(OGBaseVP):
 
     def addProperties(self, view_object):
         self.view_obj = view_object
-        if not hasattr(self.view_obj, 'fill_ribs'):
-            self.view_obj.addProperty('App::PropertyBool',
-                                 'fill_ribs', 'visuals', 'fill ribs')
-            self.view_obj.fill_ribs = False
+        self.addProperty('fill_ribs', False, 'visuals', 'fill ribs')
+        self.addProperty('x', 0., 'position', 'set x position')
+        self.addProperty('y', 0., 'position', 'set y position')
+        self.addProperty('z', 0., 'position', 'set x position')
 
 
     def getGliderInstance(self):
@@ -319,7 +319,9 @@ class OGGliderVP(OGBaseVP):
         _rot.setValue(coin.SbVec3f(0, 1, 0), coin.SbVec3f(1, 0, 0))
         rot = coin.SoRotation()
         rot.rotation.setValue(_rot)
-        self.seperator += [rot, self.vis_glider, self.vis_lines]
+        self.trans = coin.SoTranslation()
+        self.trans.translation = view_obj.x, view_obj.y, view_obj.z
+        self.seperator += [self.trans, rot, self.vis_glider, self.vis_lines]
         pick_style = coin.SoPickStyle()
         pick_style.style.setValue(coin.SoPickStyle.BOUNDING_BOX)
         self.vis_glider += [pick_style]
@@ -334,6 +336,8 @@ class OGGliderVP(OGBaseVP):
             return
         if not hasattr(fp, 'Visibility') or not fp.Visibility:
             return
+        if prop in ['x', 'y', 'z']:
+            self.trans.translation = fp.x, fp.y, fp.z
         if prop in ['Visibility'] and fp.Proxy.recompute:
             prop = 'all'
         if not hasattr(fp, 'half_glider'):
