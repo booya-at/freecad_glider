@@ -94,7 +94,7 @@ class ShapeTool(BaseTool):
         self.Qnum_front.setMaximum(5)
         self.Qnum_dist.setMaximum(8)
 
-        self.Qnum_cells.setMinimum(10)
+        self.Qnum_cells.setMinimum(3)
         self.Qnum_back.setMinimum(2)
         self.Qnum_front.setMinimum(2)
         self.Qnum_dist.setMinimum(1)
