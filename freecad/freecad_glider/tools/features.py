@@ -14,6 +14,7 @@ class BaseFeature(OGBaseObject):
         obj.addProperty('App::PropertyLink', 'parent', 'not yet', 'docs')
         obj.parent = parent
         super(BaseFeature, self).__init__(obj)
+        self.addProperties()
 
     def drawGlider(self, call_parent=True):
         if not self.obj.ViewObject.Visibility:
@@ -62,7 +63,7 @@ class BaseFeature(OGBaseObject):
             if App.GuiUp and not self.obj.ViewObject.Proxy:
                 self.restore_view_provider()  # defined in parent class
             # backward compatibility (remove this)
-            # self.obj.ViewObject.Proxy.addProperties(self.obj.ViewObject)
+            self.obj.Proxy.addProperties()
 
             self.obj.ViewObject.Proxy.recompute = True
             # we have blocked the automatic update mechanism. so now we have to call it manually
@@ -75,8 +76,12 @@ class BaseFeature(OGBaseObject):
 class RibFeature(BaseFeature):
     def __init__(self, obj, parent):
         super(RibFeature, self).__init__(obj, parent)
-        obj.addProperty('App::PropertyIntegerList', 'ribs', 'not yet', 'docs')
-        obj.addProperty('App::PropertyInteger', 'airfoil', 'not yet', 'docs')
+
+    def addProperties(self):
+        self.obj.addProperty('App::PropertyIntegerList', 'ribs', 'not yet', 'docs')
+        self.obj.addProperty('App::PropertyInteger', 'airfoil', 'not yet', 'docs')
+        self.addProperty('rib_offset', 0., 'not yet', 'orthogonal offset of ribs relative to chord')
+        self.addProperty('delta_aoa', 0., 'not yet', 'additional (delta) aoa')
 
     def getGliderInstance(self):
         glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
@@ -84,6 +89,8 @@ class RibFeature(BaseFeature):
         for i, rib in enumerate(glider.ribs):
             if i in self.obj.ribs:
                 rib.profile_2d = airfoil
+                rib.pos += rib.in_plane_normale * self.obj.rib_offset * rib.chord
+                rib.aoa_absolute += self.obj.delta_aoa
         return glider
 
 class VRibFeature(OGGliderVP):
@@ -116,6 +123,8 @@ class VBallooningFeature(OGGliderVP):
 class SharkFeature(BaseFeature):
     def __init__(self, obj, parent):
         super(SharkFeature, self).__init__(obj, parent)
+
+    def addProperties(self):
         self.addProperty('ribs', [], 'not_yet', 'docs', int)
         self.addProperty('x1', 0.1, 'not_yet', 'distance')
         self.addProperty('x2', 0.11, 'not_yet', 'distance')
@@ -235,7 +244,6 @@ class VSingleSkinRibFeature(OGGliderVP):
 class FlapFeature(BaseFeature):
     def __init__(self, obj, parent):
         super(FlapFeature, self).__init__(obj, parent)
-        self.addProperties()
 
     def addProperties(self):
         self.addProperty('flap_begin', 0.95, 'flap', 'where should the flapping effect start', float)
@@ -262,7 +270,6 @@ class VFlapFeature(OGGliderVP):
 class HoleFeature(BaseFeature):
     def __init__(self, obj, parent):
         super(HoleFeature, self).__init__(obj, parent)
-        self.addProperties()
 
     def getGliderInstance(self):
         glider = copy.deepcopy(self.obj.parent.Proxy.getGliderInstance())
@@ -304,7 +311,6 @@ class VHoleFeature(OGGliderVP):
 class ScaleFeature(BaseFeature):
     def __init__(self, obj, parent):
         super(ScaleFeature, self).__init__(obj, parent)
-        self.addProperties()
 
     def addProperties(self):
         self.addProperty('scale', 1.0, 'scale', 'scales the glider')

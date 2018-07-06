@@ -863,8 +863,8 @@ class LineObserveTool(BaseTool):
     def __init__(self, obj):
         super(LineObserveTool, self).__init__(obj)
         self.g3d = self.obj.Proxy.getGliderInstance()
-        self.draw_glider()
         self.setup_qt()
+        self.draw_glider()
 
     def setup_qt(self):
         self.force = QtGui.QLabel("x: {:5.1f} N\n"\
@@ -875,7 +875,7 @@ class LineObserveTool(BaseTool):
                                    "stretched lengths:  {:5.3f} m".format(0, 0, 0))
 
         self.force_factor = QtGui.QSlider(QtCore.Qt.Orientation.Horizontal)
-        self.force_factor.setTickInterval(10)
+        self.force_factor.setTickInterval(100)
         self.force_factor.setMinimum(1)
         self.force_factor.setValue(10)
 
@@ -888,7 +888,24 @@ class LineObserveTool(BaseTool):
         self.layout.setWidget(2, text_field, QtGui.QLabel("force-factor"))
         self.layout.setWidget(2, input_field, self.force_factor)
 
+
+        self.recalc_button = QtGui.QPushButton("recompute")
+        self.sag_check = QtGui.QCheckBox("sag")
+        self.sag_check.setCheckState(QtCore.Qt.CheckState(True))
+        self.layout.setWidget(3, input_field, self.recalc_button)
+        self.layout.setWidget(3, text_field, self.sag_check)
+
+
         self.force_factor.sliderReleased.connect(self.draw_residual_forces)
+        self.recalc_button.clicked.connect(self.recompute_lines)
+
+
+    def recompute_lines(self):
+        calculate_sag = bool(self.sag_check.checkState())
+        self.g3d.lineset.recalc(calculate_sag=calculate_sag)
+        self.line_sep.unregister()
+        self.task_separator.removeAllChildren()
+        self.draw_glider()
 
 
     def draw_glider(self):
@@ -898,9 +915,7 @@ class LineObserveTool(BaseTool):
         rot.rotation.setValue(_rot)
         self.task_separator += rot        
         draw_glider(self.g3d, self.task_separator, profile_num=50, hull=None, ribs=True, fill_ribs=False)
-        for _ in range(10):
-            self.g3d.lineset.recalc(calculate_sag=False)
-        self.g3d.lineset.recalc(calculate_sag=True)
+        # self.g3d.lineset.recalc(calculate_sag=True)
 
         self.line_sep = LineSelectionSeperator()
         self.arrows = coin.SoSeparator()
@@ -908,7 +923,7 @@ class LineObserveTool(BaseTool):
         for line in self.g3d.lineset.lines:
             self.line_sep += GliderLine(line)
         self.line_sep.register(self.view, self)
-        self.draw_residual_forces(factor=10)
+        self.draw_residual_forces()
 
     def draw_residual_forces(self, factor=None):
         self.arrows.removeAllChildren()
@@ -917,6 +932,7 @@ class LineObserveTool(BaseTool):
             if True: #node.type == 1:
                 point = node.vec
                 force = self.g3d.lineset.get_residual_force(node) * factor
+                force *= 1 - 2 * (node.type == 1)
                 if np.linalg.norm(force) > 1e-4:
                     arrow = Arrow([point, point - force], arrow_size=0.05 * np.linalg.norm(force))
                     arrow.set_color("red")
@@ -931,9 +947,9 @@ class LineObserveTool(BaseTool):
                             "stretched lengths   {:5.3f} m".format(*length))
 
     def accept(self):
-        super(LineObserveTool, self).accept()
         self.line_sep.unregister()
+        super(LineObserveTool, self).accept()
 
     def reject(self):
-        super(LineObserveTool, self).accept()
         self.line_sep.unregister()
+        super(LineObserveTool, self).reject()
