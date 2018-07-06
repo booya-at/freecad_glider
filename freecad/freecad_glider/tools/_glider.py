@@ -115,6 +115,9 @@ class OGBaseObject(object):
         obj.Proxy = self
         self.obj = obj
 
+    def addProperties(self):
+        pass
+
     def execute(self, fp):
         pass
 

@@ -864,6 +864,7 @@ class LineObserveTool(BaseTool):
         super(LineObserveTool, self).__init__(obj)
         self.g3d = self.obj.Proxy.getGliderInstance()
         self.setup_qt()
+        self.g3d.lineset.recalc(False)
         self.draw_glider()
 
     def setup_qt(self):
@@ -891,7 +892,8 @@ class LineObserveTool(BaseTool):
 
         self.recalc_button = QtGui.QPushButton("recompute")
         self.sag_check = QtGui.QCheckBox("sag")
-        self.sag_check.setCheckState(QtCore.Qt.CheckState(True))
+        self.sag_check.setTristate(False)
+        self.sag_check.setCheckState(QtCore.Qt.CheckState(False))
         self.layout.setWidget(3, input_field, self.recalc_button)
         self.layout.setWidget(3, text_field, self.sag_check)
 
